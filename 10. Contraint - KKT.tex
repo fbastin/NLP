@@ -1,0 +1,821 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation avec contraintes\\Conditions d'optimalité}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cA{\mathcal{A}}
+\def\cB{\mathcal{B}}
+\def\cE{\mathcal{E}}
+\def\cI{\mathcal{I}}
+\def\cL{\mathcal{L}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+\def\cX{\mathcal{X}}
+\def\cV{\mathcal{V}}
+
+\def\bu{\boldsymbol{u}}
+
+\def\RR{\mathbb{R}}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Multiplicateurs de Lagrange: contraintes d'égalité}
+
+Considérons le problème de programmation mathématique suivant
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) = 0,\ i = 1,\ldots,m.
+\end{align*}
+où $\cX \subset \RR^n$, $f: \RR^n \rightarrow \RR$, $g_i: \RR^n \rightarrow \RR$, $i = 1,\ldots,m$.
+
+\mbox{}
+
+Le {\red Lagrangien} associé à ce problème est obtenu en associant un multiplicateur de Lagrange $\lambda_i$ à chaque fonction de contrainte $g_i$:
+$$
+L(x, \lambda) = f(x) + \sum_{i = 1}^{m} \lambda_i g_i(x).
+$$
+
+Sans faire d'hypothèse particulière sur $\cX$ ou sur les fonctions $f$ et $g_i$, nous pouvons obtenir des conditions très générales pour qu'un point $x^*$ soit une solution optimale du problème.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimalité}
+
+\begin{thm}
+Supposons que le Lagrangien associé au problème
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) = 0,\ i = 1,\ldots,m.
+\end{align*}
+possède un minimum local $x^* \in \cX$ lorsque le vecteur de multiplicateurs $\lambda$ vaut $\lambda^*$.
+Si $g_i(x^*) = 0$, $i = 1,\ldots,m$, alors $x^*$ est un minimum local de $f(x)$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimalité}
+
+\begin{proof}
+	La preuve se fait par contradiction en supposant que $x^*$ n'est pas un minimum local de $f(x)$.
+	Alors $\forall \epsilon > 0$, $\exists\, \overline{x} \in \cB(x^*, \epsilon)$ tel que $g_i(\overline{x}) = 0$, $i = 1,\ldots,m$ et $f(\overline{x}) < f(x^*)$.
+	
+Par conséquent, pour tout $\lambda$,
+	$$
+	\sum_{i = 1}^{m} \lambda_i g_i(x^*) = \sum_{i = 1}^{m} \lambda_i g_i(\overline{x}) = 0.
+	$$
+	Dès lors,
+$$
+f(\overline{x}) + \sum_{i = 1}^{m} \lambda_i g_i(\overline{x}) < f(x^*) + \sum_{i = 1}^{m} \lambda_i g_i(x^*).
+$$
+En prenant $\lambda = \lambda^*$, la relation précédente contredit le fait que est un
+minimum local du Lagrangien lorsque $\lambda = \lambda^*$.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Multiplicateurs de Lagrange: contraintes d'inégalité}
+
+Considérons le problème de programmation mathématique suivant
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m.
+\end{align*}
+où $\cX \subset \RR^n$, $f: \RR^n \rightarrow \RR$, $g_i: \RR^n \rightarrow \RR$, $i = 1,\ldots,m$.
+
+\mbox{}
+
+\begin{thm}
+Supposons que le Lagrangien associé au problème
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m.
+\end{align*}
+possède un minimum local $x^* \in \cX$ lorsque le vecteur de multiplicateurs $\lambda$ vaut $\lambda^*$.
+Si $g_i(x^*) = 0$, $\lambda^*_i \geq 0$, et $\lambda^*_i g_i(x^*) = 0$, $i = 1,\ldots,m$ alors $x^*$ est un minimum local de $f(x)$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Multiplicateurs de Lagrange: contraintes d'inégalité}
+	
+\begin{proof}
+Comme précédemment, la preuve se fait par contradiction en supposant que $x^*$ n'est pas un minimum local de $f(x)$.
+Alors $\forall \epsilon > 0$, $\exists\, \overline{x} \in \cB(x^*, \epsilon)$ tel que $g_i(\overline{x}) \leq 0$, $i = 1,\ldots,m$ et $f(\overline{x}) < f(x^*)$.
+Par conséquent, pour $\lambda = \lambda^* \geq 0$,
+$$
+\sum_{i = 1}^{m} \lambda_i g_i(\overline{x}) \leq 0 \mbox{ et }
+\sum_{i = 1}^{m} \lambda_i g_i(x^*) = 0.
+$$
+Dès lors,
+$$
+f(\overline{x}) + \sum_{i = 1}^{m} \lambda_i g_i(\overline{x}) < f(x^*) + \sum_{i = 1}^{m} \lambda_i g_i(x^*).
+$$
+La relation précédente contredit le fait que $x^*$ est un
+minimum local du Lagrangien lorsque $\lambda = \lambda^*$.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Généralisation}
+
+Considérons à présent un problème ayant des contraintes d'égalité et d'inégalité:
+\begin{align*}
+\min_{x \in \mathbb{R}^n} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m \\
+& h_j(x) = 0,\ j = 1,\ldots,r
+\end{align*}
+
+Nous définissons le Lagrangien comme
+$$
+L(x, \lambda, \mu) = f(x) + \sum_{i = 1}^m \lambda_i g_i(x)
+ + \sum_{j = 1}^r \mu_j h_j(x)
+$$
+et la fonction duale lagrangienne
+$$
+\cL(\lambda, \mu) = \min_{x \in \mathbb{R}^n} L(x, \lambda, \mu)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problème dual}
+
+Le problème dual est
+\begin{align*}
+\max_{\lambda \in \RR^m, \mu \in \RR^r}\ & \cL(\lambda, \mu) \\
+\mbox{tel que } & \lambda \geq 0.
+\end{align*}
+
+Propriétés importantes:
+\begin{itemize}
+\item
+Le problème dual est toujours convexe, i.e. $\cL$ est toujours concave (même si la problème primal n'est pas convexe).
+\item
+Les valeurs optimales (globales) primale et duale, $f^*$ et $\cL^*$, satisfont toujours la dualité faible: $f^* \geq \cL^*$.
+\item {\blue Dualité forte}: sous certaines conditions (qualifications de contraintes), $f^* = \cL^*$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Saut de dualité}
+
+Étant donné une solution primale réalisable $x$ et une solution duale réalisable $(\lambda, \mu)$, la quantité $f(x) - \cL(\lambda, \mu)$ est appelé le saut de dualité entre $x$ et $(\lambda, \mu)$.
+Notons que
+$$
+f(x) - f^* \leq f(x) - \cL(\lambda, \mu)
+$$
+de sorte que si le saut de dualité est nul, alors $x$ est optimal primal (et similairement, $\lambda$ et $\mu$ sont optimaux duaux).
+
+\mbox{}
+
+D'un point de vue algorithmique, si la dualité forte tient, ceci fournit un critère d'arrêt: si $f(x) - \cL(\lambda, \mu) \leq \epsilon$, nous avons alors la garantie que $f(x) - f^* \leq \epsilon$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Saut de dualité: cas local}
+
+Désignons l'ensemble réalisable par
+$$
+\cX = \{ x \,|\, g_i(x), i = 1,\ldots,m, h_j(x), j = 1,\ldots,r \}.
+$$
+Considérons $x^*$ un minimum local de $f(\cdot)$, i.e.
+$$
+\exists \epsilon > 0  \text{ t.q. } \forall x \in \cB(x^*, \epsilon) \cap \cX, f(x^*) \leq f(x).
+$$
+Nous pouvons également définir la fonction duale lagrangienne restreinte à la boule $\cB(x^*, \epsilon)$:
+$$
+\cL_{\cB(x^*, \epsilon)}(\lambda, \mu) = \min_{x \in \cB(x^*, \epsilon)} L(x,\lambda, \mu).
+$$
+Dans ce cas, la dualité faible tient toujours localement:
+$$
+\cL^*_{\cB(x^*, \epsilon)} \leq f(x^*).
+$$
+Sous certaines conditions, la dualité fort tiens également:
+$$
+\cL^*_{\cB(x^*, \epsilon)} = f(x^*).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Saut de dualité: cas local}
+
+Remarquons cependant que
+$$
+\min_{x \in \mathbb{R}^n} L(x, \lambda, \mu) 
+\leq \min_{x \in \cB(x^*, \epsilon)} L(x, \lambda, \mu) 
+$$
+et donc
+$$
+\cL^* \leq \cL^*_{\cB(x^*, \epsilon)}.
+$$
+
+\mbox{}
+
+Dès lors, si $x^*$ est un minimum local et si la dualité forte tient localement,
+$$
+\cL^* \leq f(x^*),
+$$
+l'inégalité pouvant être stricte.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions de Karush-Kuhn-Tucker (KKT)}
+
+Étant donné le problème général
+\begin{align*}
+\min_{x \in \mathbb{R}^n} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m \\
+& h_j(x) = 0,\ j = 1,\ldots,r
+\end{align*}
+les conditions de Karush-Kuhn-Tucker, ou conditions KKT, sont:
+\begin{align*}
+\nabla_x L(x,\lambda,\mu) &= 0 & \mbox{(stationarité)}\\
+\lambda_i g_i(x) &= 0 & \mbox{(écarts de complémentarités)} \\
+g_i(x) \leq 0, &\ h_j(x) = 0\ \forall i,j & \mbox{(faisabilité primale)} \\
+\lambda_i &\geq 0\ \forall i & \mbox{(faisabilité duale)}
+\end{align*}
+
+%\mbox{}
+
+%Dans le cas non convexe, seule la dualité faible est garantie.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Nécessité}
+
+Soit $x^*$, $(\lambda^*, \mu^*)$, des solutions globales primale et duale, avec un saut de dualité nul (la dualité forte tient).
+Alors
+\begin{align*}
+f(x^*) &= \cL(\lambda^*, \mu^*) \\
+&= \min_{x \in \RR^n} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{i = 1}^r \mu_i^* h_i(x) \right) \\
+& \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
+& \leq f(x^*)
+\end{align*}
+Dès lors, $x^*$ est un minimum (global) de $L(x, \lambda^*, \mu^*)$ sur $\RR^n$.
+
+Par conséquent, $\nabla_x L(x^*, \lambda^*, \mu^*) = 0$.
+Nous retrouvons les conditions de stationarité.
+
+Nous devons aussi avoir $\sum_{i = 1}^m \lambda_i^* g_i(x^*) = 0$ puisque $\sum_{i = 1}^m \lambda_i^* g_i(x^*) \geq 0$.
+Ceci implique que pour tout $i$, $\lambda_i^* g_i(x^*) = 0$.
+Nous retrouvons les conditions de complémentarité.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Nécessité: cas local}
+
+Le résultat tient encore pour la minimisation locale en considerant la fonction duale lagrangienne. 
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Nécessité}
+
+\begin{thm}[Nécessité des conditions KKT]
+Si $x^*$, $(\lambda^*, \mu^*)$ sont des solutions primale et duale avec un saut de dualité nul (i.e. la dualité forte tient),
+alors $x^*$, $(\lambda^*, \mu^*)$ satisfont les conditions KKT.
+\end{thm}
+
+\mbox{}
+
+Dès lors, l'hypothèse de dualité forte apparaît importante. Elle sera garantie sous certaines conditions.
+\begin{itemize}
+\item
+Programme linéaire. La dualité forte tient toujours.
+\item
+Programme convexe. Condition de Slater: il existe un $x$ tel que $g_i(x) < 0$, $i = 1,\ldots,m$ et $h_i(x) = 0$, $i = 1,\ldots,r$.
+\item
+Programme non-convexe.
+Hypothèse de qualification de contraintes.
+La plus courante, mais aussi la plus forte, est la condition d'indépendance linéaire des gradients à la solution.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Nécessité (cas non convexe)}
+
+\begin{thm}[Nécessité des conditions KKT]
+Si $x^*$ est une solution locale de
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m \\
+& h_i(x) = 0,\ i = 1,\ldots,r,
+\end{align*}
+où les fonctions $f$, $g_i$ et $h_i$, $i = 1,\ldots,m$, sont continûment différentiables, et qu'une condition de qualification de contrainte tient en $x^*$.
+Alors, il existe un vecteur de multiplicateurs de Lagrange  $(\lambda^*, \mu^*)$ tel que les conditions KKT sont satisfaites en $(x^*,\lambda^*, \mu^*)$.
+\end{thm}
+
+\begin{proof}
+Preuve: technique!
+Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suffisance des conditions KKT}
+	
+	S'il existent $x^*$, $(\lambda^*, \mu^*)$ satisfaisant les conditions KKT, alors
+	\begin{align*}
+	L(\lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
+	&= f(x^*)
+	\end{align*}
+	
+	Dès lors, le saut de dualité est nul ({\red dualité forte}).
+	% si $L(\lambda^*, \mu^*) = \cL(\lambda^*, \mu^*)$, ce qui est le cas si $x^*$ est un minimum global de $\cL(\lambda^*, \mu^*)$.
+	
+	\mbox{}
+	
+	Dans le cas convexe, cela implique que 	$x^*$ et $(\lambda^*, \mu^*)$ sont des solutions globales primale et duale, respectivement.
+
+	\mbox{}
+
+	Dans la cas non-convexe, $x^*$ est un minimum local, pas nécessairement global, voire un point-selle.
+	% donner un exemple du dernier cas
+	
+	%Si $x^*$ n'est pas un minimum global, la fonction dual lagrangienne n'est pas non plus minimisée globalement. Si on considère le minimum global de la fonction duale lagrangienne, le saut de dualité n'est pas nul.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Contraintes linéaires}
+	
+	Revenons à la méthode de projection.
+	Un autre cas important de contraintes relativement faciles à traiter sont les contraintes d'égalité
+	$$
+	Ax = b
+	$$
+	avec $A \in \RR^{m \times n}$ de rang plein.
+	
+	Nous pouvons généraliser le problème de projection de $y$ sur l'ensemble
+	$$
+	\cX = \lbrace x \,|\, Ax = b \rbrace
+	$$
+	en considérant la norme-2 ou la norme engendré par une matrice $H$ définie positive
+	$$
+	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
+	$$
+	Nous allons résoudre ce problème en utilisant les conditions d'optimalité de Karush-Kuhn-Tucker (KKT).
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Projection sur contraintes linéaires}
+	
+	Considérons le problème
+	$$
+	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
+	$$
+	Le problème est convexe, et satisfait la condition de Slater s'il existe au moins un point réalisable.
+	
+	\mbox{}
+	
+	Les conditions KKT s'écrivent
+	\begin{align*}
+	\nabla_x \frac{1}{2} \langle y-x, H(y-x) \rangle
+	+ \nabla_x(Ax - b)^T \lambda &= 0 \\
+	Ax - b & = 0 %\\
+	%\lambda^T(Ax - b) &= 0
+	\end{align*}
+	ou
+	\begin{align*}
+	H(y-x) + A^T \lambda &= 0 \\
+	Ax & = b \\
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Projection sur contraintes linéaires}
+	
+	Le problème peut être réorganisé comme
+	\begin{align*}
+	Hx - A^T \lambda &= Hy \\
+	Ax + 0\lambda & = b
+	\end{align*}
+	donnant lieu au système linéaire
+	$$
+	\begin{pmatrix}
+	H & A^T \\ A & 0
+	\end{pmatrix}
+	\begin{pmatrix}
+	x \\ -\lambda
+	\end{pmatrix}
+	=
+	\begin{pmatrix}
+	Hy \\ b
+	\end{pmatrix}
+	$$
+	Si $H$ est inversible, ce qui sera le cas dans nos problèmes comme nous prendrons $H$ définie positive, nous pouvons résoudre le système en isolant $x$ et en le susbtituant.
+	Tout d'abord, nous avons
+	$$
+	x = H^{-1}Hy+H^{-1}A^T \lambda = y+H^{-1}A^T \lambda
+	$$
+	et donc
+	$$
+	A\left(y+H^{-1}A^T \lambda\right) = b
+	$$
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Projection sur contraintes linéaires}
+	
+	On en tire
+	$$
+	AH^{-1}A^T \lambda = b - Ay
+	$$
+	puis, une fois $\lambda$ déterminé
+	$$
+	Hx = Hy + A^T \lambda
+	$$
+	
+	%Supposons que nous pouvons obtenir deux matrices de rang plein $R$ et $N$ dont les colonnes donnent une base au domaine et à l'espace nul de $A$, respectivement.
+	%$x$ peut alors être représenté comme
+	%$$
+	%x = Rx^R + Nx^N
+	%$$
+	%ce qui entraîne
+	%$$
+	%b = ARx^R
+	%$$
+	%Si $b = 0$, nous pouvons prendre $x^R = 0$, et il suit que $x = Nx^N$.
+	%Suite: page 72 de CGT
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Application}
+	
+	Considérons le problème
+	\begin{align*}
+	\min_x \ & f(x) \\
+	\mbox{t.q. } & Ax = b
+	\end{align*}
+	
+	\mbox{}
+	
+	J. B. Rosen, ``The Gradient Projection Method for Nonlinear Programming. Part I. Linear Constraints'',  Journal of the Society for Industrial and Applied Mathematics, 8(1), pp. 181-217, 1960.
+	
+	\mbox{}
+	
+	Supposons que nous avons un point de départ $x_0$ tel que $Ax_0 = b$.
+	Nous souhaitons garder tous les itérés réalisables, i.e. $Ax_k = b$.
+	
+	\mbox{}
+	
+	Étant donné la direction de recherche $d_k$, nous devons dès lors avoir $Ad_k = 0$
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Projection de la plus forte pente}
+	
+	Considérons $d_k = -\nabla f(x_k)$.
+	
+	\mbox{}
+	
+	De ce qui précède, en prenant $H = I$, et en notant $\overline{d}_k$ la projection de $d_k$,
+	\begin{align*}
+	\overline{d}_k &= d_k + A^T\lambda \\
+	&= d_k - A^T(AA^T)^{-1}Ad_k \\
+	&= \left(I-A^T(AA^T)^{-1}A\right)d_k \\
+	&= -\left(I-A^T(AA^T)^{-1}A\right)\nabla f(x_k) 
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Algorithme}
+	
+	\begin{itemize}
+		\item 
+		\textbf{Étape 0} Soit $x_0$. Poser $k = 0$.
+		\item 
+		\textbf{Étape 1}
+		Calcul de la direction de recherche:
+		$$
+		\overline{d}_k = -\left(I-A^T(AA^T)^{-1}A\right)\nabla f(x_k).
+		$$
+		Si $\| \overline{d}_k \| = 0$, arrêt: $x_k$ est optimal.
+		Sinon, aller à l'étape 2.
+		\item 
+		\textbf{Étape 2}
+		Résoudre (approximativement)
+		$$
+		\min_{\alpha \geq 0} f(x_k+\alpha \overline{d}_k)
+		$$
+		Soit $\alpha_k$ la solution. Poser $x_{k+1} = x_k + \alpha_k \overline{d}_k$, et $k := k + 1$. Retour à l'étape 1.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Remarques}
+	
+	Nous avons ici directement projeté la direction de recherche. Il est possible de montrer que $\overline{d}_k$ est solution du problème
+	\begin{align*}
+	\min_{d} \ & \nabla f(x_k)^Td \\
+	\mbox{t.q. } & Ad = 0,\ \|d\| = 1.
+	\end{align*}
+	
+	\mbox{}
+	
+	L'article de Rosen considère le cas plus général de contraintes sous la forme
+	\begin{align*}
+	a_i x = b_i,\ i = 1,\ldots,m_1 \\
+	a_i x \leq b_i,\ i = m_1,\ldots,m \\
+	\end{align*}
+	L'algorithme doit alors considérer quelles sont les contraintes actives.
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Ensemble actif}
+
+\begin{defn}[Ensemble actif]
+L'ensemble actif $\cA(x)$ du problème d'optimisation
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i \in \cI \\
+& h_i(x) = 0,\ i \in \cE,
+\end{align*}
+en un point réalisable $x$ est l'ensemble des indices des contraintes d'égalité et l'ensemble des indices $i$ des contraintes d'inégalité telles que $g_i(x) = 0$, c'est-à-dire
+$$
+\cA(x) = \cE U \{ i \,|\, g_i(x) = 0 \}
+$$
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{LICQ}
+
+\begin{defn}[LICQ]
+Étant donné le point $x$ et l'ensemble actif $\cA(x)$, nous disons que la qualification de contraintes d'indépendance linéaire (linear
+independence constraint qualification -- LICQ) tient si l'ensemble des contraintes actives $\nabla_x c_i(x), i \in \cA(x)$ est linéairement indépendant.
+\end{defn}
+
+\begin{lem}
+	Soit $x^*$ un point du problème de programmation nonlinéaire où la LICQ tient et soit $d \in \RR^n$ un vecteur tel que
+	\begin{align*}
+	d & \ne 0 \\
+	d^T \nabla g_i(x^*) &= 0,\ i \in \cE \\
+	d^T \nabla g_i(x^*) &\leq 0,\ i \in \cA(x^*) \cap \cI
+	\end{align*}
+\end{lem}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{LICQ}
+
+\begin{lem}[suite]
+Alors pour $\epsilon > 0$ assez petit, il existe un chemin $x(\cdot) \in C^2 \left((-\epsilon, \epsilon), \RR^n \right)$ tel que
+\begin{align*}
+x(0) &= x^* \\
+\frac{d}{dt} x(0) &= d \\
+g_i(x(t)) &= td^T\nabla g_i(x^*),\ i \in \cA(x^*),\ t \in (-\epsilon, \epsilon)
+\end{align*}
+de sorte que
+\begin{align*}
+g_i(x(t)) &= 0,\ i \in \cE,\ t \in (-\epsilon, \epsilon) \\
+g_i(x(t)) &\leq 0,\ i \in \cI,\ t \in [0, \epsilon)
+\end{align*}
+\end{lem}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Soit $\ell = \#\cA$.
+Puisque la LICQ tient, il est possible de choisir $Z \in \RR^{(n-\ell) \times n}$ telle que
+$$
+\begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\
+Z
+\end{pmatrix}
+$$
+soit une matrice nonsingulière.
+
+\mbox{}
+
+Soit une fonction $h: \RR^n \times \RR$ définie par
+$$
+h(x,t) =
+\begin{pmatrix}
+
+\begin{pmatrix}
+g_i(x), \ i \in \cA(x^*)
+\end{pmatrix}
+-t
+\begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\
+\end{pmatrix}
+d
+\\
+
+Z(x-x^*-td)
+
+\end{pmatrix}
+$$
+La matrice jacobienne de $h$ en $(x^*, 0)$ vaut
+$$
+D h(x^*, 0) =
+\begin{pmatrix}
+D_x h(x^*, 0) & D_t h(x^*, 0)
+\end{pmatrix}
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Rappel: matrice jacobienne}
+
+Soit
+$$
+F:{\begin{pmatrix}x_{1}\\\vdots \\x_{n}\end{pmatrix}}
+\longmapsto {\begin{pmatrix}f_{1}(x_{1},\dots ,x_{n})\\\vdots \\f_{m}(x_{1},\dots ,x_{n})\end{pmatrix}}.
+$$
+La matrice jacobienne de $F$ est
+$$
+DF
+=
+\begin{pmatrix}
+\nabla_x^T f_1 \\
+\vdots \\
+\nabla_x^T f_m
+\end{pmatrix}
+=
+{\begin{pmatrix}{\dfrac {\partial f_{1}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{1}}{\partial x_{n}}}\\\vdots &\ddots &\vdots \\{\dfrac {\partial f_{m}}{\partial x_{1}}}&\cdots &{\dfrac {\partial f_{m}}{\partial x_{n}}}\end{pmatrix}}.
+$$
+Si $n = m$, le jacobien de $F$ est le déterminant de $DF$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+Les éléments de
+$$
+D h(x^*, 0) =
+\begin{pmatrix}
+D_x h(x^*, 0) & D_t h(x^*, 0)
+\end{pmatrix}
+$$
+sont
+$$
+D_x h(x^*, 0) =
+\begin{pmatrix}
+\begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*)
+\end{pmatrix} \\
+ Z
+\end{pmatrix}
+$$
+et
+$$
+D_t h(x^*, 0) =
+- \begin{pmatrix}
+\begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*)
+\end{pmatrix}d \\
+Zd
+\end{pmatrix}
+= -D_x h(x^*, 0)d
+$$
+
+Puisque $D_x h(x^*, 0)$ est non singulier, le théorème des fonctions implicites implique que pour $\delta > 0$ assez petit, il existe une fonction unique $x \in C^2: (-\delta, \delta) \rightarrow \RR^n$ et un voisinage $\cV(x^*)$ tel que pour $x \in \cV(x^*)$, $t \in (-\delta, \delta)$,
+$$
+h(x,t) = 0 \Leftrightarrow x = x(t)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Rappel: théorème des fonctions implicites}
+
+Soit $F \in C^k: \Omega \subseteq \cR^n\times\cR^p \rightarrow \cR^p$, notée
+$$
+F(x,y) = \left( F_1(x,y), F_2(x,y), \ldots, F_p(x,y) \right)
+$$
+S'il existe $(a,b)$ tel que $F(a,b) = 0$ et pour lequel le jacobien de $D_yF$ ($D_yF$ est inversible) est non nul, alors
+\begin{enumerate}
+\item
+il existe un voisinage $A$ de $a$ dans $\cR^n$ et un voisinage $B$ de $b$ dans $\cR^p$, une fonction $f \in C^k(A,B)$, tels que $A \times B \subseteq \Omega$ et que $\forall\, (x,y) \in A \times B$,
+$$
+F(x,y) = 0 \Leftrightarrow y=f(x).
+$$
+\item
+la matrice jacobienne de $f$ par rapport à $x$ s'écrit
+$$
+D_x f = - \left( D_yF (x, f(x) )\right)^{-1} \left( D_xF (x, f(x))\right).
+$$
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+En particulier, nous avons $h(x^*,0) = 0$, et donc $x(0) = x^*$.
+De plus, $h(x(t), t) = 0$ donne, par définition de $h$,
+$$
+g_i(x(t)) = td^T \nabla g(x^*)
+$$
+pour tout $i \in \cA(x^*)$ et $t \in (-\delta, \delta)$.
+Les conditions du lemme sur $d$ impliquent dès lors que
+\begin{align*}
+g_i(x(t)) &= 0,\ i \in \cE \\
+g_i(x(t)) &\leq 0,\ i \in \cA(x^*) \cap \cI,\ t \in [0,\delta)
+\end{align*}
+
+D'autre part, puisque $g_i(x^*) < 0$, $i \notin \cA(x^*)$, la continuité de $x(t)$ implique qu'il existe $\epsilon \in (0,\delta)$ tel que
+$$
+g_j(x^*) < 0,\ j \in \cI \setminus \cA(x^*),\ t \in (-\epsilon, \epsilon).
+$$
+
+Finalement, du théorème des fonctions implicites, nous pouvons tirer que
+$$
+\frac{d}{dt} x(0) = -(D_x h(x^*, 0))^{-1} D_th(x^*, 0) = d
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Retour au cône tangent}
+
+Il est également possible de montre que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
+$$
+T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0, i \in \cE, \ d^T\nabla g_i(x) \leq 0, i \in \cA(x) \cap \cI \}
+$$
+Dès lors,
+$$
+\frac{d}{dt} x(0) \in T_{\cX}(x^*).
+$$
+
+\mbox{}
+
+Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, lequel nous permettra de davantage caractériser les conditions prévalentes à une solution du problème d'optimisation.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Chemin de sortie réalisable}
+	
+	\begin{defn}
+		Soit $x^* \in \RR^n$ un point réalisable pour le PNL et définissons $x \in C^2\left((-\epsilon,\epsilon), \RR^n \right)$ un chemin tel que
+		\begin{align*}
+		x(0) &= x^* \\
+		d &:= \frac{d}{dt}x(0) \ne 0 \\
+		g_i(x(t)) &= 0,\ i \in \cE,\ t \in (-\epsilon, \epsilon) \\
+		g_i(x(t)) &\leq 0,\ i \in \cI,\ t \in [0, \epsilon)
+		\end{align*}
+		$x(t)$ est {\red un chemin de sortie réalisable} à partir de $x^*$ et le vecteur tangent $d = \frac{d}{dt}x(0)$ est {\red une direction de sortie réalisable} à partir de $x^*$.
+	\end{defn}
+	
+	Nous pouvons imaginer que $x(t)$ est un morceau lisse de trajectoire d'une particule passant à travers $x^*$ au temps $t = 0$ avec une vitesse non nulle $d$ et qui se déplace dans le domaine réalisable.
+	
+\end{frame}
+
+\end{document}

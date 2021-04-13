@@ -1,0 +1,589 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation avec contraintes\\Conditions d'optimalité -- $2^e$ ordre}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cA{\mathcal{A}}
+\def\cB{\mathcal{B}}
+\def\cE{\mathcal{E}}
+\def\cI{\mathcal{I}}
+\def\cL{\mathcal{L}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+
+\def\bu{\boldsymbol{u}}
+
+\def\cX{\mathcal{X}}
+
+\def\NN{\mathbb{N}}
+\def\RR{\mathbb{R}}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Contexte}
+
+Notes partiellement basées sur \url{http://www.numerical.rl.ac.uk/people/nimg/course/lectures/raphael/lectures/lec10slides.pdf}
+
+\mbox{}
+
+Nous considérons à nouveau le problème d'optimisation nonlinéaire (PNL) général
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } & g_i(x) = 0,\ i\ \in \cE \\
+& g_i(x) \leq 0,\ i \in \cI
+\end{align*}
+
+Hypothèse: $f$ et $g_i$ ($i \in \cE \cup \cI$) sont des fonctions deux fois continûment différentiables.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Chemin de sortie réalisable: rappel}
+
+\begin{defn}
+Soit $x^* \in \RR^n$ un point réalisable pour le problème de PNL et définissons $x \in C^2\left((-\epsilon,\epsilon), \RR^n \right)$ un chemin tel que
+\begin{align*}
+x(0) &= x^* \\
+d &:= \frac{d}{dt}x(0) \ne 0 \\
+g_i(x(t)) &= 0,\ i \in \cE,\ t \in (-\epsilon, \epsilon) \\
+g_i(x(t)) &\leq 0,\ i \in \cI,\ t \in [0, \epsilon)
+\end{align*}
+$x(t)$ est {\red un chemin de sortie réalisable} à partir de $x^*$ et le vecteur tangent $d = \frac{d}{dt}x(0)$ est {\red une direction de sortie réalisable} à partir de $x^*$.
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimalité au second ordre}
+
+L'analyse d'optimalité au second ordre est basée sur l'observation suivante: si $x^*$ est un minimiseur local du problème de PNL et $x(t)$ est un chemin de sortie réalisable à partir de $x^*$, alors $x^*$ doit aussi être un minimiseur local pour le problème d'optimisation sous contraintes avec une variable
+$$
+\min_t f(x(t)) \mbox{ t.q. } t \geq 0.
+$$
+
+\mbox{}
+
+Analysons d'avantage les directions de sortie réalisables à partir de $x^*$.
+La définition implique
+$$
+d^T \nabla g_i(x^*)
+= \frac{d}{dt} g_i(x(t)) |_{t = 0}
+= \begin{cases}
+\frac{d}{dt} 0 = 0 & i \in \cE \\
+\lim_{t \rightarrow 0^+} \frac{g_i(x(t))-0}{t} & i \in \cA(x^*) \cap \cI
+\end{cases}
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires}
+
+Dès lors, les conditions suivantes sont nécessaires pour que $d \in \RR^n$ soit une direction de sortie réalisable à partir de $x^*$:
+\begin{align*}
+d & \ne 0 \\
+d^T \nabla g_i(x^*) &= 0,\ i \in \cE \\
+d^T \nabla g_i(x^*) &\leq 0,\ i \in \cA(x^*) \cap \cI
+\end{align*}
+
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Conditions nécessaires}
+
+%Si $(x^*, \lambda^*)$ satisfont les conditions KKT, le gradient du Lagrangien s'annule:
+%$$
+%0 = \nabla_x L(x^*,\lambda^*) = \nabla f(x^*) + \sum_{i \in \cI} \lambda_i^* \nabla g_i(x^*) + \sum_{i \in \cE} \lambda_i^* \nabla g_i(x^*)
+%$$
+%Soit $d \in N^+$. Alors
+%\begin{align*}
+%0 &= d^T\nabla_x L(x^*,\lambda^*) \\
+%& = d^T\nabla f(x^*) + \sum_{i \in \cI} \lambda_i^* d^T\nabla g_i(x^*) + \sum_{i \in \cE} \lambda_i^* d^T\nabla g_i(x^*) \\
+%& = d^T\nabla f(x^*) + \sum_{i \in \cA(x^*) \cap \cI} \lambda_i^* d^T\nabla g_i(x^*)
+%\end{align*}
+
+%\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes}
+
+D'autre part, si la LICQ tient en $x^*$, du Lemme sur la LICQ, nous avons l'existence d'un chemin de sortie réalisable $x(t)$ à partir de $x^*$ tel que
+\begin{align*}
+x(0) &= x^* \\
+\frac{d}{dt} x(0) &= d \\
+g_i(x(t)) &= td^T\nabla g_i(x^*),\ i \in \cE \cup \cA(x^*),\ t \in (-\epsilon, \epsilon)
+\end{align*}
+Dès lors, lorsque la LICQ tient, les conditions nécessaires sur $d$ sont aussi suffisantes, et fournissent par conséquent une caractérisation exacte pour que $d$ soit une direction de sortie réalisable à partir de $x^*$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+Soit $x^*$ un minimum local tel que la LICQ tienne.
+Les conditions KKT indiquent qu'il existe un vecteur de multiplicateurs de Lagrange $\lambda^*$ tel que
+\begin{align*}
+\nabla_x L(x^*,\lambda^*) &= 0 \\
+g_i(x^*) &= 0,\ i \in \cE \\
+g_i(x^*) &\leq 0,\ i \in \cI \\
+\lambda_i^* g_i(x^*) &= 0,\ i \in \cI \\
+\lambda_i^* &\geq 0,\ i \in \cI
+\end{align*}
+où
+$$
+L(x^*, \lambda) = f(x^*) + \sum_{i \in \cE \cup \cI} \lambda_i^* g_i(x^*).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+Soit $x(t)$ un chemin de sortie réalisable à partir de $x^*$ avec la direction de sortie $d$, et considérons le problème restreint
+\begin{align*}
+\min\ & f(x(t)) \\
+\mbox{t.q. } & t \geq 0.
+\end{align*} 
+Puisque $x^*$ est un minimiseur local du problème de PNL, $t = 0$ doit aussi être un minimiseur local du problème restreint.
+
+Du développement de Taylor autour de $t = 0$ et des conditions KKT,
+\begin{align*}
+f(x(t)) &= f(x(0)) + (t-0) \frac{d}{dt} f(x(t)) |_{t=0} + O(t^2) \\
+&= f(x^*) + t\left(\frac{d}{dt}x(t)|_{t=0}\right)^T \nabla_x f(x(t))|_{t=0} + O(t^2) \\
+&= f(x^*) + td^T \nabla f(x^*) + O(t^2) \\
+&= f(x^*) - t \sum_{i \in \cE \cup \cI} \lambda_i^* d^T \nabla g_i(x^*) + O(t^2)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+Nous souhaiterions dès lors montrer que pour $t \geq 0$ assez petit,
+$$
+- t \sum_{i \in \cE \cup \cI} \lambda_i^* d^T \nabla g_i(x^*) + O(t^2) \geq 0
+$$
+
+Notons que
+$$
+\lambda_i^* d^T\nabla g_i(x^*) = 0,\ i \in \cE \cup (\cI \setminus \cA(x^*))
+$$
+de sorte que ces termes peuvent être omis.
+
+\mbox{}
+
+Mais qu'en est-il des indices $j \in \cA(x^*) \cap \cI$?
+Nous savons déjà que $\lambda_i^* d^T\nabla g_i(x^*) \leq 0,\ i \in \cA(x^*)$.
+
+
+Nous allons distinguer deux cas.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+Cas 1: il existe un indice $j \in \cA(x^*)$ tel que $\lambda_j^* d^T \nabla g_j(x^*) < 0$.
+
+\mbox{}
+
+Alors, pour tout $0 < t \ll 1$,
+\begin{align*}
+f(x(t))
+&= f(x^*) - t \sum_{i \in \cE \cup \cI} \lambda_i^* d^T \nabla g_i(x^*) + O(t^2) \\
+&\geq f(x^*) - t \lambda_j^* d^T \nabla g_j(x^*) + O(t^2) \\
+&> f(x^*)
+\end{align*}
+Dès lors, dans ce cas, $f$ est strictement croissante le long du chemin $x(t)$ pour $t$ suffisamment petit, même si $\frac{d^2}{dt^2} f(x(0))$ était négatif.
+% En raison de la contrainte $g_j$, rien ne peut être dit à propos de $\nabla^2 f(x^*) d$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+Cas 2:
+$$
+\lambda_i^* d^T \nabla g_i(x^*) = 0,\ i \in \cE \cup \cI. 
+$$
+Dans ce cas, l'argument précédent ne peut garantir que $f$ est localement croissante le long du chemin $x(t)$.
+Nous savons seulement que $\frac{d}{dt} f(x(0)) = 0$, c'est-à-dire que $x^*$ est un point stationnaire du problème restreint.
+
+\mbox{}
+
+Mais il pourrait très bien s'agir d'un maximiseur local ou d'un point selle du problème restreint!
+
+\mbox{}
+
+Les dérivée secondes $\frac{d^2}{dt^2} f(x(0))$ déterminent à présent si $t = 0$ est un minimiseur local du problème restreint, conduisant à une information additionnelle nécessaire.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Conditions nécessaires d'optimalité au second ordre}
+	
+Nous noterons
+$$
+N^+ =
+\left\lbrace d \ne 0 \,\bigg|\,
+\begin{matrix}
+d^T \nabla g_i(x^*) = 0, & i \in \cE \cup \{ j \in \cA(x^*) \cap \cI \,|\, \lambda_j^* > 0 \} \\
+d^T \nabla g_i(x^*) \leq 0, & \{ i \in \cA(x^*) \cap \cI \,|\, \lambda_i^* = 0 \} 
+\end{matrix}
+\right\rbrace
+$$
+Dès lors, $d \in N^+$ implique $\lambda_i^* d^T \nabla g_i(x^*) = 0$, $i \in \cE \cup \cI$.
+
+%\end{frame}
+
+%\begin{frame}
+%\frametitle{Conditions nécessaires d'optimalité au second ordre}
+
+\mbox{}
+
+\begin{thm}[Conditions nécessaires d'optimalité au second ordre]
+Soit $x^*$ un minimiseur local du PNL où la LICQ tient.
+Soit $\lambda^* \in \RR^m$ un vecteur de multiplicateurs de Lagrange tel que $(x^*, \lambda^*)$ satisfaisant les conditions KKT.
+Alors nous avons
+$$
+d^T \nabla^2_{xx} L(x^*, \lambda^*) d \geq 0
+$$
+pour tout $d \in N^+$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Soit $d \in N^+$ et soit
+%. Dès lors,
+%$$
+%\lambda_i^* d^T \nabla g_i(x^*) = 0, i \in \cE \cup \cI,
+%$$
+%Soit
+$x(\cdot) \in C^2((-\epsilon, \epsilon), \RR^n)$
+un chemin de sortie réalisable à partir de $x^*$ correspondant à $d$.
+Alors
+\begin{align*}
+L(x(t), \lambda^*) &=
+ f(x(t)) + \sum_{i \in \cE \cup \cI} \lambda_i^* g_i(x(t))\\
+&= f(x(t)) + \sum_{i \in \cE \cup \cI} \lambda_i^* t d^T \nabla g_i(x^*) \\
+&= f(x(t))
+\end{align*}
+Le développement de Taylor de $L(x(t),\lambda^*)$ autour de $t = 0$ implique
+\begin{align*}
+f(x(t)) = &\ L(x^*, \lambda^*) + t \nabla_x L(x^*, \lambda^*)^T d \\
+& + \frac{t^2}{2}\left( d^T \nabla_{xx}^2 L(x^*, \lambda^*) d + \nabla_x L(x^*, \lambda^*)^T \frac{d^2}{dt^2}x(t)|_{t=0} \right) \\
+& + O(t^3)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Les conditions KKT impliquent
+$$
+\nabla_x L(x^*, \lambda^*) = 0
+$$
+Dès lors
+$$
+f(x(t)) = L(x^*, \lambda^*) + \frac{t^2}{2} d^T \nabla_{xx}^2 L(x^*, \lambda^*) d + O(t^3)
+$$
+et par les conditions d'optimalité au premier ordre (dans le cas convexe, la dualité forte), $L(x^*, \lambda^*) = f(x^*)$
+
+\mbox{}
+
+Si $d^T \nabla_{xx}^2 L(x^*, \lambda^*) d < 0$ alors pour $t$ suffisamment petit, $f(x(t)) < f(x^*)$, contredisant l'hypothèse que $x^*$ est un minimiseur local.
+
+\mbox{}
+
+Dès lors, nous devons avoir
+$$
+d^T \nabla_{xx}^2 L(x^*, \lambda^*) d \geq 0
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes d'optimalité au second ordre}
+
+\begin{thm}[Conditions suffisantes d'optimalité au second ordre]
+Soit $(x^*, \lambda^*) \in \RR^n \times \RR^m$ satisfaisant les conditions KKT, et sous une hypothèse de qualification de contrainte, si
+$$
+d^T \nabla^2_{xx} L(x^*, \lambda^*)d > 0
+$$
+pour toute  direction $d \in N^+$.
+Alors $x^*$ est un minimiseur local strict.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Supposons par contradiction que $x^*$ n'est pas un minimiseur local.
+Il existe alors une séquence de points réalisables $\{ x_k \}$, $k = 1,\ldots$, telle que
+$x_k \ne x^*$ pour tout $k$, $\lim_{k \rightarrow \infty} x_k = x^*$ et
+$$
+f(x_k) \leq f(x^*),\ \forall k \in \NN.
+$$
+La séquence
+$$
+\frac{x_k-x^*}{\| x_k-x^* \|}
+$$
+tient sur la sphère unité, qui est un ensemble compact, et dès lors nous pouvons extraire une sous-séquence $\{ x_{k_i} \}$, $i \in \NN$, $k_i < k_j$ ($i < j$), tel qu'il existe une direction limite $d := \lim_{k \rightarrow \infty} d_{k_i}$ existe, avec
+\begin{align*}
+d_{k_i} = \frac{x_{k_i}-x^*}{\| x_{k_i}-x^* \|}
+\end{align*}
+Puisque $d$ tient sur la sphère unité, nous avons $d \ne 0$.
+En ne considérant que la sous-séquence ainsi construite, nous pouvons supposer sans perte de généralité que $k_i = i$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Vérifions que $d \in N^+$. Considérons tout d'abord les contraintes d'égalité.
+$\forall i \in \cE$, en utilisant le développement de Taylor, nous avons
+\begin{align*}
+0 &= \frac{g_i(x_k)}{\| x_k - x^* \| } \\
+&= \frac{1}{\| x_k - x^* \| } \left( g_i(x^*) + \| x_k - x^* \| \nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2) \right) \\
+&= \nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|)
+\end{align*}
+En faisant tendre $k$ vers l'infini, nous obtenons
+$$
+\nabla g_i(x^*)^Td_k = 0
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+$\forall i \in \cA(x^*) \cap \cI$, en utilisant le développement de Taylor, nous avons de manière similaire
+\begin{align*}
+0 &\geq \frac{g_i(x_k)}{\| x_k - x^* \| } \\
+&= \frac{1}{\| x_k - x^* \| } \left( g_i(x^*) + \| x_k - x^* \| \nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2) \right) \\
+&= \nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|)
+\end{align*}
+En faisant tendre $k$ vers l'infini, nous obtenons
+$$
+\nabla g_i(x^*)^Td \leq 0
+$$
+
+\mbox{}
+
+Ainsi, $d$ est une direction de sortie réalisable. Montrons que $d \in N^+$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Si $d \notin N^+$, alors $\exists j \in \cA(x^*) \cap \cI$ tel que
+$$
+\lambda_j^* \nabla g_j(x^*)^Td < 0
+$$
+En vertu du développement de Taylor,
+\begin{align*}
+\lambda_j^* g_j(x_k)
+&= \lambda_j^* g_j(x^*) + \lambda_j^* \| x_k - x^* \| \nabla g_j(x^*)^Td_k + O(\| x_k - x^* \|^2) \\
+&= \lambda_j^* \| x_k - x^* \|\nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2)
+\end{align*}
+Dès lors
+\begin{align*}
+L(x_k, \lambda^*) &= f(x_k) + \sum_{i \in \cE \cup \cI} \lambda_i^* g_i(x_k) \\
+&\leq f(x_k) + \lambda_j^* g_j(x_k) \\ 
+&=  f(x_k) + \lambda_j^*\| x_k - x^* \|\nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+D'autre part, le développement de Taylor de $L(x_k,\lambda^*)$ autour de $(x^*, \lambda^*)$ donne
+\begin{align*}
+L(x_k,\lambda^*) =\ & L(x^*,\lambda^*) + \| x_k - x^* \| d_k^T \nabla_x L(x^*,\lambda^*)
+\\ & + \frac{ \| x_k - x^* \|^2 }{2} d_k^T \nabla^2_{xx} L(x^*,\lambda^*) d_k + O( \| x_k - x^* \|^3 )
+\end{align*}
+De part les conditions KKT, $\nabla_x L(x^*,\lambda^*) = 0$ et $L(x^*, \lambda^*) = f(x^*)$.
+Dès lors, nous obtenons
+$$
+L(x_k,\lambda^*) = f(x^*) + \frac{ \| x_k - x^* \|^2 }{2} d_k^T \nabla^2_{xx} L(x^*,\lambda^*) d_k + O( \| x_k - x^* \|^3 )
+$$
+
+\mbox{}
+
+En combinant ces expressions,
+\begin{align*}
+f(x_k) & \geq L(x_k, \lambda^*) - \lambda_j^*\| x_k - x^* \|\nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2) \\
+&= f(x^*) - \lambda_j^*\| x_k - x^* \|\nabla g_i(x^*)^Td_k + O(\| x_k - x^* \|^2)
+\end{align*}
+et pour $k$ assez grand, $f(x_k) > f(x^*)$ contredisant nos hypothèses de travail.
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Ainsi $d \in N^+$, et des hypothèses du théorème, nous avons 
+$$
+d^T \nabla_{xx}^2 L(x^*, \lambda^*) d > 0.
+$$
+
+%Le développement de Taylor de $f(x_k)$ autour de $x^*$ donne
+
+%$$
+%f(x_k) = f(x^*) + (x_k-x^*)^T\nabla f(x^*) + O(\| x_k-x^* \|^2)
+%$$
+%que nous pouvons réécrire, en utilisant la définition de $d_k$,
+
+%$$
+%f(x_k) = f(x^*) + \| x_k-x^* \| \nabla f(x^*)^Td_k + O(\| %x_k-x^* \|^2)
+%$$
+%Par hypothèse, $f(x^*) \geq f(x_k)$, et dès lors%, pour $k$ assez grand,
+%$$
+%\nabla f(x^*)^Td = \lim_{k \rightarrow \infty} \nabla f(x^*)^Td_k \leq 0
+%$$
+D'autre part, des conditions KKT et $d \in N^+$,
+$$
+\nabla f(x^*)^Td = -d^T\sum_{i \in \cE \cup \cI} \lambda_i \nabla g_i(x^*)
+= \sum_{i \in \cE \cup \cI} \lambda_i (-d^T \nabla g_i(x^*)) = 0
+$$
+De plus, de nos hypothèses de départ et des conditions KKT,
+$$
+f(x^*) \geq f(x_k) \geq f(x_k) + \sum_{i \in \cE \cup \cI} \lambda_i^* g_i(x_k) = L(x_k,\lambda^*)
+$$
+et, reprenant le développement de $L(x_k,\lambda^*)$
+$$
+f(x^*) \geq f(x^*) + \frac{ \| x_k - x^* \|^2 }{2} d_k^T \nabla^2_{xx} L(x^*,\lambda^*) d_k + O( \| x_k - x^* \|^3 )
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Il s'ensuit
+$$
+d_k^T \nabla^2_{xx} L(x^*,\lambda^*) d_k \leq O( \| x_k - x^* \| )
+$$
+en passant à la limite comme $k \rightarrow \infty$
+$$
+d^T \nabla^2_{xx} L(x^*,\lambda^*) d \leq 0
+$$
+Ceci contredit l'hypothèse du théorème
+$$
+d^T \nabla^2_{xx} L(x^*,\lambda^*) d > 0
+$$
+et donc l'hypothèse d'existence de la séquence $\{ x_k \}$ ne tient pas. Dès lors, $x^*$ est minimiseur local.
+
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Preuve}
+
+%Combinant les deux inégalités, nous devons avoir
+%$$
+%\nabla f(x^*)^Td = 0
+%$$
+
+%\mbox{}
+
+%D'autre part, de nos hypothèses de départ et des conditions KKT,
+%$$
+%f(x^*) \geq f(x_k) \geq f(x_k) + \sum_{i \in \cE \cup \cI} \lambda_i^* g_i(x_k) = L(x_k,\lambda^*)
+%$$
+
+%\end{frame}
+
+\begin{frame}
+\frametitle{Complémentarité stricte}
+
+Il est courant, et commode, de supposer que la condition de complémentarité stricte s'applique. Celle-ci requiert que le multiplicateur de Lagrange ne peut s'annuler pour une contrainte active, i.e.
+$$
+\lambda_j^* \ne 0\ \forall j \in \cA(x^*) \cap \cI
+$$
+
+\mbox{}
+
+La complémentarité stricte permet de réexprimer $N^+$ de manière très commode. Rappelons que
+$$
+N^+ =
+\left\lbrace d \ne 0 \,\bigg|\,
+\begin{matrix}
+d^T \nabla g_i(x^*) = 0, & i \in \cE \cup \{ j \in \cA(x^*) \cap \cI \,|\, \lambda_j^* > 0 \} \\
+d^T \nabla g_i(x^*) \leq 0, & \{ i \in \cA(x^*) \cap \cI \,|\, \lambda_i^* = 0 \} 
+\end{matrix}
+\right\rbrace
+$$
+
+%Un des avantages de la complémentarité stricte est qu'il est possible d'identifier l'ensemble actif en $x^*$ à proximité de $x^*$. En effet, pour $\epsilon > 0$ suffisamment petit, par continuité, si $x_k \in \cB(x^*, \epsilon)$, $g(x_k) $
+
+sous la complémentarité stricte, nous avons
+$$
+N^+ =
+\left\lbrace d \ne 0 \,|\,
+d^T \nabla g_i(x^*) = 0, i \in \cA(x^*)
+\right\rbrace
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Complémentarité stricte}
+
+Autrement dit, $d$ appartient au noyau du Jacobien des contraintes actives:
+$$
+d \in Ker(J),\ J = \begin{pmatrix} \nabla g_i(x^*)^T, i \in \cA(x^*) \end{pmatrix}
+$$
+
+\mbox{}
+
+Comme
+$$
+d \in N^+
+\Rightarrow
+\lambda_i^* d^T \nabla g_i(x^*) = 0,\ i \in \cE \cup \cI,
+$$
+nous avons également
+$$
+d \in N^+
+\Leftrightarrow
+\lambda_i^* d^T \nabla g_i(x^*) = 0,\ i \in \cE \cup \cI,
+$$
+
+\end{frame}
+
+\end{document}

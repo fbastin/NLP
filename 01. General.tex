@@ -1,0 +1,324 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Programmation non-linéaire}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{amsthm}
+
+\def\red{\color{red}}
+
+\def\rit{\mathcal{R}}
+
+\def\cB{\mathcal{B}}
+\def\cV{\mathcal{V}}
+
+\usepackage{gnuplottex}
+% This variables allows to conditional generate the Gnuplot figures.
+\def \gnuplotx {Generate the figures}
+
+\newtheorem{defn}{Définition}
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{L'objet d'intérêt}
+
+Nous considérons le problème
+\[
+\min_{x \in S} f(x),
+\]
+où $f: \rit^n \rightarrow \rit$ et $S$ est un sous-ensemble de $\rit^n$.
+
+\begin{itemize}
+\item
+$f$: fonction objectif (ou fonction coût)
+\item
+$S$: ensemble réalisable
+\item
+$n$: dimension du problème
+\end{itemize}
+
+\mbox{}
+
+Tout point $x \in S$ est appelé \textit{solution réalisable} (ou simplement parfois \textit{solution}).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimum global}	
+
+Idéalement, nous voudrions trouver un {\red minimum global} de $f$ dans $S$, i.e., un point dans $S$ où la fonction atteint sa plus petite valeur.
+Une définition formelle est:
+\begin{defn}[Minimiseur global]
+Un point $x^*$ est un minimiseur global de $f: \rit^n \rightarrow \rit$ dans $S$ si $f(x^*) \leq f(x)$ pour tout $x \in S$.
+\end{defn}
+
+\mbox{}
+
+$x^*$ est appelé {\sl solution optimale} ou {\sl minimiseur de $f$}.
+$f(x^*)$ est dite {\sl valeur optimale de $f$}, est nous la noterons parfois $f^*$.
+
+\mbox{}
+
+Un problème d'optimisation n'a pas nécessairement une solution unique.
+Il peut ne pas y avoir de solution ou plus d'une solution optimale. Nous définirons
+\[
+\arg\min f(x) \overset{def}{=} \left\lbrace x \,|\, f(x) \leq f(y)\ \forall y \in S \right\rbrace.
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimum local}	
+
+Un minimum global peut être difficile à obtenir.
+La plupart des algorithmes cherchent seulement un {\red minimum local}, qui est un point qui atteint la plus petite valeur de $f$ dans son voisinage.
+
+\begin{defn}[Minimiseur local]
+Un point $x^*$ de $f: \rit^n \rightarrow \rit$ dans $S$ est un minimiseur local s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) \leq f(x)$ pour $x \in \mathcal{V} \cap S$.
+\end{defn}
+
+Un point qui satisfait cette définition est parfois appelé minimiseur local faible, pour le distinguer d'un minimiseur local strict.
+
+\begin{defn}[Minimiseur local strict]
+Un point $x^*$ est un minimiseur local strict (aussi appelé minimiseur local fort) s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) < f(x)$ pour tout $x \in \mathcal{V}$ avec $x \ne x^*$.
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimum local isolé}	
+
+\begin{defn}[Minimiseur local isolé]
+Un point $x^*$ est un minimiseur local isolé s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) < f(x)$ pour tout $x \in \mathcal{V}$ avec $x \ne x^*$ et il n'y a pas d'autre minimiseur local dans $\mathcal{V}$.
+\end{defn}
+
+\mbox{}
+
+Un minimiseur local strict n'est pas toujours isolé, mais tout minimiseur local isolé est strict.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exemple}
+
+(Tiré de Nocedal et Wright)
+Considérons la fonction suivante:
+\[
+f(x) = x^4 \cos{\frac{1}{x}} +2x^4.
+\]
+
+\mbox{}
+
+$f(x) \in C^2$ (deux fois continûment différentiable) et a un minimum local strict en $x^* = 0$.
+Toutefois, tout voisinage de $x^*$ contient d'autres minimums locaux stricts.
+%, et nous pouvons extraire une séquence telle que $x_n \rightarrow 0$, comme $n \rightarrow \infty$.
+
+%\ifx \gnuplotx \undefined
+%\else
+\begin{center}
+	\begin{gnuplot}[terminal=cairolatex,scale=0.5]
+plot [-0.1:0.1][0:0.00015]x*x*x*x*(cos(1/x)+2) title '$x^4\left(\cos\left(\frac{1}{x}\right)+2\right)$'
+	\end{gnuplot}
+\end{center}
+%\fi
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Voisinage}
+
+Un voisinage $\cV(x)$ d'un point $x$ est un ensemble ouvert contenant $x$.
+
+\mbox{}
+
+Typiquement, $\cV(x)$ est pris comme un boule ouverte centrée en $x$, de rayon $\epsilon > 0$:
+$$
+\cB(x,\epsilon) = \lbrace y \,|\, \| x-y \| < \epsilon\rbrace
+$$
+Le choix de la norme n'est pas spécifié, mais la plupart du temps, nous travaillerons avec la norme 2
+$$
+\|x-y\|_2 = \sqrt{ (x-y)^T(x-y) }
+$$
+
+\mbox{}
+
+Quel que soit $\cV(x)$, $\exists \epsilon > 0$ tel que $\cB(x,\epsilon) \subseteq \cV$.
+Nous ne perdons dès lors aucune généralité en travaillant avec une boule ouverte centrée en $x$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ensemble réalisable}
+
+Généralement, l'ensemble réalisable $S$ sera représenté sous forme de contraintes d'égalités et d'inégalités:
+\begin{align*}
+& c_i(x) = 0,\ i \in \mathcal{E}, \\
+& c_i(x) \leq 0,\ i \in \mathcal{I}.
+\end{align*}
+
+\mbox{}
+	
+\begin{itemize}
+\item 
+$\mathcal{E}$: ensemble des contraintes d'égalité
+\item 
+$\mathcal{I}$: ensemble des contraintes d'inégalité
+\end{itemize}
+
+\mbox{}
+
+En résumé, nous considérerons des problèmes de la forme
+\begin{align*}
+\min_x\ & f(x) \\
+\mbox{t.q. } & c_i(x) = 0,\ i \in \mathcal{E}, \\
+& c_i(x) \leq 0,\ i \in \mathcal{I}.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Reformulations}
+
+La formulation précédente est assez générale, et couvre d'autres variantes par simple reformulation.
+
+\mbox{}
+
+Nous pouvons par exemple considérer un problème de maximisation avec la transformation
+\[
+\max_{x \in S} f(x) = -\min_{x \in S} (-f(x))
+\]
+
+\mbox{}
+
+Les problèmes sont aussi définis à une constante près, comme
+\[
+\min_x (f(x)+\kappa) = \kappa + \min_x f(x)
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Reformulations des contraintes}
+
+Nous pourrions aussi ne considérer que des contraintes d'égalité, en introduisant des variables d'écart:
+\begin{align*}
+c_i(x) & \leq 0 \\
+& \Leftrightarrow \\
+c_i(x) + s_i & = 0, \quad s_i \geq 0 \\
+\end{align*}
+Similairement, nous pourrions juste écrire des contraintes d'inégalité:
+\begin{align*}
+c_i(x) & = 0 \\
+& \Leftrightarrow \\
+c_i(x) & \leq 0, \\
+-c_i(x) & \leq 0
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Structure générale d'un algorithme d'optimisation}
+
+On fixe un point de départ $x_0$ et on génère une séquence de points $x_1$, $x_2$,\ldots sur le principe suivant.
+Poser $k = 0$, et calculer $f(x_0)$. Tant qu'une condition d'arrêt n'est pas satisfaite, répéter
+\begin{enumerate}
+\item
+Poser $k := k+1$.
+\item
+Déterminer une solution candidate $x_{k+1}$, et calculer $f_(x_{k+1})$.
+\end{enumerate}
+
+\mbox{}
+
+$k$ est appelé {\sl indice d'itération}.
+On voudrait que le nombre d'itérations soit fini, et si ce n'est pas le cas, que la séquence de point converge vers une solution, i.e.
+\[
+\exists\, x^* \mbox{ tel que } \lim_{n \rightarrow \infty} x_n = x^*,
+\]
+et
+\[
+x^* = \arg\min f(x). 
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+La convergence peut être testée de différentes manières, dépendamment du problème et de la technique d'optimisation utilisée.
+Par exemple, on peut décider de s'arrêter quand la réduction de la fonction objectif entre deux itérations devient négligeable:
+\[
+|\Delta f| = |f(x_{k+1}) - f(x_k)| \leq \epsilon,
+\]
+où $\epsilon$ est la {\red tolérance d'optimisation} pour la fonction objectif $f$.
+
+\mbox{}
+
+Alternativement, on peut s'arrêter lorsque le changement entre les itérés devient non significatif:
+\[
+\| x_{k+1} - x_k \|_k \leq \epsilon,
+\]
+où $\| \cdot \|_k$ est une certaine norme (pouvant théoriquement dépendre de l'indice d'itération $k$).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité}
+
+Supposons que nous nous arrêtions à l'itération $\ell$.
+Ceci garantit-il que $x_{\ell}$ est une solution du problème d'optimisation?
+
+\mbox{}
+
+Pas nécessairement!
+
+\mbox{}
+
+Nous voudrions pouvoir établir des {\red conditions d'optimalité}, qui peuvent être vérifiées, et telles que si celles-ci sont remplies, $x_{\ell}$ soit solution.
+
+\mbox{}
+
+En pratique, celles-ci ne seront jamais satisfaites, mais nous voudrions pouvoir détecter que $x_{\ell}$ est ``quasi''-optimal, dans le sens où
+\[
+f(x_{\ell}) \leq f(x)+\delta
+\]
+pour tout $x \in S$, et $\delta > 0$ petit.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Pas de méthode miracle}
+
+\begin{quote}
+[\ldots] for any algorithm, any elevated performance over one class of problems is offset by performance over another class
+\end{quote}
+{\sl No free lunch theorems for optimization}, David H. Wolpert and William G. Macready, IEEE Transactions on Evolutionary Computation 1(1), pp. 67--82, 1997.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Avertissement}
+
+Beaucoup de fausses idées circulent sur les propriétés et les algorithmes d'optimisation.
+Plusieurs sont recensées dans le document ``Myths and Counterexamples in Mathematical Programming'', disponible à l'adresse
+\url{http://glossary.computing.society.informs.org/myths/CurrentVersion/myths.pdf}
+
+\mbox{}
+
+Nous tâcherons d'éviter ces pièges dans le cours, mais vous êtes invités à me corriger au besoin!
+
+\end{frame}
+
+\end{document}
+

@@ -1,0 +1,1212 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation sans contraintes}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\blue{\color{blue}}
+\def\red{\color{red}}
+
+\def\co{\mathcal{o}}
+
+\def\cB{\mathcal{B}}
+\def\cR{\mathcal{R}}
+
+\def\RR{\mathbb{R}}
+
+\def\bu{\boldsymbol{u}}
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Préliminaires}
+
+Soit $Y \subseteq \cR^n$ un ensemble ouvert et $f: Y \rightarrow \cR$.
+
+\mbox{}
+
+Notations:
+\begin{enumerate}
+\item
+norme euclidienne (norme 2) de $x \in \cR^n$: $\| x \| = \sqrt{ x^T x }$
+\item
+$$
+\nabla_x f(x) = \begin{pmatrix} \frac{df(x)}{dx_1} \\ \frac{df(x)}{dx_2} \\ \vdots \\ \frac{df(x)}{dx_n} \end{pmatrix}
+$$
+\end{enumerate}
+
+\begin{defn}[ensemble ouvert]
+$X$ est un ensemble ouvert si $\forall x \in X$, $\exists \epsilon > 0$ tel que $\cB(x,\epsilon) = \lbrace z \in \cR^n \, |  \| z-x \| \, < \epsilon \rbrace \subseteq X$
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Développement de Taylor}
+
+Si $f \in C^1$ sur $Y$, alors $\forall x, y \in Y$,
+$$
+f(y) = f(x) + \nabla f(x)^T(y-x) + o(\| y - x \|)
+$$
+comme $y \rightarrow x$.
+
+\mbox{}
+
+Note: si $y \ne x$, $h(y) = o(\| y - x \|)$ comme $y \rightarrow x$ signifie que
+$$
+\lim_{y \rightarrow x} \frac{h(y)}{\| y - x \|} \rightarrow 0.
+$$
+
+En d'autres termes, $h(y)$ converge ``plus vite'' vers 0 que $\| y - x \|$.
+
+\mbox{}
+
+Le développement linéaire de $f$ autour de $x$ est 
+$$
+\tilde{f}(y) = f(x) + \nabla f(x)^T(y-x)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Développement de Taylor -- version sans résidu}
+
+$\exists z \in \lbrace t \in \cR^n \,|\, t = \lambda x + (1-\lambda) y,\ \lambda \in [0,1] \rbrace$
+tel que
+$$
+f(y) = f(x) + \nabla f(z)^T(y-x)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Dérivée directionnelle}
+
+La dérivée de $f$ au point $x$ suivant le vecteur $h$ est, si elle existe, la dérivée en $0$ de la fonction à une variable définie par $t \rightarrow f(x+th)$, c'est-à-dire
+$$
+D_h f(x) = \lim_{t \rightarrow 0} \frac{f(x+th)-f(x)}{t}
+$$
+
+\begin{lem}
+Soit $f: Y \rightarrow \cR$, où $Y$ est un sous-ensemble ouvert de $\cR^n$, $f \in C^1$, $x \in Y$ et $h \in \cR^n$. Alors
+$$
+D_h f(x) = \nabla f(x)^T h.
+$$
+\end{lem}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve du lemme}
+
+\begin{proof}
+Le développement de Taylor nous donne
+$$
+f(x+th) = f(x) + \nabla f(x)^T th + o(\| th \|)
+$$
+aussi pour $t \ne 0$,
+$$
+\frac{f(x+th) - f(x)}{t} - \frac{o(\| th \|)}{t} = \nabla f(x)^T h
+$$
+Le résultat suit en faisant tendre $t$ vers 0.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Direction de descente}
+
+\begin{defn}[Direction réalisable]
+Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
+Étant donné $x \in X$, $d \in \cR^n$ est une direction réalisable en $x$ s'il existe un scalaire $\alpha_{\max}$ tel que $x + \alpha d \in X$  pour tout $\alpha \in [0, \alpha_{\max}]$. 
+\end{defn}
+
+\begin{lem}[Direction de descente]
+Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
+Si $d \in \cR^n$ est une direction réalisable en $x$ et $\nabla f(x)^T d < 0$, alors
+$\exists \kappa > 0$ tel pour tout $\tau \in (0,\kappa]$
+$$
+f(x+\tau d) < f(x)
+$$
+(i.e., $d$ est une direction de descente en $x$).
+\end{lem}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve du lemme}
+
+\begin{proof}
+Puisque $D_d f(x) = \nabla f(x)^T d < 0$, il existe un scalaire $\kappa > 0$ tel que pour tout $\tau \ne 0$, $-\kappa \leq \tau \leq \kappa$,
+$$
+\frac{f(x+\tau d) - f(x)}{\tau} < 0
+$$
+Il suffit de restreindre $\tau$ à des valeurs strictement positives pour avoir
+$$
+f(x+\tau d) < f(x).
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition nécessaire d'optimalité}
+
+%% Luenberger p. 185
+\begin{thm}[Optimalité au premier ordre]
+Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
+Si $x^*$ est un minimum local de $f$ sur $X$, alors pour toute direction $d \in \cR^n$ qui est une direction réalisable en $x^*$, nous avons $\nabla f(x^*)^Td \geq 0.$
+\end{thm}
+
+\begin{proof}
+Comme $d$ est une direction réalisable, il existe $\alpha_{\max}$ tel que pour tout $\alpha \in [0,\alpha_{\max}]$, le point $x(\alpha) = x^* + \alpha d \in X$.
+
+Définissions $g(\alpha) = f(x(\alpha))$, $0\leq \alpha \leq \alpha_{\max}$. $g$ a un minimum local en $\alpha = 0$, et en vertu du développement de Taylor autour de 0,
+$$
+g(\alpha) - g(0) = g'(0) \alpha + o(\alpha).
+$$
+Si $g'(0) < 0$, pour $\alpha$ suffisamment petit, $g(\alpha) < g(0)$, aussi $0$ ne serait pas minimum local.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition nécessaire d'optimalité (suite)}
+
+\begin{proof}
+Dès lors, $g'(0) \geq 0$.
+
+Or,
+$$
+g'(\alpha) = \nabla f(x(\alpha))^T \frac{d}{d\alpha} x(\alpha) = \nabla f(x(\alpha))^T d.
+$$
+Dès lors, $\nabla f(x^*)^T d \geq 0$.
+\end{proof}
+
+\begin{coro}%[Optimalité au premier ordre -- ensemble réalisable ouvert]
+	Soient $X \subseteq \cR^n$ un ensemble ouvert et $f: X \rightarrow \cR \in C^1$.
+	Si $x^*$ est un minimum local de $f$ sur $X$, alors $\nabla f(x^*) = 0$.
+\end{coro}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition nécessaire d'optimalité}
+
+\begin{proof}
+Du théorème précédent, $\forall\, d \in \cR^n$, $\nabla f(x^*)^T d \geq 0$.
+\end{proof}
+
+\begin{proof}[Preuve alternative]
+Par contradiction, supposons que $x$ est un minimum local et que $\nabla f(x) \ne 0$. Considérons la direction $d = -\nabla f(x)$.
+Puisque $X$ est ouvert, alors $d$ est une direction réalisable en $x$, et
+$$
+\nabla f(x)^Td = -\| \nabla f(x) \|^2 < 0,
+$$
+puisque $\nabla f(x) \ne 0$.
+Dès lors, $d$ est une direction de descente en $x$ et par conséquent il est possible de déterminer un scalaire $\tau >0$ tel que $x + \tau d \in \cB(x, \epsilon)$ et $f(x + \tau d) < f(x)$, et donc $x$ n'est pas un minimum local.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition d'optimalité au deuxième ordre}
+
+Comme dans le cas unidimensionnel, les conditions au premier ordre sont rencontrées en un point stationnaire (minimum, maximum, point selle).
+Nous voulons donc avoir plus pour garantir qu'un point stationnaire est bien un minimum.
+
+\mbox{}
+
+Soit $f: X \rightarrow \cR$, avec $X \subseteq \cR^n$ ouvert.
+
+\begin{defn}[Hessien]
+Si $f$ est une fonction deux fois continûment dérivable en $x$, le hessien de $f$ est la matrice des dérivées partielles d'ordre 2:
+$$
+\nabla^2 f(x) =
+\begin{pmatrix}
+\frac{d^2f(x)}{dx_1^2} & \frac{d^2f(x)}{dx_1dx_2} & \cdots & \frac{d^2f(x)}{dx_1dx_n}\\
+\frac{d^2f(x)}{dx_1dx_2} & \frac{d^2f(x)}{dx_n^2} & \cdots & \frac{d^2f(x)}{dx_2dx_n}\\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{d^2f(x)}{dx_1dx_n} & \frac{d^2f(x)}{dx_2dx_n} & \cdots & \frac{d^2f(x)}{dx_n^2}
+\end{pmatrix}
+$$
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrice (semi-)définie positive}
+
+\begin{defn}[Matrice semi-définie positive]
+Une matrice symétrique $A \in \cR^{n \times n}$ est semi-définie positive si $\forall x \in \cR^n$, $x^TAx \geq 0$.
+\end{defn}
+
+\begin{defn}[Matrice définie positive]
+Une matrice symétrique  $A \in \cR^{n \times n}$ est définie positive si $\forall x \in \cR^n$, $x \ne 0$, $x^TAx > 0$.
+\end{defn}
+
+\begin{defn}[Matrice semi-définie négative]
+	Une matrice symétrique  $A \in \cR^{n \times n}$ est semi-définie négative si $\forall x \in \cR^n$, $x^TAx \leq 0$.
+\end{defn}
+
+\begin{defn}[Matrice définie négative]
+	Une matrice symétrique  $A \in \cR^{n \times n}$ est définie négative si $\forall x \in \cR^n$, $x \ne 0$, $x^TAx < 0$.
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrice (semi-)définie positive}
+
+\begin{thm}
+Une matrice symétrique  $A$ est semi-définie positive (définie positive) si et seulement si une des conditions suivantes tient
+\begin{enumerate}
+\item
+$\forall x \in \cR^n$ (et $x \ne 0$), $x^TAx \geq 0$ ($> 0$)
+\item
+toutes les valeurs propres sont non-négatives (positives)
+\item
+les déterminants de tous les mineurs principaux sont non-négatifs (positifs)
+\end{enumerate}
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mineurs principaux}
+
+Considérons une matrice $A \in \cR^{n \times n}$.
+$B_i$ est le $i^e$ mineur principal de $A$ si $B$ est une matrice de dimension $i \times i$, et $B(p,q) = A(p,q)$, $p = 1,\ldots,i$, $q = 1,\ldots,i$.
+
+\[
+\left(
+\begin{BMAT}{ccccc}{ccccc}
+\times & \times & \times & \times & \times \\
+\times & \times & \times & \times & \times \\
+\times & \times & \times & \times & \times \\
+\times & \times & \times & \times & \times \\
+\times & \times & \times & \times & \times 
+\addpath{(0,4,1)ruld}
+\addpath{(0,3,1)rruulldd}
+\addpath{(0,2,1)rrruuulllddd}
+\addpath{(0,1,1)rrrruuuulllldddd}
+\addpath{(0,0,1)rrrrruuuuulllllddddd}
+\end{BMAT}
+\right)
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Notations}
+
+Soit la matrice symétrique  $A \in \RR^{n \times n}$.
+
+\begin{itemize}
+	\item $A \succ 0$: $A$ est définie positive.
+	\item $A \succeq 0$: $A$ est semi-définie positive.
+	\item $A \prec 0$: $A$ est définie négative.
+	\item $A \preceq 0$: $A$ est semi-définie négative.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires de deuxième ordre}
+
+\begin{lem}
+Soient $X \subseteq \cR^n$ un ensemble ouvert et $f: X \rightarrow \cR \in C^2$.
+Si $x \in X$ est un minimum local de $f$ sur $X$, alors $\nabla f(x) = 0$ et
+$\nabla^2 f(x)$ est une matrice semi-definie positive.
+\end{lem}
+
+\begin{proof}
+Nous avons déjà prouvé que $\nabla f(x) = 0$ si $x$ est un minimum local.
+Concentrons-nous dès lors sur le caractère semi-défini positif.
+Le développement de Taylor au deuxième ordre donne
+$$
+f(x + \tau d) = f(x) + \tau \nabla f(x)^T  d + \frac{\tau^2}{2} d^T \nabla^2 f(x) d + o(\| \tau d \|^2)
+$$
+Comme $\nabla f(x) = 0$, nous avons
+$$
+f(x + \tau d) - f(x) = \tau^2 d^T \nabla^2 f(x) d + o(\| \tau d \|^2)
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires de deuxième ordre}
+
+\begin{proof}
+Supposons par contradiction que $\nabla^2 f(x)$ n'est pas semi-définie positive, autrement dit $\exists y \in \cR^n$ tel que $y^T \nabla^2 f(x) y < 0$.
+
+Pour $\tau > 0$ suffisamment petit, $x + \tau y \in \cB(x, \epsilon)$ et
+$$
+\tau^2 y^T \nabla^2 f(x) y + o(\| \tau y \|^2) < 0
+$$
+Dès lors,
+$$
+f(x + \tau y) - f(x) < 0
+$$
+et $x$ n'est pas un minimum local.
+
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions non suffisantes}
+
+Les conditions que $\nabla f(x) = 0$ et que $\nabla^2 f(x)$ est une matrice semi-definie positive ne sont pas suffisantes pour assurer que $x$ est un minimum local.
+
+\mbox{}
+
+Exemple: $f(x,y) = x^3 + y^3$. Nous avons
+$$
+\nabla f(x,y) = \begin{pmatrix} 3x^2 \\ 3y^2 \end{pmatrix}
+\qquad
+\nabla^2 f(x,y) = \begin{pmatrix} 6x & 0 \\ 0 & 6y \end{pmatrix}
+$$
+En (0,0), la fonction, son gradient et la matrice hessienne s'annulent, et il est évident qu'une matrice carrée nulle est semi-définie positive.
+
+Pour $\epsilon > 0$ suffisamment petit, $(-\epsilon/2, -\epsilon/2) \in \cB(x,\epsilon)$ et $f(-\epsilon/2, -\epsilon/2) < 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes de second ordre}
+
+\begin{thm}
+Soient $X \subseteq \cR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
+Si $\nabla f(x^*) = 0$ et $\nabla^2 f(x^*)$ est une matrice definie positive, alors il existe un $\epsilon > 0$ suffisamment petit tel que $f(x^*) < f(x)$ pour
+tout $x \in \cB (x^*, \epsilon)$.
+\end{thm}
+
+\begin{proof}
+En utilisant le développement de Taylor à l'ordre 2
+$$
+f(x^* + \tau d) = f(x^*) + \tau \nabla f(x^*)^T d
++ \frac{\tau^2}{2} d^T \nabla^2 f(x^*)d + o(\| \tau d \|^2),
+$$
+nous pouvons écrire, puisque $\nabla f(x^*) = 0$,
+$$
+f(x^* + \tau d) - f(x^*) = \frac{\tau^2}{2} d^T \nabla^2 f(x^*) d + o(\| \tau d \|^2 )
+$$
+
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes de second ordre}
+
+\begin{proof}
+Si $A$ est symétrique, il est possible de montrer que
+$$
+\lambda_{\min} \leq \frac{d^TAd}{\| d \|^2} \leq \lambda_{\max}
+$$
+où $\lambda_{\min}$ ($\lambda_{\max}$) est la plus petite (grande) valeur propre de $A$.
+%(voir p.e. \url{https://en.wikipedia.org/wiki/Min-max_theorem}).
+On peut en effet effectuer la décomposition spectrale
+$
+A = Q\Lambda Q^T
+$
+où
+$$
+\Lambda =
+\begin{pmatrix}
+\lambda_1 & 0 & \cdots & 0 \\
+0 & \lambda_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & \lambda_n
+\end{pmatrix}, \qquad
+Q = \begin{pmatrix}
+	\bu_1 & \cdots & \bu_n
+	\end{pmatrix},
+$$
+tels que $A \bu_i = \lambda_i \bu_i$, $\|u_i\| = 1$, $QQ^T = I$.
+
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes de second ordre}
+
+\begin{proof}
+%Dès lors, il existe $Q$ telle que $\nabla^2 f(x) = Q\Lambda Q^T$ et
+%$$
+%d^T \nabla^2 f(x) d = d^T Q\Lambda Q^T d.
+%$$
+Avec $y := Q^T d$, nous obtenons
+$$
+d^T A d = y^T \Lambda y = \sum_{i = 1}^n \lambda_i y_i^2.
+$$
+Dès lors
+\begin{align*}
+d^T A d \geq \lambda_{\min} \sum_{i = 1}^n y_i^2 &= \lambda_{\min} \| y \|^2
+= \lambda_{\min} \| d \|^2 \\
+d^T A d \leq \lambda_{\max} \sum_{i = 1}^n y_i^2 &= \lambda_{\max} \| y \|^2
+= \lambda_{\max} \| d \|^2
+\end{align*}
+Il suit
+$$
+d^T \nabla^2 f(x) d \geq \lambda_{\min} \|d\|^2.
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions suffisantes de second ordre}
+
+\begin{proof}
+Ainsi,
+\begin{align*}
+f(x^* + \tau d) - f(x^*) &= \frac{\tau^2}{2} d^T \nabla^2 f(x^*) d + o(\| \tau d \|^2 ) \\
+& \geq \frac{\tau^2}{2} \lambda_{\min} \|d\|^2 + o(\| \tau d \|^2 )
+\end{align*}
+Il suit que pour $\tau > 0$ suffisamment petit, $x^* + \tau d \in \cB(x^*, \epsilon)$ et $f(x^* + \tau d) - f(x^*) > 0$ ou $f(x^* + \tau d) > f(x^*)$.
+\end{proof}
+
+\begin{coro}
+Soient $X \subseteq \cR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
+Si $\nabla f(x^*) = 0$ et $\nabla^2 f(x^*)$ est une matrice definie positive, alors $x^*$ est un minimum local de $f$ sur $X$.
+\end{coro}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fonction convexe}
+
+Soit $X \subseteq \RR^n$ un ensemble convexe et $f: X \rightarrow \RR$.
+
+\mbox{}
+
+$f$ est dite {\color{red} convexe} si $\forall x_{1}, x_{2} \in X$, $\forall t \in [0,1]$:
+$$f(tx_{1}+(1-t)x_{2})\leq tf(x_{1})+(1-t)f(x_{2}).$$
+
+\mbox{}
+
+$f$ est dite {\color{red} strictement convexe} si $\forall x_{1}, x_{2} \in X$, $x_1 \ne x_2$, $\forall t \in (0,1)$:
+$$f(tx_{1}+(1-t)x_{2}) < tf(x_{1})+(1-t)f(x_{2}).$$
+
+\mbox{}
+
+Une fonction $f$ est dite {\color{red} (strictement) concave} si $-f$ est (strictement) convexe.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Propriétés}
+
+\begin{thm}
+Une fonction $f: X \subseteq \RR^n \rightarrow \RR$ est convexe si et seulement si la fonction $g: \RR \rightarrow \RR$ donnée par
+$$
+g(\alpha) = f(x+\alpha y)
+$$
+est convexe en tout $x + \alpha y \in X$.
+\end{thm}
+
+\mbox{}
+
+L'intérêt de ce résultat en optimisation est que si une fonction est convexe, elle le sera également le long de toute direction de recherche.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Caractérisations équivalentes}
+
+\begin{thm}
+Soit $f: X \subseteq \RR^n$, $f \in C^2$, $X$ ouvert. Les affirmations suivantes sont équivalentes
+\begin{enumerate}[(i)]
+	\item $f$ est convexe;
+	\item $\forall x, y \in X$, $f(y) \geq f(x) + \nabla f(x)^T(y-x)$;
+	\item $\forall x \in X$, $\nabla^2 f(x) \succeq 0$.
+\end{enumerate}
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convexité et fonctions quadratique}
+
+Considérons la fonction quadratique
+$$
+f(x) = x^TAx + b^Tx + c.
+$$
+
+\mbox{}
+
+$f(\cdot)$ est
+\begin{itemize}
+\item
+convexe si et seulement si $A \succeq 0$;
+\item
+strictement convexe si et seulement si $A \succ 0$;
+\item
+concave si et seulement si $A \preceq 0$;
+\item
+strictement concave si et seulement si $A \prec 0$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fonction convexe -- minimisation globale}
+
+\begin{thm}
+Soit le problème d'optimisation sans contrainte
+$$\min_x\ f(x),$$
+où $f \in C^1$ est convexe.
+Alors, tout point $x^*$ satisfaisant $\nabla f(x^*) = 0$ est un minimum global.
+\end{thm}
+
+\begin{proof}
+Comme $f$ est convexe et dans $C^1$, nous avons $\forall x, y,$
+$$
+f(y) \geq f(x) + \nabla f(x)^T(y-x).
+$$
+En particulier, $\forall y$,
+$$
+f(y) \geq f(x^*) + \nabla f(x^*)^T(y-x^*).
+$$
+et comme $\nabla f(x^*) = 0$, $f(y) \geq f(x^*)$.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convexité stricté}
+
+Soit $f: X \subseteq \RR^n$, $f \in C^2$, $X$ ouvert. $f$ est strictement convexe ssi
+$$
+\forall x, y \in X \mbox{ tels que } x \ne y, f(y) > f(x) + \nabla f(x)^T(y-x).
+$$
+
+\mbox{}
+
+Si $\forall x \in X$, $\nabla^2 f(x) \succ 0$, alors $f$ est strictement convexe. Mais l'inverse n'est pas vrai! Exemple: $f(x) = \sum_{i=1}^4 x_i^4$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convexité stricté et unicité de la solution}
+
+\begin{thm}
+Soit le problème d'optimisation sans contrainte
+$$\min_{x \in X}\ f(x),$$
+où $f \in C^1$ est strictement convexe et $X$ est un ensemble convexe.
+La solution optimale, si elle existe, est unique.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convexité stricté et unicité de la solution}
+
+\begin{proof}
+Supposons par l'absurde qu'il existe deux solutions optimales différentes $x_1^*$ et $x_2^*$. Prenons
+$$
+z = \frac{x_1^*+x_2^*}{2}
+$$
+En vertu de la convexité stricte,
+$$
+f(z) < \frac{1}{2}f(x_1^*) + \frac{1}{2}f(x_2^*) = f(x_1^*).
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme}
+
+Un algorithme défini sur un sous-ensemble $X \subseteq \cR^n$ est un processus itératif qui, partant d'une solution initiale $x_0 \in X$, génère une suite de points $\{ x_k \}$ dans $X$.
+
+\mbox{}
+
+À un algorithme correspond une multi application (multi function ou ``mapping'') $A: X \rightarrow X$ associant à un point $x_k \in X$ un sous-ensemble $A(x_k) \subseteq X$.
+
+Exemple:
+$$
+A(x) = \left\{ \left[ 0, \frac{x_1}{2} \right], \left[ 0, \frac{x_2}{2} \right] \right\}.
+$$
+
+\mbox{}
+
+Dénotons par $X^* \subseteq X$ l'ensemble des solutions recherchées.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme de descente}
+
+\begin{defn}[Algorithme de descente]
+Un algorithme $A$ est un algorithme de descente par rapport à une fonction $z: X \rightarrow \cR$ continue si
+\begin{enumerate}
+\item
+$x \notin X^*$ et $y \in A(x) \Rightarrow z (y) < z(x)$
+\item
+$x \in X^*$ et $y \in A(x) \Rightarrow z(y) \leq z(x)$.
+\end{enumerate}
+\end{defn}
+
+\begin{defn}
+Un algorithme $A$ est fermé au point $x \in X$ si
+\begin{enumerate}
+\item
+$\{ x_k \} \in X$ a la propriété que $\lim_{k \rightarrow \infty} x_k = x$
+\item
+$\{ y_k \in A(x_k) \}$ a la propriété que $\lim_{k \rightarrow \infty} y_k = y$
+\end{enumerate}
+alors $y \in A(x)$.
+\end{defn}
+
+Note: la notion de fermeture pour les multi applications correspond à celle de continuité pour les fonctions.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Point d'accumulation et ensemble fermé}
+
+Soit $X \subseteq \cR^n$.
+
+\begin{defn}[Point d'accumulation]
+Considérons une suite de points $x_k \in X$, $k = 1, 2,\ldots$ telle que $\lim_{k \rightarrow \infty} x_k = x$. $x$ est un point d'accumulation (point limite) de $X$.
+\end{defn}
+
+\begin{defn}[Ensemble fermé.]
+$X$ est un ensemble fermé si tout point d'accumulation de $X$ appartient à $X$.
+\end{defn}
+
+\mbox{}
+
+Par exemple, dans $\cR^2$ l'ensemble
+$$
+\Gamma = \{ [ x, y ] \in \cR^2 \,|\, x \in [ a, b ], y = 0 \}
+$$
+est un ensemble fermé.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ensemble ouvert, borné, compact}
+
+\begin{defn}[Ensemble ouvert]
+Soit $X \subseteq \cR^n$.
+$X$ est un ensemble ouvert si $\forall x \in X$, alors la boule $B(x, \epsilon) = \{ z \in R^n \,|\, \| x - z \| < \epsilon \} \subseteq X$.
+\end{defn}
+
+(Contre)-exemple: dans $R^2$ l'ensemble
+$$
+\Gamma = \{ [ x, y ] \in \cR^2 \,|\, x \in ( a, b ), y = 0 \}
+$$
+n'est pas un ensemble ouvert puisque nous ne pouvons pas modifier la valeur de $y$.
+
+\begin{defn}[Ensemble borné]
+Un ensemble $X$ est borné si $\exists M$ t.q. $\forall\, x \in X$, $\| x \| \leq M$.
+\end{defn}
+
+\begin{defn}[Ensemble compact]
+Dans $\cR^n$, un ensemble $X$ est compact si et seulement si il est fermé et borné.
+\end{defn}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Théorème de convergence globale}
+
+Supposons que $X \subseteq \cR^n$ est un ensemble non vide et fermé, et soit $X^*$ l'ensemble non vide des solutions.
+Soit $A$ un algorithme défini sur $X$ qui, partant d'un point $x_0 \in X$, génère une suite de points $\{ x_k \}$ comme suit:
+\begin{itemize}
+\item
+si $x_k \in X^*$, l'algorithme s'arrête,
+\item
+sinon, soit $x_{k+1} \in A(x_k)$.
+Poser $k \leftarrow k + 1$ et recommencer. %répéter le processus.
+\end{itemize}
+Supposons que la suite de points $\{ x_k \}$ générés par l'algorithme est contenue dans
+un sous ensemble compact de $X$ et qu'il existe une fonction continue $z$ par rapport à laquelle $A$ est un algorithme de descente.
+Sous ces conditions, si la multi application $A$ est fermée aux points appartenant à $X^*$, alors
+\begin{enumerate}
+\item
+soit l'algorithme s'arrête après un nombre fini d'itérations à un point de $X^*$,
+\item
+soit il génère une suite infinie de points $\{ x_k \}$ telle que tout point d'accumulation de $\{ x_k \}$ (c'est-à-dire tout point limite d'une sous-suite convergente de $\{ x_k \}$) appartient à $X^*$.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Descente par coordonnées (coordinate descent)}
+
+Soit $f: Y \subseteq \cR^n \rightarrow \cR$.
+$f$ est minimisée pour chaque coordonnée séquentiellement.
+Ainsi, les directions utilisées en séquence sont
+$$
+e_1 = \begin{pmatrix} 1 \\ 0 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \quad
+e_2 = \begin{pmatrix} 0 \\ 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \quad
+\cdots, \quad
+e_n = \begin{pmatrix} 0 \\ 0 \\ 0 \\ \vdots \\ 1 \end{pmatrix}
+$$
+
+À chaque fois que $n$ itérations sont complétées, la séquence est reprise.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Gauss-Seidel}
+
+\begin{description}
+\item[Étape 0]
+Soit $f$ la fonction à minimiser, et $\delta > 0$ le niveau de tolérance.
+Poser $k = 0$ et choisir une solution initiale $x^0$.
+\item[Étape 1]
+\begin{enumerate}
+\item
+Poser $y_0 := x_k$.
+\item
+Pour $j = 1,\ldots,n$,
+\begin{itemize}
+\item 
+calculer $\alpha^* \in \arg\min_{\alpha} f(y_{j-1} + \alpha e_j)$.
+\item
+Poser $y_j = y_{j-1}+\alpha_j e_j$.
+\end{itemize}
+\item
+Poser $x_{k+1} = y_n$.
+\end{enumerate}
+\item[Étape 2]
+Arrêt si $\| x_{k + 1} - x_k \| < \delta$ et poser $x^* := x_{k+1}$.\\
+Sinon, poser $k := k+1$ et retourner à l'étape 1.
+\end{description}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Jacobi}
+	
+	\begin{description}
+		\item[Étape 0]
+		Soit $f$ la fonction à minimiser, et $\delta > 0$ le niveau de tolérance.
+		Poser $k = 0$ et choisir une solution initiale $x_0$.
+		\item[Étape 1]
+		\begin{enumerate}
+			\item
+			Pour $j = 1,\ldots,n$,
+				calculer $\alpha_j^* \in \arg\min_{\alpha} f(x_k + \alpha e_j)$.
+			\item
+			Soit $\alpha^* = (\alpha_1^*,\ldots, \alpha_n^*)$.
+			Poser $x_{k+1} = x_k + \alpha^*$.
+		\end{enumerate}
+		\item[Étape 2]
+		Arrêt si $\| x_{k + 1} - x_k \| < \delta$ et poser $x^* := x_{k+1}$.\\
+		Sinon, poser $k := k+1$ et retourner à l'étape 1.
+	\end{description}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de recherche linéaire}
+
+Une méthode de recherche linéaire pour optimiser une fonction $f: R^n \rightarrow R$
+génère une suite de points $\{ x_k \}$ où $x_0$ est un point initial choisi dans $\cR^n$ et où
+$$
+x_{k + 1} = x_k + \alpha_k d_k
+$$
+i.e. $x_{k+1}$ est généré à partir de $x_k$ en choisissant une direction $d_k \in R^n$ et en prenant un pas $\alpha_k \in \cR$ dans cette direction pour s'éloigner de $x_k$.
+Les méthodes diffèrent par leurs choix de direction $d_k$ et de pas $\alpha_k$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de plus forte pente}
+
+Supposons qu'à chaque itération $k$, $d_k$ soit choisi comme une direction de descente.
+Dès lors, à une itération $k$, si $\nabla f(x_k) \ne 0$, il est possible de trouver $\alpha_k$
+$$
+f(x_k + \alpha_k d_k) < f(x_k).
+$$
+Supposons que $f(x)$ soit bornée inférieurement sur $Y$ par $\kappa$. Dès lors
+$f(x_k) > f(x_{k+1}) > \ldots \geq \kappa$.
+
+\begin{thm}
+Toute fonction monotonement décroissante et minorée converge.
+\end{thm}
+En d'autres termes, $f(x_k)$ converge vers une value $\overline{f}$.
+Mais il se peut que $\overline{f} > f^*$! $d_k$ et $\alpha_k$ doivent être choisis adéquatement pour avoir $\overline{f} = f^*$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de plus forte pente}
+
+Cherchons la direction qui fait décroître $f$ le plus vite localement.
+
+\mbox{}
+
+Le développement linéaire de $f$ autour de $x$ était
+$$
+f(y) = f(x) + \nabla f(x)^T(y-x) + o(\| y-x \|)
+$$
+et donc
+$$
+f(x_k + \alpha d_k) - f(x_k) = \alpha \nabla f(x_k)^T d_k + o(\| \alpha d_k \| )
+$$
+L'inégalité de Cauchy-Schwarz nous indique que
+$$
+| \nabla f(x_k)^T d_k | \leq \| \nabla f(x_k) \| \| d_k \|
+$$
+et l'égalité est atteinte avec $d_k = \pm \nabla f(x_k)$. En faisant tendre $\alpha$ vers 0, on voit que
+$$
+| f(x_k + \alpha d_k) - f(x_k) | \approx \alpha | \nabla f(x_k)^T d_k |
+$$
+et donc localement, la plus forte décroissance est atteinte en prenant $d_k = -\nabla f(x_k)$: {\red plus forte pente}.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de plus forte pente (méthode du gradient)}
+	
+\begin{description}
+\item[Étape 0]
+Soit $f \in C^1$ la fonction à minimiser, et $\delta > 0$ le niveau de tolérance.
+Poser $k = 0$ et choisir une solution initiale $x_0$.
+\item[Étape 1]
+Arrêt si $\| \nabla f(x_k) \| < \delta$ et poser $x^* := x_{k}$.
+\item[Étape 1]
+Calculer $\alpha^* \in \arg\min_{\alpha \geq 0} f(x_k - \alpha \nabla f(x_k))$.\\
+Poser $x_{k+1} = x_k - \alpha^* \nabla f(x^k)$, $k \leftarrow k+1$.\\
+Retour à l'étape 1.
+\end{description}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de plus forte pente: convergence}
+
+Posons $\delta = 0$ plutôt que $\delta > 0$.
+
+\begin{thm}
+Soit $f \in C^1$.
+Tout point d'accumulation $x^*$ d'une sous-suite convergente de la suite générée par la méthode
+du gradient est tel que $\nabla f(x^*) = 0$.
+\end{thm}
+
+\begin{proof}
+Considérons une sous-suite convergente $\{ x_{k_j} \}$ de $\{ x_k \}$ telle que $x_{k_j} \rightarrow x^*$ quand $k_j \rightarrow \infty$. Dès lors
+$$
+f(x_{k_{j+1}}) \leq f(x_{k_j+1}) = \min_{\alpha \geq 0} f(x_{k_j} - \alpha \nabla f(x_{k_j}))
+$$
+et donc, $\forall \alpha \geq 0$,
+$$
+f(x_{k_{j+1}}) \leq f(x_{k_j} - \alpha \nabla f(x_{k_j}))
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de plus forte pente: convergence}
+	
+\begin{proof}
+Comme $f \in C^1$, $f$ et $\nabla f$ sont continus sur $\cR^n$.
+En outre, comme
+$$
+\lim_{j \rightarrow \infty} f(x_{k_j}) = f(x^*),
+$$
+nous avons, $\forall \alpha \geq 0$,
+$$
+\lim_{j \rightarrow \infty} f(x_{k_j} - \alpha \nabla f(x_{k_j})) = f(x^* - \alpha \nabla f(x^*))
+$$
+De là,
+$$
+f(x^*) \leq  f(x^* - \alpha \nabla f(x^*)),\ \forall \alpha \geq 0.
+$$
+Si $\nabla f(x^*) \ne 0$, $-\nabla f(x^*)$ est une direction de descente, et cette inégalité n'est pas valide. On en déduit $\nabla f(x^*) = 0$.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Directions orthogonales}
+
+\begin{lem}[Déplacement en zig-zag]
+Si $x_{k + 1} = x_k - \alpha_k \nabla f ( x_k )$ où $\alpha_k$ est tel que
+$$
+f(x_k) - \alpha_k \nabla f(x_k) = \min_{\alpha \geq 0} f(x_k - \alpha \nabla f(x_k))
+$$
+alors $\nabla f(x_{k+1})^T\nabla f(x_k) = 0$.
+\end{lem}
+
+\begin{proof}
+Si $\nabla f(x_k) = 0$, alors le résultat tient immédiatement.
+Supposons donc $\nabla f(x_k) \ne 0$.
+Considérons la fonction
+$$
+m: \cR^+ \rightarrow \cR,\ m(\alpha) = f(x_k - \alpha \nabla f(x_k)).
+$$
+Dès lors,
+$$
+m'(\alpha) = -\nabla f(x_k)^T \nabla f(x_k - \alpha \nabla f(x_k))
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Directions orthogonales}
+	
+\begin{proof}
+Or, $\alpha_k$ est choisi de sorte à minimiser $m(\alpha)$, aussi $m'(\alpha_k) = 0$.
+De là,
+$$
+0 = -\nabla f(x_k)^T \nabla f(x_{k+1})
+$$
+\end{proof}
+
+Notes:
+\begin{enumerate}
+\item
+L'ordre de convergence de la méthode du gradient est linéaire.
+\item
+Au début de son application, la méthode permet de faire
+diminuer la valeur de la fonction économique relativement
+rapidement, mais son efficacité à ce chapitre diminue au
+cours des itérations.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcul du pas}
+
+Nous pouvons utiliser les méthodes vues précédemment dans le cadre unidimensionel pour calculer
+$$
+\min_{\alpha \geq 0} f(x_k-\alpha \nabla f(x_k))
+$$
+mais il est difficile de vérifier a priori si les hypothèses de ces méthodes sont satisfaites.
+
+\mbox{}
+
+Mais avons-nous besoin de calculer le minimum exact le long de $-\nabla f(x_k)$?
+
+\mbox{}
+
+Nous avons plus généralement à considérer le problème de recherche linéaire qui consiste à déterminer une longueur de pas adaptée étant donnée une direction de recherche $d_k$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de recherche linéaire}
+
+\begin{enumerate}
+\item
+Choisir un point initial $x_0$ et poser $k = 0$.
+\item
+Arrêt si la convergence est atteinte (habituellement en testant si $\| \nabla f(x_k) \| < \delta$, avec $\delta > 0$ petit.
+\item
+Calculer une direction de recherche $d_k$ à partir de $x_k$, telle que $d_k$ est une direction de descente.
+\item
+Calculer une longueur de pas adéquate $\alpha_k > 0$ telle que
+$$
+f(x_k + \alpha_k d_k) < f(x_k).
+$$
+Le calcul de $\alpha_k$ est appelé recherche linéaire, et est habituellement l'objet d'une boucle de calcul itérative interne.
+\item
+Poser
+$$
+x_{k+1} = x_k + \alpha_k d_k.
+$$
+Incrémenter $k$ et retourner en 2.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcul de la longueur de pas}
+
+Le défi dans le calcul de $\alpha_k$ est d'éviter que le pas soit trop long ou trop court.
+
+\mbox{}
+
+{\red Recherche linéaire exacte}: nous cherchons $\alpha_k$ solution du programme
+$$
+\min_{\alpha \geq 0} f(x_k + \alpha d_k)
+$$
+L'approche est cependant souvent considérée comme trop coûteuse.
+
+\mbox{}
+
+{\red Recherche linéaire inexacte}
+\begin{enumerate}
+	\item
+	formuler un critère qui assure que les pas ne sont ni trop longs ni trop courts
+	\item
+	choisir une bonne longueur de pas initial
+	\item
+	construire une séquence de mises à jour qui satisfont les critères précédents après quelques étapes
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Recherche linéaire par ``backtracking''}
+
+Une première approche consiste à fixer une valeur maximale de la longueur du pas, et de réduire celle-ci jusqu'à obtenir une réduction de la fonction.
+
+\begin{enumerate}
+\item
+Soit $\alpha_{\mbox{init}} > 0$. Poser $\alpha_{(0)} = \alpha_{\mbox{init}}$ et $\ell = 1$.
+\item
+Tant que $f(x_k + \alpha_{(\ell)} d_k ) \geq f(x_k)$, répéter
+\begin{itemize}
+\item 
+poser $\alpha_{(\ell+1)} = \kappa \alpha_{(\ell)}$, avec $\kappa \in (0, 1)$ fixé,
+\item
+incrémenter $\ell$ par 1.
+\end{itemize}
+\item
+Poser $\alpha_k = \alpha_{(\ell)}$.
+\end{enumerate}
+
+Cette méthode permet d'éviter que le pas ne devienne trop petit, mais pas qu'il soit trop long relativement à la décroissance de $f$, et ne garantit pas une décroissance significative de $f$.
+Afin d'améliorer la méthode, nous devons renforcer l'exigence
+$$
+f(x_k + \alpha_{(\ell)} d_k ) < f(x_k).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition d'Armijo}
+
+La {\blue condition d'Armijo} impose que nous obtenions au moins une fraction $\beta$ de la réduction prédite par le développement de Taylor au premier ordre de $f$ en $x_k$:
+$$
+f(x_k + \alpha_k d_k ) \leq f(x_k) + \alpha_k \beta \nabla f(x_k)^T d_k
+$$
+pour un certain $\beta \in (0, 1)$ fixé (par exemple $\beta = 0.1$ ou même $\beta = 0.0001$).
+
+Ceci aura aussi pour effet de prévenir des pas trop grands.
+
+La procédure de backtracking devient
+\begin{enumerate}
+	\item
+	Soit $\alpha_{\mbox{init}} > 0$. Poser $\alpha_{(0)} = \alpha_{\mbox{init}}$ et $\ell = 1$.
+	\item
+	Tant que
+	$f(x_k + \alpha_k d_k ) > f(x_k) + \alpha_k \beta \nabla f(x_k)^T d_k$, répéter
+	\begin{itemize}
+		\item 
+		poser $\alpha_{(\ell+1)} = \kappa \alpha_{(\ell)}$, avec $\kappa \in (0, 1)$ fixé,
+		\item
+		incrémenter $\ell$ par 1.
+	\end{itemize}
+	\item
+	Poser $\alpha_k = \alpha_{(\ell)}$.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence du backtracking-Armijo}
+
+\begin{thm}[Terminaison du backtracking-Armijo]
+Soit $f(x) \in C^1$, et $\nabla f(x)$ lipschitzienne autour de $x_k$ avec une constante $\gamma_k$.
+Soit $d_k$ une direction de descente en $x_k$.
+Alors, pour un $\beta \in (0,1)$ fixé,
+\begin{enumerate}
+\item
+la condition d'Armijo $f(x_k + \alpha d_k) \leq f(x_k) + \alpha \beta \nabla f(x_k)^T d_k$ est satisfaite pour tout $\alpha \in [0, a_k^{\max}]$, où
+$$
+a_k^{\max} = \frac{2(\beta - 1)\nabla f(x_k)^T d_k}{\gamma_k \| d_k \|^2}
+$$
+\item
+de plus, pour $\kappa \in (0,1)$ fixé, la longueur de pas générée par la procédure de recherche linéaire backtracking-Armijo se termine avec
+$$
+\alpha_k \geq \min \left\{ \alpha_{\mbox{init}}, \frac{2\kappa(\beta - 1)\nabla f(x_k)^T d_k}{\gamma_k \| d_k \|^2} \right\}
+$$
+\end{enumerate}
+
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Remarque}
+
+En pratique, $\gamma_k$ n'est pas connu. Dès lors, nous ne pouvons pas simplement calculer $\alpha_k^{\max}$ et $\alpha_k$ à partir des formules explicites données par le théorème.
+
+\mbox{}
+
+La condition d'Armijo ne suffit pas à elle seule comme elle ne prévient pas des pas trop petits.
+Considérons par exemple la fonction $f(x) = x^2$ et $x_{0} = 2$. Prenons $d_k = -1$ et $\alpha_k = 2^{-k-1}$. Dans ce cas $x_{k} \rightarrow 1$. Pourtant, la condition d'Armijo est satisfaite pour $c_1$ choisi suffisamment petit.
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence de la recherche linéaire avec Armijo}
+
+\begin{thm}%[Convergence de la méthode de recherche linéaire avec pas d'Armijo]
+Supposons que $f(x) \in C^1$ et que $\nabla f(x)$ est lipschitzienne sur $\cR^n$.
+Alors, pour les itérés générés par la méthode de recherche linéaire avec pas d'Armijo par backtracking, une des trois situations suivantes a lieu:
+\begin{enumerate}
+\item
+$
+\nabla f_k(x) = 0
+$ après un nombre fini d'itérations 
+\item
+$\lim_{k \rightarrow \infty} f(x_k) = -\infty$
+\item
+$\lim_{k \rightarrow \infty} \nabla f(x_k) = 0$
+\end{enumerate}
+
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition de Wolfe}
+
+La condition d'Armijo n'est toutefois pas toujours suffisante pour assurer un bon comportement de l'algorithme de recherche linéaire.
+
+\mbox{}
+
+Une longueur de pas $\alpha_k$ est dite satisfaire les conditions de Wolfe par rapport à la direction de descente $d_k$ si les inégalités suivantes sont satisfaites:
+\begin{align*}
+f(x_k + \alpha_k d_k ) \leq f(x_k) + \alpha_k \beta_1 \nabla f(x_k)^T d_k  & \qquad \mbox{(condition d'Armijo)} \\
+\nabla f(x_k + \alpha_k d_k )^T d_k \geq \beta_2 \nabla f(x_k)^T d_k
+& \qquad \mbox{(condition de courbure)}
+\end{align*}
+avec $0 < \beta_1 < \beta_2 < 1$.
+
+\mbox{}
+
+La condition d'Armijo assure une réduction suffisante de la fonction objectif, tandis que la condition de courbure assure une réduction suffisante de la pente.
+%La condition de courbure sera en particulier utile dans le cadre des approches quasi-Monte Carlo.
+
+\end{frame}
+
+\end{document}

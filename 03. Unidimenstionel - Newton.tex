@@ -1,0 +1,305 @@
+\documentclass[t,usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage[francais]{babel}
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à une variable\\Méthode de Newton}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\newtheorem{defn}{Définition}
+\newtheorem{thm}{Théorème}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\cB{\mathcal{B}}
+\def\cR{\mathbb{R}}
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Développement de Taylor d'ordre $n$}
+
+Supposons $f: \cR \rightarrow \cR \in C^n$ ($n$ fois continûment différentiable)
+
+\begin{thm}[Développement de Taylor d'ordre $n$]
+	
+Il existe un point $z$ entre $x$ et $x_k$ tel que
+\begin{align*}
+f(x) = &f(x_k) + f'(x_k)(x-x_k) + \frac{f''(x_k)}{2!}(x-x_k)^2 + \ldots \\
+&+ \frac{f^{(n-1)}(x_k)}{(n-1)!}(x-x_k)^{n-1} + \frac{f^{(n)}(z)}{n!}(x-x_k)^{n}
+\end{align*}
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approximation quadratique}
+
+{\blue Hypothèse}: au point d'évaluation $x_k$, il est possible d'évaluer $f(x_k)$, $f'(x_k)$,
+$f''(x_k)$, et de plus $f''(x_k) \ne 0$.
+
+\mbox{}
+
+Étant donné un point d'évaluation $x_k$, considérons l'approximation quadratique de $f$ autour de $x_k$
+$$
+m(x) = f(x_k) + f'(x_k)(x-x_k)+\frac{f''(x_k)}{2}(x-x_k)^2.
+$$
+Le développement de Taylor d'ordre 2 nous donne
+$$
+f(x) = f(x_k) + f'(x_k)(x-x_k)+\frac{f''(z)}{2}(x-x_k)^2.
+$$
+avec $z \in [x_k, x]$ si $x \geq x_k$, $z \in [x, x_k]$ sinon. De plus,
+$$
+m(x_k) = f(x_k).
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Dérivées du modèle}
+
+Nous avons
+\[
+m'(x_k) = f'(x_k)
+\]
+et
+$$
+m''(x_k) = \frac{f''(x_k)}{2}\left.\frac{d^2}{dx^2}\right|_{x=x_k}(x-x_k)^2
+= \frac{f''(x_k)}{2}2 = f''(x_k)
+$$
+
+Le modèle $m$ et la fonction $f$ coïncident jusqu'à l'ordre 2 en $x_k$.
+
+\mbox{}
+
+$m$ est vu comme une {\blue approximation quadratique} de $f$ en $x_k$
+
+\mbox{}
+
+Il est facile de minimiser le modèle en annulant sa dérivée.
+Si $f''(x_k) \ne 0$, nous pouvons écrire
+$$
+m'(x) = f'(x_k)+f''(x_k)(x-x_k) = 0 \Leftrightarrow x = x_k - \frac{f'(x_k)}{f''(x_k)}
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+
+La méthode de Newton consiste à définir le nouvel itéré comme
+$$
+x_{k+1} = x_k - \frac{f'(x_k)}{f''(x_k)}
+$$
+
+\begin{thm}[Convergence de la méthode de Newton]
+Soit $f: \cR \rightarrow \cR \in C^3$.
+Supposons que $x^*$ satisfait les conditions $f'(x^*) = 0$ et
+$f''(x^*) \ne 0$.
+Si $x_0$ (le point initial) est choisi suffisamment près de $x^*$,
+alors la suite des points $\lbrace x_k \rbrace$ générés par la méthode de Newton
+converge vers $x^*$ avec un ordre de convergence d'au moins 2.
+\end{thm}
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+
+\begin{proof}
+Soient $k_1 > 0$ et $k_2 > 0$ tels que $|f'''(x^*)| < k_1$ et $|f''(x^*)| > k_2$.
+Par continuité de $f'''$ et de $f''$, il existe un scalaire $\epsilon_1 > 0$ tel que pour
+tout $\xi \in \cB(x^*, \epsilon_1) := \{ \xi \,|\, |\xi - x^*| < \epsilon_1 \}$, $|f'''(\xi)| < k_1$ et $|f''(\xi)| > k_2$.
+
+Comme $f'(x^*) = 0$, on peut réécrire la récurrence de Newton comme
+$$
+x_{k+1}-x^* = x_k-x^* - \frac{f'(x_k)-f'(x^*)}{f''(x_k)}
+$$
+ou encore
+$$
+x_{k+1}-x^* = \frac{f''(x_k)(x_k-x^*) - f'(x_k)+f'(x^*)}{f''(x_k)}
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+
+\begin{proof}
+Du développement de Taylor d'ordre 2, appliqué à $f'$, $\exists \gamma$ entre $x^*$ et $x_k$ tel que
+$$
+f'(x^*) = f'(x_k) + f''(x_k)(x^*-x_k)+\frac{f'''(\gamma)}{2!}(x^*-x_k)^2
+$$
+d'où
+$$
+f'(x^*) - f'(x_k) + f''(x_k)(x_k-x^*) = \frac{f'''(\gamma)}{2!}(x^*-x_k)^2
+$$
+et donc on peut remplacer le numérateur dans l'expression précédente pour obtenir
+$$
+x_{k+1}-x^* = \frac{f'''(\gamma)}{2f''(x_k)}(x^*-x_k)^2
+$$
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+	
+\begin{proof}
+Il s'ensuit
+$$
+|x_{k+1}-x^*| = \frac{1}{2}\frac{|f'''(\gamma)|}{|f''(x_k)|}(x^*-x_k)^2
+$$
+Posons
+$$
+\epsilon = \min \left\lbrace \epsilon_1, \frac{2k_2}{k_1} \right\rbrace
+$$
+Soit $x_0 \in \cB(x^*, \epsilon)$.
+Si $| x_k - x^*| < \epsilon$, $x_k \in \cB(x^*, \epsilon_1)$, et donc
+$$
+| f'''(x_k) | < k_1 \quad | f''(x_k) | > k_2. 
+$$
+De plus, alors $\exists \gamma \in \cB(x^*,\epsilon_1)$ tel que
+\begin{align*}
+& f'(x^*) = f'(x_k) + f''(x_k)(x^*-x_k)+\frac{f'''(\gamma)}{2}(x^*-x_k)^2. \\
+\mbox{et } & | f'''(\gamma) | < k_1,\ | f''(\gamma) | > k_2. 
+\end{align*}
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+
+\begin{proof}
+Il en découle
+$$
+|x_{k+1}-x^*| < \frac{1}{2}\frac{k_1}{k_2}(x^*-x_k)^2.
+$$
+De plus, par hypothèse,
+$$
+|x_k-x^*| < \epsilon \leq \frac{2k_2}{k_1}.
+$$
+Par conséquent
+$$
+|x_k-x^*| \frac{k_1}{2k_2} < 1
+$$
+et
+$$
+|x_{k+1}-x^*| < |x_k - x^*|
+$$
+et la méthode converge.
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton}
+
+\begin{proof}
+De plus, la méthode est au moins d'ordre 2 puisque
+$$
+\frac{|x_{k+1}-x^*|}{(x_k-x^*)^2} = \frac{1}{2}\frac{k_1}{k_2}.
+$$
+\end{proof}
+
+{\blue Note}: l'hypothèse $f''(x^*) \ne 0$ assure que $x^*$ est un maximun ou un
+minimum de $f$, et qu'il est possible d'utiliser un $k_2 \ne 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Newton: recherche de zéro}
+
+La méthode de Newton est également utilisée pour déterminer un point où la fonction
+s'annule.
+
+\mbox{}
+
+Supposons que nous cherchions une racine de la fonction $g(x) \in C^1$.
+Par analogie aux précédents développements, et en se rappelant que le minimum correspond à un point où la dérivée s'annule, la récurrence s'écrit
+\[
+x_{k+1} = x_k - \frac{g(x_k)}{g'(x_k)}
+\]
+ou encore
+$$
+g'(x_k) = \frac{g(x_k) - 0}{x_k - x_{k+1}}
+$$
+Interprétation géométrique: $x_{k + 1}$ est choisi de telle sorte que de la droite passant par les
+points $(x_k, g(x_k))$ et $(x_{k + 1}, 0)$ a pour pente $g'(x_k)$, celle de $g$ au point $x_k$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de la position fausse}
+
+\underline{Hypothèses}: au point d'évaluation $x_k$, il est possible d'évaluer
+$f(x_k)$ et $f'(x_k)$.
+
+Étant donné un point d'évaluation $x_k$, considérons l'approximation quadratique suivante de $f$ en $x_k$, ne nécessitant pas la connaissance de $f''(x_k)$:
+$$
+m(x) = f(x_k) + f'(x_k)(x-x_k) + \frac{1}{2}\frac{f'(x_{k-1}) - f'(x_k)}{x_{k-1}-x_k}(x-x_k)^2
+$$
+En d'autres termes, le modèle est construit comme la méthode de Newton, mais en remplaçant la dérivée seconde $f''(x_k)$ par $\frac{f'(x_{k-1}) - f'(x_k)}{x_{k-1}-x_k}$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Propriétés}
+
+Nous avons
+\begin{enumerate}
+	\item 
+	$m(x_k) = f(x_k)$
+	\item
+	$m'(x_k) = f'(x_k)$
+	\item
+	$m'(x_{k-1}) = f'(x_k)+f'(x_{k-1})-f'(x_k) = f'(x_{k-1})$
+\end{enumerate}
+
+\mbox{}
+
+Comme pour la méthode de Newton, on va chercher un itéré annulant la dérivée du modèle, celle-ci coïncidant à la dérivée de la fonction à cet itéré, soit
+$$
+0 = m'(x_{k+1}) = f'(x_k) + \frac{f'(x_{k-1}) - f'(x_k)}{x_{k-1}-x_k}(x_{k+1}-x_k)
+$$
+d'où
+$$
+x_{k+1} = x_k - \frac{x_{k-1}-x_k}{f'(x_{k-1}) - f'(x_k)}f'(x_k)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+\begin{thm}
+Soit $f \in C^3$.
+Supposons que $x^*$ satisfait les conditions $f'(x^*) = 0$ et $f''(x^*) \ne 0$.
+Si $x_0$ et $x_1$ (les points initiaux) sont choisis suffisamment près de $x^*$,
+alors la suite des points $\lbrace x_k \rbrace$ générés par la méthode de la fausse position
+converge vers $x^*$ avec un ordre de convergence égal à $\tau \approx 1,618$ (le nombre d'or).
+\end{thm}
+
+\begin{proof}
+Admis.
+\end{proof}
+
+Comme pour la méthode de Newton, la méthode peut être adaptée pour la recherche d'un zéro d'une fonction, et souffre des mêmes limitations de convergence locale.
+
+\mbox{}
+
+La vitesse de convergence est moindre. C'est le prix à payer de ne pas calculer la dérivée seconde.
+
+\end{frame}
+
+\end{document}

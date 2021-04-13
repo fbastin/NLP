@@ -1,0 +1,407 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation sans contraintes\\Méthode de Steihaug-Toint}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cB{\mathcal{B}}
+\def\cL{\mathcal{L}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+
+\def\bu{\boldsymbol{u}}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivations}
+
+Considérons le problème
+$$
+\min f(x)
+$$
+où $f \in C^2$.
+
+\mbox{}
+
+Nous avons vu que l'algorithme de région de confiance permet de résoudre ce problème et tout point limite est un point critique au premier ordre si la minimisation approximative du modèle donne une fraction suffisante de la réduction atteinte au point de Cauchy.
+
+\mbox{}
+
+Cependant, la convergence est lente si seul le point de Cauchy est utilisé.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivations}
+
+Typiquement, un modèle quadratique est utilisé pour le sous-problème de région de confiance.
+La méthode du gradient conjugué est efficace pour minimiser approximativement une fonction quadratique strictement convexe. Peut-on l'adapter si le modèle n'est plus strictement convexe?
+
+\mbox{}
+
+Si le modèle n'est pas convexe, la région de confiance devrait prévenir la génération d'une séquence de points allant à l'infini.
+Par contre, si le modèle est strictement convexe et atteint son minimum à l'intérieur de la région de confiance, celle-ci ne devrait pas interférer avec la méthode du gradient conjugué.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Sous-problème}
+
+Nous considérons le sous-problème
+$$
+\min_s q(s) := g^Ts + \frac{1}{2} s^T H s
+$$
+sous la contrainte $\| s \|_M \leq \Delta$.
+
+\mbox{}
+
+Le sous-problème est défini en prenant
+\begin{align*}
+g &= \nabla f(x_k) \\
+H &= \nabla^2 f(x_k) \\
+M &= R^TR \quad \mbox{(préconditionneur)}
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Préconditionnement et changement d'échelle}
+
+La condition
+$$
+\| s \|_M \leq \Delta
+$$
+peut se réécrire
+$$
+\langle s, Ms \rangle \leq \Delta^2
+$$
+ou encore
+$$
+\langle Rs, Rs \rangle \leq \Delta^2.
+$$
+Le préconditionnement revient à effectuer un changement d'échelle dans les variables.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Application du gradient conjugué}
+
+Supposons que nous appliquions l'algorithme du gradient conjugué pour minimiser $q$.
+Plusieurs cas de figure peuvent se produire.
+
+\mbox{}
+
+Si à chaque itération du gradient conjugué $\langle d_k, Hd_k \rangle > 0$ et tous les itérés $s_k$ restent à l'intérieur de la région de confiance, nous obtenons un problème d'optimisation convexe sans contrainte.
+
+\mbox{}
+
+Il peut toutefois arriver qu'à une certaine itération $k$, $\langle d_k, Hd_k \rangle \leq 0$. Dans ce cas, le problème de recherche linéaire
+$$
+\min_{\alpha} q(s_k+\alpha d_k)
+$$
+donnerait $\alpha_k = +\infty$. Mais si nous ajoutons la contrainte de région de confiance, alors $\alpha_k$ sera choisi de manière à atteindre la frontière de la région de confiance.
+Dans ce cas, nous cherchons la racine positive du problème
+$$
+\| s_k + \alpha_k d_k \|_M \leq \Delta_k.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Application du gradient conjugué}
+
+La troisième possibilité est que $s_k$ soit en dehors de la région de confiance à l'itération $k$.
+
+\mbox{}
+
+Il est concevable que les itérés suivants puissent revenir dans la région de confiance.
+Toutefois, ce n'est pas le cas.
+
+\begin{thm}
+Supposons que nous appliquions l'algorithme du gradient conjugué préconditionné pour minimiser $q(s)$, en partant de $s_0 = 0$, et que $\langle d_i, Hd_i \rangle > 0$ pour $0 \leq i \leq k$.
+Les itérés $s_j$ satisfont alors les inégalités
+$$
+\| s_j \|_M \leq \| s_{j+1} \|_M,
+$$
+pour $0 \leq j \leq k-1$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Montrons tout d'abors que
+$$
+\langle d_j, Md_i \rangle
+ = \frac{g_j^Tv_j}{g_i^Tv_i}\langle d_i, Md_i \rangle
+> 0.
+$$
+pour tout $0 \leq i \leq j \leq k$.
+C'est trivial pour $i = j$.
+Supposons que cela soit aussi vrai pour $i \leq l$.
+De l'algorithme du gradient conjugué, nous avons
+$$
+d_{l+1} = -v_{l+1} + \frac{g_{l+1}^Tv_{l+1}}{g_l^Tv_l}d_l.
+$$
+Dès lors,
+$$
+\langle d_{l+1}, Md_i \rangle
+= -\langle v_{l+1}, Md_i \rangle + \frac{g_{l+1}^Tv_{l+1}}{g_l^Tv_l}\langle d_l, Md_i \rangle
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Par hypothèse de récurrence
+\begin{align*}
+\langle d_{l+1}, Md_i \rangle
+&= -\langle v_{l+1}, Md_i \rangle + \frac{g_{l+1}^Tv_{l+1}}{g_l^Tv_l}
+\frac{g_l^Tv_l}{g_i^Tv_i}\langle d_i, Md_i \rangle \\
+&= -\langle v_{l+1}, Md_i \rangle + \frac{g_{l+1}^Tv_{l+1}}{g_i^Tv_i}\langle d_i, Md_i \rangle
+\end{align*}
+Or, la propriété de conjugaison indique que
+$$
+\langle v_{l+1}, Md_i \rangle = 0
+$$
+et donc
+$$
+\langle d_{l+1}, Md_i \rangle
+= \frac{g_{l+1}^Tv_{l+1}}{g_i^Tv_i}\langle d_i, Md_i \rangle
+$$
+De plus, comme $M$ est définie positive, pour $0 \leq i \leq k$,
+$$
+g_i^T v_i = g_i^T M g_i > 0.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Par conséquent, nous avons bien
+$$
+\langle d_{l+1}, Md_i \rangle > 0.
+$$
+
+\mbox{}
+
+D'autre part, l'algorithme du gradient conjugué donne
+$$
+s_j = s_0 + \sum_{i = 0}^{j-1} \alpha_i d_i = \sum_{i = 0}^{j-1} \alpha_i d_i.
+$$
+Dès lors
+\begin{align*}
+\langle s_j, Md_j \rangle
+&= \left\langle \sum_{i = 0}^{j-1} \alpha_i d_i, Md_j \right \rangle \\
+&= \sum_{i = 0}^{j-1} \alpha_i \langle d_i, Md_j \rangle > 0
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Dès lors
+\begin{align*}
+\| s_{j+1} \|_M^2
+&= \langle s_{j+1}, Ms_{j+1} \rangle \\
+&= \langle s_j + \alpha_j d_j, M (s_j + \alpha_j d_j) \rangle \\
+&= \langle s_j, Ms_j \rangle + 2\alpha_j \langle s_j, Md_j\rangle
++ \alpha_j^2 \langle d_j, Md_j \rangle \\
+&> \langle s_j, Ms_j \rangle = 
+\| s_j \|_M^2.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Discussion}
+
+Dès lors, aussi longtemps qu'une courbure positive, i.e. $H$ est définie positif, est rencontrée dans la méthode du gradient conjugué préconditionné, la norme-M des itérés est strictement croissante, pourvu que nous partions de $s_0 = 0$.
+Ainsi
+$$
+\| s_j \|_M \leq \| \arg \min_{s \in \mathbb{R}^n} q(s) \|_M,
+$$
+où l'inégalité est stricte excepté à l'itération finale.
+
+\mbox{}
+
+En particulier, quand $H$ est définie positif, et que $s^*$ se trouve hors de la région de confiance, la solution du sous-problème de région de confiance doit se trouver sur la frontière de la région de confiance.
+Dès lors, une stratégie adéquate est de revenir sur la frontière lorsqu'un itéré du gradient conjugué arrive en dehors de la région de confiance.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{GC tronqué de Steihaug-Toint}
+	
+	%% Algo 5.1.3
+	
+Étant donné $x_0$, posons $g_0 = \nabla f(x_0)$, $v_0 = M^{-1} g_0$ et $d_0 = -v_0$.
+Pour $k = 0,1,2,\ldots$, jusqu'à convergence, faire
+\begin{itemize}
+\item
+Set $\kappa_k = \langle d_k, Hd_k \rangle$.
+\item Si $\kappa_k \leq 0$, calculer $\sigma_k$ comme la racine positive de
+$\| s_k + \sigma_k d_k \|_M = \Delta$, et poser
+$$
+s_{k+1} = s_k + \sigma_kd_k.
+$$
+Arrêt.
+\item
+Sinon, calculer
+$$
+\alpha_k = \frac{\langle g_k, v_k \rangle}{\kappa_k}
+$$
+\item
+Si $\| s_k + \alpha_k d_k \|_M \geq \Delta$,
+ calculer $\sigma_k$ comme la racine positive de
+$\| s_k + \sigma_k d_k \|_M = \Delta$, et poser
+$$
+s_{k+1} = s_k + \sigma_kd_k.
+$$
+Arrêt
+\item
+Sinon
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{GC tronqué de Steihaug-Toint}
+Calculer
+	\begin{align*}
+	s_{k+1} &= s_k + \alpha_k d_k \\
+	g_{k+1} &= g_k + \alpha_k H d_k \\
+	v_{k+1} &= M^{-1}g_{k+1} \\
+	\beta_k &= \frac{\langle g_{k+1}, v_{k+1} \rangle}{\langle g_k, v_k \rangle} \\
+	d_{k+1} &= -v_{k+1} + \beta_k d_k
+	\end{align*}
+	
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+Aussi longtemps que le nombre de conditionnement de $M$ reste borné sur la séquence de sous-problèmes approximativement résolus par l'algorithme de région de confiance, alors n'importe quel itéré généré par l'algorithme de gradient conjugué tronqué est suffisant pour assurer la convergence vers un point critique au premier ordre.
+
+\mbox{}
+
+Ceci résulte du fait que le premier itéré généré par l'algorithme de gradient conjugué tronqué est le point de Cauchy pour le modèle, et n'important itéré généré par la suite donne une valeur plus petite pour le modèle.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Considérations pratiques}
+
+À chaque étape de la méthode de Steihaug-Toint, nous devons calculer $\| s_k + \alpha_k d_k\|_M$.
+
+\mbox{}
+
+Ce n'est pas un problème si $M$ est disponible, mais ce peut l'être si tout ce qui est disponible est une procédure qui renvoie $M^{-1}v$, pour un $v$ donné, de sorte que $M$ est non disponible.
+
+\mbox{}
+
+Heureusement, ce n'est pas un inconvénient majeur comme il est possible de calculer  $\| s_k + \alpha_k d_k\|_M$ à partir de l'information disponible..
+
+\mbox{}
+
+Observons tout d'abord que
+$$
+\| s_k + \alpha_k d_k\|^2_M = \| s_k \|_M^2 + 2\alpha_k \langle s_k, Md_k \rangle
++ \alpha^2 \| d_k \|^2_M.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Considérations pratiques}
+
+La racine carrée positive de $\| s_k + \sigma_k d_k\|_M = \Delta$ s'obtient en développant l'égalité
+$$
+\| s_k + \sigma_k d_k\|^2_M = \Delta^2
+$$
+Nous pouvons la réécrire comme
+\begin{align*}
+0 &= \| s_k + \sigma_k d_k\|^2_M - \Delta^2 \\
+&= \| s_k \|_M^2 -  \Delta^2 + 2\sigma_k \langle s_k, Md_k \rangle
++ \sigma^2 \| d_k \|^2_M
+\end{align*}
+Les racines carrées sont
+$$
+\sigma_k = \pm \frac{\langle s_k, Md_k \rangle - \sqrt{\langle s_k, Md_k \rangle^2-\| d_k \|_M^2(\|s_k\|^2_M - \Delta^2 )}}{\| d_k \|_M^2}
+$$
+et la racine positive est donnée par
+$$
+\sigma_k = \frac{-\langle s_k, Md_k \rangle + \sqrt{\langle s_k, Md_k \rangle^2-\| d_k \|_M^2(\|s_k\|^2_M - \Delta^2 )}}{\| d_k \|_M^2}
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Considérations pratiques}
+
+Dès lors, nous pouvons calculer $\| s_{k+1} \|_M^2$ à partir de $\| s_k \|_M^2$ aussi longtemps que nous connaissons déjà $\langle s_k, Md_k \rangle$ et $\| d_k \|_M^2$.
+Mais d'une part
+$$
+\| d_k \|_M^2 =  g_k^Tv_k + \beta_{k-1}^2 \| d_{k-1} \|_M^2	
+$$
+et d'autre part
+$$
+\langle s_k, Md_k \rangle = \beta_{k-1} \left( \langle s_{k-1}, Md_{k-1} \rangle + \alpha_{k-1} \| d_{k-1} \|_M^2 \right)
+$$
+comme
+$$
+s_k = \sum_{i = 0}^{k-1} \alpha_i d_i.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Terminaison}
+
+Il n'est pas nécessaire de minimiser le modèle avec une grande précision.
+On pourra s'arrêter lorsqu'une réduction suffisante du gradient est atteinte
+$$
+\| g_k \| \leq \| g_0 \| \min \lbrace \chi, \| g_0 \|^{\theta} \rbrace
+$$
+avec $\chi < 1$, $\theta \geq 0$ ou
+$k > k_{\max} \geq 0$.
+
+\mbox{}
+
+Des valeurs usuelles sont $\chi = 0.1$, $\theta = 0.5$ et $k_{\max} = n$.
+\end{frame}
+
+
+\end{document}

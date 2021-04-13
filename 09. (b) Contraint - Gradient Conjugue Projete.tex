@@ -1,0 +1,52 @@
+\documentclass[t,usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Warsaw}
+\usepackage{xcolor}
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation avec contraintes\\Gradient conjugué projeté}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{Hiver 2017}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cB{\mathcal{B}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+
+\def\bu{\boldsymbol{u}}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Méthode du gradient conjugué projeté}
+
+Il est possible d'adapter l'algorithme du gradient conjugué tronqué pour tenir compte de contraintes de bornes, comme expliqué dans Lin et Moré, 1999.
+
+\mbox{}
+
+Idée de base: appliquer l'algorithme du gradient conjugué jusqu'à ce qu'une contrainte soit rencontrée, auquel cas l'ensemble actif est mis à jour et on recommence les itérations du gradient conjugué dans l'espace réduit (les contraintes actives restent actives).
+
+\end{frame}
+
+\end{document}

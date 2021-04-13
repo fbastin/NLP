@@ -1,0 +1,688 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à une variable}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+
+\usepackage{gnuplottex}
+% This variables allows to conditional generate the Gnuplot figures.
+\def \gnuplotx {Generate the figures}
+
+\newtheorem{defn}{Définition}
+\newtheorem{thm}{Théorème}
+
+\def\red{\color{red}}
+
+\def\cB{\mathcal{B}}
+\def\cR{\mathcal{R}}
+\def\cX{\mathcal{X}}
+
+\def\RR{\mathbb{R}}
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{}
+
+Concentrons-nous dans un premier temps sur des fonctions univariées.
+
+\mbox{}
+
+Le problème que nous cherchons à résoudre est
+\begin{align*}
+\min_x \ & f(x) \\
+\mbox{t.q. } & x \in \cX \subseteq \cR.
+\end{align*}
+
+\mbox{}
+
+Même pour ce problème simple, nous allons devoir étudier les caractéristiques de la fonction pour développer des méthodes appropriées.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Unimodalité}
+
+Une fonction est dite unimodale si elle possède un seul mode, c'est-à-dire un et un seul point où elle atteint un maximum local, dans le cas d'un problème de maximisation, ou un et un seul point où elle atteint un minimum local, dans le cas d'un problème de minimisation.
+
+{
+\centering
+\ifx \gnuplotx \undefined
+\includegraphics{unidimensionel-gnuplottex-fig1.eps}
+\else
+\begin{gnuplot}[terminal = cairolatex,terminaloptions={color size 10cm,5cm}]
+ plot [-4:4] 0.1*x*x-2 title 'unimodal', 0.2*x-x*sin(x) title 'multimodal'  
+\end{gnuplot}
+\fi
+}
+
+\end{frame}
+
+\begin{frame}
+
+\begin{defn}[Fonction unimodale -- version maximisation]
+Une fonction $f(x)$ est une fonction unimodale si pour une certaine valeur $m$, elle est monotement croissante pour $x \leq m$ et monotonement décroissante pour $x \geq m$. Dans ce cas, la valeur maximale de $f(x)$ est $f(m)$ et il n'y a pas d'autres maximums locaux.
+\end{defn}
+
+\begin{defn}[Fonction unimodale -- version minimisation]
+	Une fonction $f(x)$ est une fonction unimodale si pour une certaine valeur $m$, elle est monotement décroissante pour $x \leq m$ et monotonement croissante pour $x \geq m$. Dans ce cas, la valeur mimimale de $f(x)$ est $f(m)$ et il n'y a pas d'autres minimums locaux.
+\end{defn}
+
+\mbox{}
+
+Une fonction unimodale n'est pas nécessairement continue, et encore moins dérivable.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Principe général}
+
+Soit $f: [a, b] \rightarrow \cR$ unimodale. Considérons le problème
+$$
+\min_{x \in [a,b]} f(x),
+$$
+et soit $x^* \in \arg\min \{ f(x) \,|\, x \in [a,b] \}$.
+
+\mbox{}
+
+Soient $x^G$ et $x^D$ tels que $a < x^G < x^D < b$. Alors
+\begin{align*}
+f(x^G) < f(x^D) & \Rightarrow x^* \in [a, x^D] \\
+f(x^G) > f(x^D) & \Rightarrow x^* \in [x^G, b] \\
+f(x^G) = f(x^D) & \Rightarrow x^* \in [x^G, x^D].
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de Fibonacci}
+
+{\color{blue}Hypothèse}: $f(x)$ est unimodale.
+
+\mbox{}
+
+L’approche consiste
+\begin{itemize}
+\item 
+à choisir un certain nombre de points selon une stratégie basée sur les
+nombres de Fibonacci
+\item 
+à évaluer séquentiellement la valeur de la fonction à ces points
+\item 
+identifier un plus petit intervalle contenant le
+minimum local en se basant sur la propriété d’unimodalité de la
+fonction objectif
+\end{itemize}
+
+\mbox{}
+
+Étant données les valeurs de la fonction en deux points de l'intervalle,
+l'unimodalité permet d'identifier une partie de l'intervalle où le minimum
+ne peut se retrouver
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Principes}
+
+\begin{itemize}
+	\item 
+Choisir deux points $x_1$ et $x_2$ symétriques et à la même distance
+de chaque extrémité de l’intervalle $[a, b]$
+\item
+Choisir le prochain point symétriquement par
+rapport au point déjà dans l’intervalle résultant.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Stratégie optimale de sélection des points d’évaluation}
+
+Notation:
+\begin{itemize}
+\item
+$d_0 = d_1 = b - a$: longueur de l'intervalle initial
+\item
+$d_k$: longueur de l'intervalle après avoir utilisé $k$ points d'évaluation
+\end{itemize}
+
+\mbox{}
+
+La suite $F_k$ des nombres de Fibonacci récursivement comme:
+\begin{align*}
+& F_0 = 0, \quad F_1 = 1 \\
+& F_n = F_{n-1} + F_{n-2},\ n \geq 2.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fibonacci et nombre d'or}
+
+Nous avons
+$$
+\frac{F_{n+1}}{F_n} = \frac{F_n+F_{n-1}}{F_n} = 1 + \frac{F_{n-1}}{F_n}
+$$
+En supposant que
+$$
+\lim_{n \rightarrow \infty} \frac{F_{n+1}}{F_n} = \tau
+$$
+avec $\tau \in \RR$, nous obtenons en prenant la limite de part et d'autre de la première équation
+$$
+\tau = 1 + \frac{1}{\tau}
+$$
+donnant
+$$
+\tau^2 - \tau - 1 = 0.
+$$
+Cette dernière équation a comme racines
+$$
+\frac{1 \pm \sqrt{5}}{2}
+$$
+\end{frame}
+
+\begin{frame}
+\frametitle{Fibonacci et nombre d'or}
+
+Comme $F_j > 0$ pour tout $j \geq 1$, nous retenons la racine positive pour obtenir
+$$
+\lim_{n \rightarrow \infty} \frac{F_{n+1}}{F_n} = \tau = \frac{1+\sqrt{5}}{2}
+$$
+
+\mbox{}
+
+Il est aussi possible de montre (formule de Binet) que
+$$
+F_n = \frac{1}{\sqrt{5}}(\tau^n - (1-\tau)^n) 
+$$
+de sorte que
+$$
+\lim_{n \rightarrow \infty} \frac{F_{n+1}}{F_n} = \frac{\tau^{n+1}}{\tau^n} = \tau
+$$
+comme $(1-\tau)^n \rightarrow 0$ quand $n \rightarrow \infty$. Il n'est plus nécessaire ici de supposer en partant que la limite existe.
+
+\mbox{}
+
+Preuve de la formule de Binet: par récurrence (exercice!).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Procédure de Fibonacci}
+
+Soit $N$, fixé, le nombre de fois ou l'on évaluera la fonction.
+
+\begin{enumerate}
+\item
+Initialisation: $x_{\min} = a$, $x_{\max} = b$, $d_1 = x_{\max}-x_{\min}$.
+\item 
+À chaque itération $k$, $x^G$ et $x^D$ sont choisis symétriques à une distance $\frac{F_{N-k-1}}{F_{N-k+1}}d_k$ de chacune des extrémités de l’intervalle $[a,b]$:
+\begin{align*}
+x^G &= x_{\min}+\frac{F_{N-k-1}}{F_{N-k+1}}d_k,\\
+x^D &= x_{\max}-\frac{F_{N-k-1}}{F_{N-k+1}}d_k= x_{\max}-\frac{F_{N-k+1}-F_{N-k}}{F_{N-k+1}}d_k \\
+& = x_{\max}-d_k+\frac{F_{N-k}}{F_{N-k+1}}d_k = x_{\min}+\frac{F_{N-k}}{F_{N-k+1}}d_k
+\end{align*}
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Procédure}
+
+\begin{enumerate}[2]
+\item
+Une partie de l'intervalle est éliminée en se basant sur l’unimodalité de la fonction.
+Il en résulte un intervalle de longueur $d_{k+1} = \frac{F_{N-k}}{F_{N-k+1}}d_k$.
+Plus précisément,
+\begin{align*}
+f(x^G) < f(x^D) & \Rightarrow x_{\max} = x^D \\
+f(x^G) > f(x^D) & \Rightarrow x_{\min} = x^G
+\end{align*}
+$k := k+1$.
+Dans le cas particulier où $f(x^G) = f(x^D)$, on posera $x_{\min} = x^G$ et $x_{\max} = x^D$ et $k := k+2$.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcul de $x^G$ et $x^D$}
+
+Calcul de $x^G_{k+1}$ et $x^D_{k+1}$.
+Supposons $f(x^G_k) < f(x^D_k)$ (le cas $f(x^G_k) > f(x^D_k)$ se traite de façon similaire).
+\begin{align*}
+x^D_{k+1}
+& = x_{\min, k+1} + \frac{F_{N-(k+1)}}{F_{N-(k+1)+1}}(x_{\max, k+1}-x_{\min, k+1}) \\
+& = x_{\min, k} + \frac{F_{N-k-1}}{F_{N-k}}(x^D_k-x_{\min, k}) \\
+& = x_{\min, k} + \frac{F_{N-k-1}}{F_{N-k}}\frac{F_{N-k}}{F_{N-k+1}}(x_{\max,k}-x_{\min, k}) \\
+& = x_{\min, k} + \frac{F_{N-k-1}}{F_{N-k+1}}(x_{\max, k}-x_{\min, k}) \\
+& = x^G_k.
+\end{align*}
+
+Par conséquent, seul $f(x^G_{k+1})$ doit être évaluée à l'itération $k+1$.
+
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Procédure (suite)}
+
+%\begin{enumerate}
+%\item
+%Le troisième point est choisi symétriquement par rapport au point déjà
+%dans l’intervalle résultant. Ceci engendre un intervalle de longueur
+%$d_3 = \frac{F_{N-2}}{F_N}d_2$.
+%\item
+%En général le point suivant est choisi symétriquement par rapport au
+%point déjà dans l'intervalle résultant. 
+%\end{enumerate}
+
+%\end{frame}
+
+\begin{frame}
+\frametitle{Note}
+
+L'algorithme place le dernier point $N$ au centre de l'intervalle, superposé au point s’y trouvant déjà.
+En effet, puisqu'en utilisant cette stratégie de sélection des points d'évaluation, nous avons
+$$
+d_k = \frac{F_{N-k+1}}{F_N}d_1,\ k = 2, 3,\ldots, N
+$$
+il s'ensuit que
+\begin{align*}
+d_{N-1} &= \frac{F_{N-(N-1)+1}}{F_N} = \frac{F_2}{F_N} = \frac{2}{F_N}d_1 \\
+d_N &= \frac{F_{N-N+1}}{F_N}d_1 = \frac{F_1}{F_N}d_1 = \frac{1}{F_N}d_1 
+\end{align*}
+et donc
+$$
+d_N = \frac{d_{N-1}}{2}
+$$
+Pour remédier à cette situation, le dernier point est plutôt placé à une distance $\epsilon$ (à gauche ou à droite) de celui s'y trouvant déjà.
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+Il est possible de démontrer que la longueur finale d'intervalle obtenue,
+\[
+d_N = \frac{1}{F_N}d_1 
+\]
+est la plus petit longueur d'intervalle qu’il est possible d’obtenir en utilisant
+une stratégie basée sur $N$ points d’évaluations.
+
+\mbox{}
+
+Ainsi, lorsque le nombre de points d'évaluation $N$ devient très grand
+pour tendre vers l’infini, la suite des valeurs
+$$
+\{ d_k \} \rightarrow 0
+$$
+plus rapidement qu’en utilisant toute autre stratégie
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de la section dorée}
+
+Nom issu du nombre d'or $\tau = \frac{1+\sqrt{5}}{2} \approx 1.618\ldots$
+
+\mbox{}
+
+La méthode de la section dorée utilise la même stratégie que la méthode de
+Fibonacci pour selectionner les points d’évaluation, mais le nombre de
+points d’évaluation n'est pas fixé au départ.
+
+\mbox{}
+
+Pour spécifier les deux premiers points, nous procédons comme dans la
+méthode de Fibonacci en les prenant symétriques à une distance $\frac{F_{N-1}}{F_N}d_1$
+de chaque extrémité en considérant que $N \rightarrow \infty$.
+
+\mbox{}
+
+Par conséquent les deux premiers points sont choisis symétriquement à
+une distance $\tau$ de chaque extrémité:
+\begin{align*}
+x_G &= x_{\max} - \frac{1}{\tau} d_1 \\
+x_D &= x_{\min} + \frac{1}{\tau} d_1
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fonctions continues}
+	
+Faisons à présent l'hypothèse suivante:
+$f: [a,b] \rightarrow \mathcal{R}$, $f \in C^0$ (i.e. $f$ est continue sur $[a,b]$).
+	
+\mbox{}
+	
+(Wikipedia)
+\begin{thm}[Théorème des bornes]
+Soient $f$ une fonction définie sur un intervalle $[a, b]$ de réels et à valeurs réelles.
+Si $f$ est continue, alors la fonction $f$ est bornée et atteint ses bornes, autrement dit il existe deux réels $c$ et $d$ de l'intervalle $[a, b]$ tels que pour tout $x$ de $[a, b]$, les inégalités suivantes soient vérifiées:
+$$
+f(c)\leq f(x)\leq f(d).
+$$
+\end{thm}
+	
+%\mbox{}
+	
+Nous cherchons $c$.
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de bisection (ou de bipartition)}
+
+Méthode pour identifier le 0 d'une fonction $g(x)$ sur un intervalle $[a, b]$.
+
+\mbox{}
+
+Supposons $f$ continûment différentiable.
+Si $g(x) = f'(x)$, alors la méthode de bisection peut être utilisée pour identifier un point où la dérivée d’une fonction s’annule.
+
+\mbox{}
+
+{\red Hypothèse}: sur l'intervalle $[a, b]$, la fonction $g$ est continue et telle que
+$g(a)g(b) < 0$.
+
+\mbox{}
+
+Ainsi, la fonction change de signe entre $a$ et $b$, et par continuité, passe par 0.
+La méthode génère une suite d'intervalles de longueur décroissante
+jouissant de la même propriété.
+
+\mbox{}
+
+Notons $\overline{X} = \lbrace x \in [a,b] \,|\, g(x) = 0 \rbrace$. Nous cherchons à trouver un point $\overline{x} \in \overline{X}$.
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme}
+
+Principe de la méthode: à chaque itération, réduire la longueur de l'intervalle contenant $\overline{x}$ en la divisant en deux.
+Soit $L_0 = b-a$.
+
+\mbox{}
+
+Tant que $b-a > \delta$, répeter
+\begin{description}
+\item[Étape 0]
+Soit $a$ et $b$ tels que $g(a)g(b) < 0$. Soit $\delta$ le niveau de tolérance
+sur la longueur de l'intervalle contenant la racine à la fin de l'algorithme.
+\item[Étape 1]
+Soit $c = \frac{a+b}{2}$.
+\begin{itemize}
+\item
+Si $g(c) = 0$, alors $\overline{x} := c$. Poser $a := c$, $b := c$.
+\item
+Si $g(a)g(c) > 0$, poser $a := c$.
+Sinon, poser $b := c$.
+\end{itemize}
+
+\end{description}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+La longueur de l'intervalle à l'itération $k$ est dès lors
+\[
+L_k = \frac{L_0}{2^k}
+\]
+
+Le nombre $n$ d'itérations requises pour atteindre une longueur
+inférieure ou égale à $\delta$ doit satisfaire
+\[
+\frac{L_0}{2^n} \leq \delta
+\]
+et donc
+\[
+n \geq \log_2 \frac{L_0}{\delta}
+\]
+Il suffit donc de prendre
+\[
+n = \left\lceil \log_2 \frac{L_0}{\delta} \right\rceil
+\]
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Vitesse de convergence}
+
+La suite des longueurs des intervalles converge vers 0.
+
+\mbox{}
+
+La convergence est linéaire avec un rapport de convergence de $\frac{1}{2}$:
+$$
+\lim_{k \rightarrow \infty} \frac{\frac{L_0}{2^k+1}-0}{\frac{L_0}{2^k}-0} = \frac{1}{2}
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Application à l'optimisation}
+
+On ne cherche pas un zéro d'une fonction en optimisation, par contre on peut appliquer l'approche sur la dérivée de la fonction.
+
+\mbox{}
+
+Soit $f: \cR \rightarrow \cR$, dérivable en $c$:
+$$
+f'(c) = \frac{df(c)}{dx} := \lim_{x \rightarrow c} \frac{f(x)-f(c)}{x-c}
+$$
+Si $f'(c) \ne 0$, alors $c$ n'est ni un minimum local ni un maximum local de f.
+
+\mbox{}
+
+De plus, si $f'(c) > 0$, il existe un intervalle $(c-\delta, c+\delta)$, avec $\delta > 0$, tel que
+\begin{align*}
+f(x) < f(c) \ \forall x \in (c-\delta, c)\\
+f(c) < f(x) \ \forall x \in (c, c+\delta)\\
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Puisque $f'(c) = \lim_{x \rightarrow c, x \ne c} \frac{f(x)-f(c)}{x-c} > 0$, alors $\exists \delta > 0$ tel que
+$$
+\frac{f(x)-f(c)}{x-c} > 0,\ \forall x \in (c-\delta, c+\delta), x \ne c.
+$$
+Par conséquent, les signes de $f(x)-f(c)$ et $(x-c)$ doivent être identiques, d'où le résultat. 
+\begin{flushright}
+\qedsymbol
+\end{flushright}
+
+\mbox{}
+
+Similairement, si $f'(c) < 0$, il existe un intervalle $(c-\delta, c+\delta)$, avec $\delta > 0$, tel que
+\begin{align*}
+f(x) > f(c) \ \forall x \in (c-\delta, c)\\
+f(c) > f(x) \ \forall x \in (c, c+\delta)\\
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Corollaire}
+
+Soit $c \in \cR$.
+\begin{enumerate}
+\item 
+si $f'(c) > 0$, il existe un intervalle $(c - \delta, c + \delta)$ avec $\delta > 0$ t.q.
+\begin{align*}
+& f(x) < f(c), \ \forall x \in (c - \delta, c) \\
+& f(x) > f(c), \ \forall x \in (c, c + \delta)
+\end{align*}
+et la fonction $f$ est croissante au point $c$.
+\item
+si $f'(c) < 0$, il existe un intervalle $(c - \delta, c + \delta)$ avec $\delta > 0$ t.q.
+\begin{align*}
+& f(x) > f(c), \ \forall x \in (c - \delta, c) \\
+& f(x) < f(c), \ \forall x \in (c, c + \delta)
+\end{align*}
+et la fonction f est décroissante au point $c$.
+\item
+si $c$ est un minimum ou un maximum local de $f$, alors $f'(c) = 0$.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition nécessaire, non suffisante}
+
+Si $f: \cR \rightarrow \cR$, et $f'(c) = 0$, $c$ n'est pas nécessairement un minimum ou un maximum local.
+
+\mbox{}
+
+Prenons par exemple $f(x) = x^3$. $f'(0) = 0$, mais $0$ n'est ni minimum, ni maximum.
+
+\begin{defn}
+	[Point stationnaire]
+$c$ est un point stationnaire d'une fonction $f$ si $f$ est dérivable en $c$ et $f'(c) = 0$.
+\end{defn}
+
+\mbox{}
+
+Nous devrons étudier sous quelles conditions il est possible de garantir qu'un point stationnaire est un extremum de la fonction.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Condition suffisante}
+
+\begin{thm}
+Soit $f: \cR \rightarrow \cR$ deux fois dérivable en $c$ et telle que $f'(c) = 0$.
+Supposons également que la dérivée $f'(x)\ \forall x \in \cB(c,\epsilon)$ existe.
+\begin{enumerate}[i)]
+	\item 
+	Si $f''(c) < 0$ alors $c$ est un maximum local de $f$.
+	\item
+	Si $f''(c) > 0$ alors $c$ est un minimum local de $f$.
+\end{enumerate}
+\end{thm}
+
+\mbox{}
+
+\underline{Note}: ce n'est pas une condition nécessaire. Considérons par exemple $f(x) = x^4$. 0 est minimum local (et global) de $f$ et $f''(x) = 12x^2$, d'où $f''(0) = 0$.
+
+\mbox{}
+
+Justification intuitive de ii): si $f''(c)>0$, alors $f'$ est une fonction croissante au point $c$ et par conséquent $c$ est un minimum local.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Optimisation sous contrainte}
+	
+Soit $f: S \rightarrow \cR$, avec $S \subset \cR$.
+
+\mbox{}
+
+Si $x^*$ est à l'intérieur de $S$, les critères sur la dérivée s'appliquent, mais ce n'est plus le cas si $x^*$ est sur la frontière de $S$.
+
+\mbox{}
+
+Considérons par exemple $f: [-1,1] \rightarrow \cR$, $f(x) = x^3$. Le minimum est atteint en $x^* = -1$, mais $f'(-1) \ne 0$.
+
+\mbox{}
+
+Nous devrons donc réviser les conditions d'optimalité!
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+On voudrait garantir que la suite d'itérés produits par un algorithme converge vers une solution optimale du problème, et ce le plus rapidement possible.
+
+\mbox{}
+
+\begin{defn}[Ordre de convergence]
+Soit $\lbrace r_k,\ k=1,2,\ldots \rbrace$ une suite de vecteurs dans $R^n$ convergente vers $r^*$.
+%	Soit $\{ r_k \}$ une suite de vecteurs convergeant vers $r^*$.
+	L'ordre de convergence est défini comme
+	$$
+	\sup \left\{ p \,\Big|\, 0 \leq \lim_{k \rightarrow \infty} \frac{ \| r_{k+1} - r^* \| }{\| r_k - r^* \|^p } < \infty \right\}
+	$$
+\end{defn}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ordre de convergence}
+
+Plus la valeur de $p$ est grande, plus la convergence est rapide à la limite
+puisque la distance à $r^*$ décroît plus rapidement.
+En effet, si
+$$
+\lim_{k \rightarrow \infty} \frac{\| r_{k+1}-r^* \|}{\| r_k-r^* \|^p} = \beta
+$$
+alors asymptotiquement
+$$
+\| r_{k+1}-r^* \| = \beta {\| r_k-r^* \|^p}.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence linéaire}
+
+\begin{defn}[Convergence linéaire]
+Soit $\{ r_k \}$ une suite de vecteurs convergeant vers $r^*$ telle que
+$$
+\lim_{k \rightarrow \infty} \frac{ \| r_{k+1} - r^* \| }{\| r_k - r^* \| } = \beta < 1
+$$
+Alors la suite $\{ r_k \}$ converge linéairement avec un rapport de convergence $\beta$. 
+\end{defn}
+
+\mbox{}
+
+Notes:
+\begin{itemize}
+\item
+la convergence linéaire est aussi appelée {\sl convergence géométrique}
+\item
+le cas $\beta = 0$ est appelé convergence super-linéaire
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exemples}
+
+Considérons la suite
+\begin{align*}
+& \left\lbrace \frac{1}{k} \right\rbrace \rightarrow 0\\
+& \lim_{k \rightarrow \infty} \frac{\frac{1}{k+1}}{\frac{1}{k}} = 1
+\end{align*}
+Convergence d'ordre 1, mais pas linéaire.
+
+\begin{align*}
+& \left\lbrace \frac{1}{k^k} \right\rbrace \rightarrow 0\\
+& \lim_{k \rightarrow \infty} \frac{\frac{1}{(k+1)^{k+1}}}{\frac{1}{k^k}}
+  = \lim_{k \rightarrow \infty} \left( \frac{k}{k+1} \right)^k \frac{1}{k+1} 
+  = 0
+\end{align*}
+Convergence super-linéaire.
+
+\end{frame}
+
+\end{document}

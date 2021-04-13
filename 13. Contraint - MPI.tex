@@ -1,0 +1,1127 @@
+\documentclass[usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation avec contraintes\\Méthodes de points intérieurs}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cA{\mathcal{A}}
+\def\cB{\mathcal{B}}
+\def\cC{\mathcal{C}}
+\def\cE{\mathcal{E}}
+\def\cI{\mathcal{I}}
+\def\cL{\mathcal{L}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+\def\cX{\mathcal{X}}
+
+\def\be{\boldsymbol{e}}
+\def\bu{\boldsymbol{u}}
+
+\def\NN{\mathbb{N}}
+\def\RR{\mathbb{R}}
+
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Problèmes non-convexes avec contraintes d'inégalité}
+
+Partiellement basé sur \url{https://courses.maths.ox.ac.uk/node/view_material/1377}
+
+\mbox{}
+
+Considérons le problème
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0\ i \in \cI
+\end{align*}
+où $f: \cR^N \rightarrow \cR$, $g_i: \cR^n \rightarrow \cR$, $i \in \cI$. De plus, nous supposons que $f$ et $g_i$ ($i \in \cI$) sont des fonctions suffisamment ``douces'' (typiquement deux fois continûment différentiables).
+
+\mbox{}
+
+Note: on ignore la présence de contraintes d'égalité (linéaires) pour la simplicité.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problèmes non-convexes avec contraintes d'inégalité}
+
+Notons l'ensemble réalisable par
+$$
+\cX = \{ x \,|\, g_i(x) \leq 0\ i \in \cI \}
+$$
+et l'intérieur par
+$$
+\cX^o = \{ x \,|\, g_i(x) < 0\ i \in \cI \}
+$$
+
+\mbox{}
+
+{\blue Hypothèse de travail}: la condition de Slater tient, i.e. $\cX^o \ne \emptyset$.
+
+\mbox{}
+
+But: trouver des points KKT du problème ainsi défini.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Barrière logarithmique}
+
+Pour (chaque) $\mu > 0$, nous associons le sous-problème barrière logarithmique
+\begin{align*}
+\min_{x \in \RR^n}\ & f_\mu(x) := f(x) - \mu \sum_{i = 1}^p \log (-g_i(x)) \\
+\mbox{t.q. } & -g(x) > 0.
+\end{align*}
+
+Il s'agit essentiellement d'un problème sans contrainte comme chaque contrainte $-g_i(x) > 0$ est assurée  par le terme log-barrière correspondant de $f_\mu$, mais le domaine de la fonction $f_{\mu}$ est restreint à l'ensemble
+$$
+\cX = \{ x \,|\, g(x) < 0 \}
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Barrière logarithmique}
+
+Supposons que $x(\mu)$ est solution du problème
+\begin{align*}
+& \min_{x \in \RR^n} f_{\mu}(x) \\
+& \mbox{ t.q. } -g(x) > 0
+\end{align*}
+Comme $g_i(x) \rightarrow 0$ implique $-\log (-g_i(x)) \rightarrow +\infty$, $x(\mu)$ doit se trouver à l'intérieur de l'ensemble réalisable, ``loin'' de ses frontières, en particulier lors $\mu > 0$ est ``grand''.
+La faisabilité stricte est assurée.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Barrière logarithmique}
+
+Quand $\mu$ est petit, $\mu \rightarrow 0$, le terme $f(x)$ ``domine'' les termes de barrière logarithmique dans l'objectif, et donc $x(\mu)$ est proche de la frontière optimale de $\cX$, mais cela peut à nouveau occasionner du mauvais conditionnement.
+
+\mbox{}
+
+Sous certaines conditions, certains minimiseurs de $f_{\mu}$ convergent vers des solutions locales du problème initial, comme $\mu \rightarrow 0$.
+Mais $f_{\mu}$ peut avoir d'autres points stationnaires, inutiles pour nos besoins.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Barrière logarithmique}
+
+De la définition de $f_{\mu}(x)$,
+%$$
+%f_{\mu}(x) := f(x) - \mu \sum_{i \in \cI} \log (-g_i(x))
+%$$
+nous tirons l'expression du gradient
+\begin{align*}
+\nabla f_{\mu}(x) &= \nabla f(x) - \mu \sum_{i \in \cI} \frac{\nabla g_i(x)}{g_i(x)} \\
+&= \nabla f(x) - \mu J(x)^T G^{-1}(x)\be
+\end{align*}
+où $J(x)$ est le Jacobien de $g(x)$, $G(x) := diag(g(x))$, $\be = (1,\ldots, 1)$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires au premier ordre}
+
+Conditions nécessaires d'optimalité au premier ordre pour le problème avec barrière logarithmique: $x(\mu)$ est un minimiseur local de $f_{\mu}$ entraîne $\nabla f_{\mu}(x(\mu)) = 0$, ou
+$$
+\nabla f(x) = \mu \sum_{i \in \cI} \frac{\nabla g_i(x)}{g_i(x)}
+$$
+avec $-\frac{\mu}{g_i(x(\mu))} > 0$, $\forall i \in \cI$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions nécessaires au premier ordre}
+
+Les conditions nécessaires d'optimalité au premier ordre pour le problème initial, en utilisant les conditions KKT, s'expriment comme
+\begin{align*}
+\nabla f(x^*) + \sum_{i \in \cI} \lambda_i^* \nabla g_i(x^*) &= 0 \\
+g_i(x^*) &\leq 0,\ i \in \cI \\
+\lambda_i^* g_i(x^*) &= 0,\ i \in \cI \\
+\lambda_i^* &\geq 0,\ i \in \cI
+\end{align*}
+et nous supposerons $\cX^o \ne \emptyset$.
+
+\mbox{}
+
+Si $x^*$ est un minimum local (nondégénéré) du problème initial (p.e. les conditions suffisantes d'optimalité au deuxième ordre tiennent), alors
+$$
+-\frac{\mu}{g_i(x(\mu))} \rightarrow \lambda_i^*,\ i \in \cI
+$$
+comme $\mu \rightarrow 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Existence locale du chemin central}
+
+\begin{thm}[Existence locale du chemin central]
+Supposons que $\cX^o \ne \emptyset$, que $x^*$ est un minimiseur local du problème original, tel que
+\begin{enumerate}
+\item
+la condition de complémentarité stricte tient en $x^*$
+\item
+la LICQ tient en $x^*$
+\item
+$\exists \alpha > 0$ tel que $d^T \nabla_{xx}^2 L(x^*, \lambda^*) d \geq \alpha \| d \|_2^2$, où $d \in \mbox{Ker}(J(x^*))$
+\end{enumerate}
+Alors il existe une unique multifonction continûment différentiable $x(\mu)$ de minimiseurs de $f_{\mu}$ dans un voisinage de $\mu = 0$ et $x(\mu) \rightarrow x^*$ comme $\mu \rightarrow 0$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode barrière basique}
+
+Fiacco-McCormick, 1960s
+
+\mbox{}
+
+Étant donné $\mu_0 > 0$, poser $k = 0$.
+Jusqu'à ``convergence'', faire
+\begin{enumerate}
+\item
+Choisir
+$
+0 < \mu_{k+1} < \mu_{k}.
+$
+\item
+Trouver $x_0^k$ tel que $g(x_0^k) < 0$ (possiblement, $x_0^k := x_k$)
+\item
+Partant de $x_0^k$, utiliser un algorithme de minimisation sans contraintes pour trouver un minimiseur ``approximatif'' $x_{k+1}$ de $f_{\mu_{k+1}}$
+Poser $k := k+1$.
+\end{enumerate}
+
+\mbox{}
+
+On doit avoir $\mu_k \rightarrow 0$, $k \rightarrow 0$.
+Par exemple, $\mu_{k+1} := 0.1\mu_k$, $\mu_{k+1} := \mu_k^2$,\ldots
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithmes pour minimiser $f_{\mu}$}
+
+Prendre des pas de Newton au sein des algorithmes suivant.
+\begin{itemize}
+\item
+Méthodes de recherche linéaire:	utiliser une recherche linéaire spéciale pour faire face à la singularité du $\log$.
+\item
+Méthodes de région de confiance: ``mettre en forme'' la région de confiance pour faire face aux contours de la singularité du log.
+
+\mbox{}
+
+Rejeter les points dont la valeur $g(x_k+d_k) > 0$.
+Retourner à l'étape 2.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Un résultat de convergence pour la méthode barrière}
+
+\begin{thm}[Convergence globale de l'algorithme barrière]
+Appliquons l'algorithme barrière basique au problème initial.
+Supposons que $f$, $g \in C^2$, $\lambda_i^k = -\mu_k/g_i(x^k)$, $i \in \cI$, et
+$$
+\| \nabla f_{\mu^k}(x^k) \| \leq \epsilon^k,
+$$
+où $\epsilon^k \rightarrow 0$ comme $k \rightarrow \infty$, et $\mu^k \rightarrow 0$ comme $k \rightarrow \infty$.
+Supposons de plus que $x^k \rightarrow x^*$, et que la LICQ tient en $x^*$.
+
+Alors $x^*$ est un point KKT du problème initial, et $\lambda^k \rightarrow \lambda^*$, où $\lambda^*$ est le vecteur de multiplicateurs de Lagrange du problème initial.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Minimiser la fonction barrière $f_{\mu}$}
+
+Utiliser la méthode de Newton avec une recherche linéaire ou une région de confiance.
+Comme
+$$
+f_{\mu}(x) := f(x) - \mu \sum_{i \in \cI} \log (-g_i(x)),
+$$
+nous avons
+\begin{align*}
+\nabla f_{\mu}(x) &= \nabla f(x) - \sum_{i \in \cI} \frac{\mu}{g_i(x)} \nabla g_i(x) \\
+&= \nabla f(x) - \mu J(x)^T G^{-1}(x) \be
+\end{align*}
+où $J(x)$ est la matrice jacobienne de $g(x)$ et $G(x) := \mbox{diag}(g(x))$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Minimiser la fonction barrière $f_{\mu}$}
+
+De plus,
+\begin{align*}
+\nabla^2 f_{\mu}(x) &= \nabla^2 f(x) - \sum_{i \in \cI} \frac{\mu}{g_i(x)} \nabla^2 g_i(x) + \sum_{i \in \cI} \frac{\mu}{g^2_i(x)} \nabla g_i(x) \nabla g_i(x)^T \\
+&= \nabla^2 f(x) - \sum_{i \in \cI} \frac{\mu}{g_i(x)} \nabla^2 g_i(x) + \mu J(x)^T G^{-2}(x)J(x)
+\end{align*}
+
+Étant donné $x$ tel que $g(x) < 0$, calculer la direction de Newton pour $f_{\mu}$ en résolvant
+$$
+\nabla^2 f_{\mu}(x) d = -\nabla f_{\mu}(x)\quad (\mu = \mu^{k+1})
+$$
+
+\mbox{}
+
+Estimateurs des multiplicateurs de Lagrange: $\lambda_i (x) := - \mu/g_i(x)$, $i \in \cI$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Minimiser la fonction barrière $f_{\mu}$}
+
+Dès lors
+$$
+\nabla f_{\mu}(x) = \nabla f(x) + J(x) \lambda(x).
+$$
+
+\mbox{}
+
+Rappelons l'expression du Lagrangien:
+$$
+L(x,\lambda) = f(x)+\sum_{i \in \cI} \lambda_i g_i(x)
+$$
+Dès lors,
+\begin{align*}
+\nabla_x L(x,\lambda)
+& = \nabla_x f(x)+\sum_{i \in \cI} \lambda_i \nabla_x g_i(x) \\
+& = \nabla_x f(x)+\sum_{i \in \cI} J(x)\lambda
+\end{align*}
+Ainsi
+$$
+\nabla f_{\mu}(x) = \nabla_x L(x,\lambda(x))
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Minimiser la fonction barrière $f_{\mu}$}
+
+Nous avons aussi
+$$
+\nabla^2_{xx} L(x,\lambda) = \nabla^2_{xx} f(x)+\sum_{i \in \cI} \lambda_i \nabla^2 g_i(x)
+$$
+
+\mbox{}
+Rappelons, comme $\lambda_i(x) = -\mu/g_i(x)$
+\begin{align*}
+\nabla^2 f_{\mu}(x)
+&= \nabla^2 f(x) - \sum_{i \in \cI} \frac{\mu}{g_i(x)} \nabla^2 g_i(x) + \mu J(x)^T G^{-2}(x)J(x) \\
+&= \nabla^2 f(x) + \sum_{i \in \cI} \lambda_i(x) \nabla^2 g_i(x) + \mu J(x)^T G^{-2}(x)J(x)
+\end{align*}
+
+Avec $\Lambda(x) = \mbox{diag}(\lambda(x))$,
+\begin{align*}
+\nabla^2 f_{\mu}(x)
+& = \nabla^2_{xx} L(x,\lambda(x)) + \mu J(x)^T G^{-2}(x) J(x) \\
+& = \nabla^2_{xx} L(x,\lambda(x)) - J(x)^T G^{-1}(x) \Lambda(x) J(x) \\
+& = \nabla^2_{xx} L(x,\lambda) + \frac{1}{\mu} J(x)^T \Lambda^{2}(x) J(x)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Difficultés potentielles}
+
+Mauvais nombre de conditionnement de la matrice hessienne de $f_{\mu}$
+
+\mbox{}
+
+Estimateurs asymptotiques des valeurs propres de $\nabla^2 f_{\mu^k}(x^k)$:
+certaines valeurs propres de $\nabla^2 f_{\mu^k}(x^k)$ tendent vers l'infini comme $k \rightarrow \infty$ tandis que les autres restent bornées; le nombre de conditionnement de $\nabla^2 f_{\mu^k}(x^k)$ est en $O(1/\mu^k)$, et explose comme $k \rightarrow \infty$.
+
+\mbox{}
+
+Dès lors, on pourrait ne pas être capable de calculer $x_k$ avec précision.
+
+Il s'agit de la principale raison expliquant l'impopularité des méthodes barrières en optimisation non linéaire dans les années 1960s.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Difficultés potentielles}
+
+Mauvais point de départ.
+
+\mbox{}
+
+Rappelons que nous avons besoin d'un point de départ $x_0^k$ pour la minimisation (approximative) de $f_{\mu^{k+1}}$, après la réduction du paramètre barrière de $\mu^k$ à $\mu^{k+1}$.
+
+\mbox{}
+
+Il est possible de montrer que l'itéré $x^k$, obtenu à la fin de la minimisation de $f_{\mu^k}$, est un très mauvais candidat comme point de départ $x_0^k$, dans le sens où le pas de Newton $x^k + d^k$ sera asymptotiquement non réalisable (i.e. $g(x^k + d^k) > 0)$ quand $\mu^{k+1} < 0.5 \mu^k$, c'est-à-dire pour n'importe quel réduction intéressante de $\mu^k$.
+
+\mbox{}
+
+Par conséquent, il y a peu d'espoir pour une convergence rapide de la méthode barrière.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthodes primales-duales}
+
+Solution à ces deux problèmes: utiliser des méthodes de points intérieurs primales-duales.
+
+\mbox{}
+
+Comme pour les méthodes de pénalité, nous allons partir des conditions d'optimalité perturbées.
+
+\mbox{}
+
+Rappelons les conditions nécessaires au premier ordre pour le problème barrière:
+comme $x(\mu)$ est un minimiseur local de $f_\mu$, $\nabla f_{\mu}(x(\mu)) = 0$, ou
+de manière équivalente,
+$$
+\nabla f(x) = \mu J(x(\mu))^T G^{-1}(x(\mu)) \be
+$$
+Soit $\lambda(\mu) = -\mu G^{-1}(x(\mu))$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité perturbées}
+
+Dès lors, $(x(\mu), \lambda(\mu))$ satisfait
+\begin{align*}
+& \begin{cases}
+\nabla f(x) + J(x)^T\lambda = 0, \\
+G(x)\Lambda\be = -\mu\be,
+\end{cases} \\
+& -g(x) > 0,\ \lambda > 0.
+\end{align*}
+Le système KKT du problème s'écrit quant à lui
+\begin{align*}
+& \begin{cases}
+\nabla f(x) + J(x)^T\lambda = 0, \\
+G(x)\Lambda\be = 0,
+\end{cases} \\
+& -g(x) > 0,\ \lambda > 0.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthodes primales-duales de poursuite de chemin (1990s)}
+
+On cherche à satisfaire $g(x) < 0$ et $\lambda > 0$, et on utilise la méthode de Newton pour résoudre le système
+$$
+\begin{cases}
+\nabla f(x) + J(x)^T\lambda = 0, \\
+G(x)\Lambda\be = -\mu\be,
+\end{cases}
+$$
+La direction de Newton direction $(\Delta x, \Delta \lambda)$ satisfait
+$$
+\begin{pmatrix}
+\nabla^2_{xx} L(x, \lambda) &  J(x)^T \\
+\Lambda J(x) & G(x)
+\end{pmatrix}
+\begin{pmatrix}
+\Delta x \\ \Delta \lambda
+\end{pmatrix}
+= -
+\begin{pmatrix}
+\nabla f(x) + J(x)^T\lambda \\
+G(x)\Lambda\be + \mu\be,
+\end{pmatrix}
+$$
+Eliminons $\Delta \lambda$. Nous avons
+$$
+\Lambda J(x) \Delta x + G(x) \Delta \lambda
+= - G(x)\Lambda\be - \mu\be,
+$$
+ou
+$$
+\Delta \lambda = - G^{-1}(x) \Lambda J(x) \Delta x - \Lambda\be - G^{-1}(x) \mu\be
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthodes primales-duales de poursuite de chemin (1990s)}
+
+En remplaçant dans la première équation, et notant que $\Lambda \be = \lambda$,
+\begin{align*}
+& \nabla^2_{xx} L(x, \lambda) \Delta x + J(x)^T (- G^{-1}(x) \Lambda J(x) \Delta x - \lambda - G^{-1}(x) \mu\be) \\
+&=  - \nabla f(x) - J(x)^T\lambda \\
+&\Leftrightarrow \\
+& \nabla^2_{xx} L(x, \lambda) \Delta x - J(x)^TG^{-1}(x) \Lambda J(x) \Delta x =  - \nabla f(x) + J(x)^TG^{-1}(x) \mu\be \\
+&\Leftrightarrow \\
+& ( \nabla^2_{xx} L(x, \lambda) - J(x)^TG^{-1}(x) \Lambda J(x)) \Delta x =  - (\nabla f(x) - \mu J(x)^TG^{-1}(x)\be)
+\end{align*}
+ce qui peut encore se réécrire
+$$
+( \nabla^2_{xx} L(x, \lambda) - J(x)^TG^{-1}(x) \Lambda J(x)) \Delta x =  -\nabla_x L(x,\lambda)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthodes primales-duales vs méthodes primales}
+
+{\blue Primal}
+$$
+\nabla^2 f_{\mu}(x)\Delta x = -\nabla f_{\mu(x)}
+$$
+ou de manière équivalente, à partir des relations précédentes,
+$$
+( \nabla^2_{xx} L(x,\lambda(x)) - J(x)^TG^{-1}(x) \Lambda(x) J(x)) \Delta x
+ = -\nabla_x L(x,\lambda(x))
+$$
+
+{\blue Primal-dual}
+$$
+( \nabla^2_{xx} L(x, \lambda) - J(x)^TG^{-1}(x) \Lambda J(x)) \Delta x =  -\nabla_x L(x,\lambda)
+$$
+
+Dans les méthodes primales-duales, les changements des multiplicateurs de Lagrange sont calculés explicitement à chaque itération.
+Dans les méthodes primales, ils sont mis à jour implicitement.
+
+\mbox{}
+
+Pour les méthodes de points intérieurs primales-duales, $x_0^k = x_k$ est un bon point de départ pour la solution du sous-problème.
+Le problème de conditionnement de la matrice hessienne peut être contourné en résolvant dans des sous-espaces adaptés.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Complexité}
+
+Si $\mu^{k+1}$ est choisi en $O((\mu^k)^2)$, on obtient une convergence superlinéaire.
+
+\mbox{}
+
+Plusieurs itérations de Newton sont menées pour chaque valeur de $\mu$ (à l'aide d'une région de confiance ou d'une recherche linéaire).
+
+\mbox{}
+
+Dans les implémentations, il est essentiel de garder les itérés éloignés des frontières au cours des premières itérations (sinon, les itérés peuvent être coincés à proximité de la frontière, entraînant une convergence lente).
+Le calcul d'un point de départ initial $x_0$ satisfaisant $g(x_0) < 0$ est non trivial.
+Plusieurs heuristiques existent (p.e., calcul du centre analytique).
+
+\mbox{}
+
+Logiciel de référence exploitable avec Julia: IPOPT
+
+\mbox{}
+
+Programmation linéaire: les méthodes de points intérieurs résolvent un programme linéaire en temps polynomial.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Implantation}
+
+Bien que les méthodes de points intérieurs se soient révélées comme une des méthodes modernes les plus efficaces, les performances numériques restent sensibles à l'implantation.
+
+\mbox{}
+
+La direction $(\Delta x, \Delta \lambda)$ calculée, comment déterminer la longueur de pas? Nous voulons
+\begin{itemize}
+	\item progresser rapidement vers la solution
+	\item rester à l'intérieur de l'ensemble réalisable
+	\item comment gérér les contraintes d'égalité?
+\end{itemize}
+
+\mbox{}
+
+On se limite souvent aux contraintes d'égalité linéaires ($Ax = b$).
+Nous allons illustrer les idées principales en programmation linéaire.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Programmation linéaire}
+% Voir http://www.diku.dk/OLD/undervisning/2007-2008/2007-2008_b2_opt/primal-dual-lo.pdf
+
+Considérons le problème
+\begin{align*}
+\min_x\ & c^Tx \\
+\mbox{s.c. } & Ax = b \Leftrightarrow b-Ax = 0\\
+& x \geq 0.
+\end{align*}
+
+\mbox{}
+
+Conditions KKT:
+\begin{align*}
+c-A^Ty-s &= 0 \\
+Ax &= b \\
+x_is_i &= 0, \ i =1,\ldots,n \\
+x, s &\geq 0
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Programmation linéaire}
+
+La première condition (annulation du gradient du lagrangien) correspond aux contraintes duales, en notant que $s$ peut s'interpréter comme un vecteur de variables d'écart:
+$$
+A^Ty \leq c
+$$
+La dernière condition condition correspond aux contraintes de complémentarité et rendent difficile la résolution directe du système KKT.
+
+\mbox{}
+
+On peut les relâcher en prenant
+$$
+x_is_i = \mu, \ i =1,\ldots,n
+$$
+avec $\mu > 0$, ce que nous pouvons réécrire comme
+$$
+Xs = \mu e
+$$
+où $X = diag(x)$, $e = \begin{pmatrix} 1 & 1 & \ldots & 1 \end{pmatrix}^T$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité}
+
+Les conditions d'optimalité deviennent
+\begin{align*}
+A^Ty + s &= c \\
+Ax &= b \\
+Xs &= \mu e \\
+x, s &\geq 0
+\end{align*}
+Comme précédemment, on considère la réalisation en utilisant la méthode de Newton (en ignorant pour le moment les contraintes de non-négativité).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité: système non-linéaire}
+
+Definissons
+$$
+F_{\gamma} (x,y,s) =
+\begin{pmatrix}
+Ax-b \\
+A^Ty + s - c \\
+Xs - \gamma \rho e
+\end{pmatrix},
+\quad
+\mu := \gamma \rho = \gamma x^Ts/n
+$$
+$\gamma \geq 0$ est un paramètre à choisir.
+
+\mbox{}
+
+Étant donné $(x^0, s^0)$, une étape de la méthode de Newton appliquée à
+$$
+F_{\gamma} (x,y,s) = 0,\ x,s\geq 0
+$$
+est donnée par
+$$
+\nabla_{\gamma} F_{\gamma} (x^0,y^0,s^0)
+\begin{pmatrix}
+\Delta x \\ \Delta y \\ \Delta s
+\end{pmatrix}
+= - F_{\gamma} (x^0,y^0,s^0).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité: système non-linéaire}
+
+Mise à jour:
+$$
+\begin{pmatrix} x^1 \\ y^1 \\ s^1 \end{pmatrix}
+=
+\begin{pmatrix} x^0 \\ y^0 \\ s^0 \end{pmatrix}
++\alpha
+\begin{pmatrix}
+\Delta x \\ \Delta y \\ \Delta s
+\end{pmatrix}
+$$
+$\alpha \in (0,1]$ est la longueur de pas.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme primal-dual}
+
+\begin{description}
+\item[Étape 1.]
+Choisir $(x^0, y^0, s^0)$ tels que $x^0, s^0 > 0$. Poser $k = 0$.
+\item[Étape 2.]
+Choisir $\gamma$, $\theta \in (0,1)$, $\epsilon > 0$.
+\item[Étape 3.]
+Tant que
+$$
+\max \{ \| Ax^k - b \|, \| A^Ty^k + s^k - c \|, (x^k)^Ts^k \} \geq \epsilon,
+$$
+répéter la mise à jour de la solution, et prendre $k := k+1$.
+\end{description}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mise à jour de la solution}
+
+\begin{enumerate}
+	\item $\mu^k := ((x^k)^Ts^k)/n$
+	\item Résoudre
+	\begin{align*}
+	A\Delta x & = -(Ax^k-b) \\
+	A^T\Delta y + \Delta s &= -(A^Ty^k+s^k-c) \\
+	S^k \Delta x +X^k\Delta s &= -X^ks^k + \gamma \mu^k e
+	\end{align*}
+	\item
+	Calculer
+	$$
+	\alpha^k := \theta \max_{\alpha} \{ x^k+\alpha \Delta x \geq 0 , s^k + \alpha \Delta s \geq 0, \theta \alpha \leq 1 \}
+	$$
+	\item Poser
+$$
+\begin{pmatrix} x^{k+1} \\ y^{k+1} \\ s^{k+1} \end{pmatrix}
+=
+\begin{pmatrix} x^k \\ y^k \\ s^k \end{pmatrix}
++\alpha
+\begin{pmatrix}
+\Delta x \\ \Delta y \\ \Delta s
+\end{pmatrix}
+$$
+	\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Progression}
+
+Observons que
+$$
+\begin{pmatrix}
+Ax^1 - b \\ A^Ty^1 + s^1 - c
+\end{pmatrix}
+=
+(1 - \alpha)
+\begin{pmatrix}
+Ax^0 - b \\ A^Ty^0 + s^0 - c
+\end{pmatrix}
+$$
+et
+$$
+(x^1)^T s^1 = (1-(1-\gamma)\alpha)(x^0)^Ts^0+\alpha^2\Delta_x \Delta_s
+$$
+
+\mbox{}
+
+En prenant $\alpha > 0$ et $\gamma \in [0,1)$
+\begin{itemize}
+	\item les résidus sont réduits
+	\item $(x^1)^Ts^1 < (x^0)^Ts^0$ pour $\alpha$ suffisamment petit
+	\item difficulté: peu de contrôle sur $\Delta_x \Delta_s$
+	\item toujours intérieur: $x, s > 0$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Notes}
+
+\begin{itemize}
+	\item algorithme simple
+	\item peu d'itérations, mais chaque itération peut être coûteuse
+	\item l'analyse de convergence théorique est complexe
+\end{itemize}
+
+\mbox{}
+
+L'algorithme a subi de nombreux raffinements.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthodes de points intérieurs en programmation non-linéraire}
+
+Référence: chapitre 19, Nocedal \& Wright
+
+\mbox{}
+
+Nous suivons à présent les notations de Nocede \& Wright et considérons le problème
+\begin{align*}
+\min_x \ & f(x) \\
+\mbox{t.q. } & c_i(x) = 0,\ i \in \cE, \\
+& c_i(x) \geq 0,\ i \in \cI.
+\end{align*}
+\begin{itemize}
+	\item $l$ contraintes d'égalité
+	\item $m$ contraintes d'inégalité
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Reformulation}
+
+\begin{align*}
+\min_x \ & f(x) \\
+\mbox{t.q. } & -c_i(x) = 0,\ i \in \cE, \\
+& - c_i(x) + s \leq 0,\ i \in \cI, \\
+& s \geq 0.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions KKT}
+
+\begin{align*}
+\nabla f(x) - J^T_{\cE}(x) y - J^T_{\cI} (x) z &= 0 \\
+Sz - \mu \be &= 0 \\
+c_{\cE}(x) &= 0 \\
+c_{\cI}(x) - s &= 0,
+\end{align*}
+avec $\mu = 0$, $z \geq 0$, $s \geq 0$.
+
+\mbox{}
+
+$J_{\cE}(x)$ et $J_{\cI}(x)$ sont les matrices jacobiennes des contraintes d'égalité et d'inégalité, respectivement.\\
+$\be = (1, 1,\ldots, 1)^T$. \\
+$S = diag(s)$, $Z = diag(z)$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Système pertubé}
+
+\begin{align*}
+\nabla f(x) - J^T_{\cE}(x) y - J^T_{\cI} (x) z &= 0 \\
+Sz - \mu_k \be &= 0 \\
+c_{\cE}(x) &= 0 \\
+c_{\cI}(x) -s &= 0,
+\end{align*}
+avec $\mu_k > 0$.
+
+\mbox{}
+
+Résoudre approximativement pour $\mu_k > 0$, et $\mu_k \rightarrow 0$ comme $k \rightarrow \infty$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Équations de Newton}
+
+\begin{multline*}
+\begin{pmatrix}
+\nabla^2_{xx} L(x,s,y,z) & 0 & - J^T_{\cE}(x) & - J^T_{\cI}(x) \\
+0 & Z & 0 & S \\
+J_{\cE}(x) & 0 & 0 & 0 \\
+J_{\cI}(x) & -I & 0 & 0 \\
+\end{pmatrix}
+\begin{pmatrix}
+\Delta x \\
+\Delta s \\
+\Delta y \\
+\Delta z	
+\end{pmatrix}
+\\
+= -\begin{pmatrix}
+\nabla f(x) - J^T_{\cE}(x) y - J^T_{\cI} (x) z \\
+Sz - \mu_k \be \\
+c_{\cE}(x) \\
+c_{\cI}(x)-s
+\end{pmatrix}
+\end{multline*}
+avec
+$$
+L(x,s,y,z) = f(x) - y^Tc_{\cE}(x) - z^T\left( c_{\cI}(x) - s \right).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mise à jour de la solution}
+
+\begin{align*}
+x^+ = x + \alpha_s^{\max} \Delta x,
+&\quad
+s^+ = x + \alpha_s^{\max} \Delta s, \\
+y^+ = x + \alpha_z^{\max} \Delta y,
+&\quad
+z^+ = x + \alpha_z^{\max} \Delta z,
+\end{align*}
+avec
+% (règle de la fraction à la frontière)
+\begin{align*}
+\alpha_s^{\max} &= \max \{ \alpha \in (0,1] \,|\, s + \alpha \Delta_s \geq (1-\tau)s \},\\
+\alpha_z^{\max} &= \max \{ \alpha \in (0,1] \,|\, z + \alpha \Delta_z \geq (1-\tau)z \},
+\end{align*}
+où $\tau \in (0,1)$ (valeur typique: 0.995).
+
+\mbox{}
+
+But: empêcher $s$ et $z$ d'atteindre 0 trop rapidement.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Fonction d'erreur}
+
+\begin{align*}
+E(x, s, y, z; \mu) = \max
+\{ &
+\| \nabla f(x) - J_{\cE}(x)^T y - J_{\cI}(x)^T z \|, \\
+&\| Sz - \mu\be \|, \\
+&\| c_{\cE}(x) \|, \\
+&\| c_{\cI}(x) - s \|
+\}
+\end{align*}
+pour une certaine norme vectorielle $\| \cdot \|$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme basique de points intérieurs}
+
+Choisir $x_0 > 0$ et $s_0 > 0$, et calculer des valeurs initiales pour les multiplicateurs $y_0$ et $z_0 > 0$.
+Choisir un paramètre barrière initial $\mu_0 > 0$ et des paramètres $\sigma \in (0, 1)$, $\tau \in (0, 1]$.
+Poser $k := 0$.
+
+\mbox{}
+
+Tant qu'un critère d'arrêt n'est pas satisfait, répéter
+
+\hfill\begin{minipage}{\dimexpr\textwidth-1cm}
+(Résoudre approximativement le système perturbé) \\
+Tant que $E(x_k, s_k, y_k, z_k; \mu_k) > \tau\mu_k$
+\begin{itemize}
+	\item
+	Calculer la direction de Newton $(\Delta x, \Delta s, \Delta y, \Delta z )$.
+	\item
+	Calculer $\alpha^{\max}_s$, $\alpha^{\max}_z$.
+	\item
+Calculer $(x_{k+1}, s_{k+1}, y_{k+1}, z_{k+1})$.
+\item
+Poser $\mu_{k+1} = mu_k$ et incrémenter $k$.
+\end{itemize}
+Choisir $\mu_k \in (0, \sigma \mu_k )$.
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Algorithme basique de points intérieurs}
+
+\begin{thm}
+Supposons que $f$ et $c_i$, $i \in \cI \cap \cE$, $\in C^1$, et que l'algorithme précédent génère une séquence infinie d'itérés $\{ x_k \}$ et que $\mu_k \rightarrow 0$ quand $k \rightarrow \infty$.
+%(that is, that the algorithm does not loop infinitely in the inner “repeat” statement).
+%Suppose that f and c are continuously differentiable functions.
+Alors tout point d'accumulation $\hat{x}$ de la séquence $\{ x_k \}$ est réalisable.
+De plus, si un point limite $\hat{x}$ de $\{ x_k \}$ satisfait la LICQ, alors les conditions KKT tiennent en $\hat{x}$.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve}
+
+Par simplicité, supposons qu'il n'y a que des contraintes d'inéqualité $c = c_{\cI}$ (le résultat peut s'étendre en présence de contraintes d'égalité).
+
+\mbox{}
+
+Soit $\hat{x}$ un point d'accumulation de $\{ x_k \}$, et soit $\{ x_{k_l} \}$ une sous-séquence convergente vers $\hat{x}$.
+
+\mbox{}
+
+Comme $\mu_k \rightarrow 0$, l'erreur $E$ tend aussi vers 0 et dès lors, $c_{k_l} - s_{k_l} \rightarrow 0$.
+Par continuité, $c(\hat{x}) \geq 0$, et $s_{k_l} \rightarrow c(\hat{x})$.
+
+\mbox{}
+
+Considérons l'ensemble actif en $\hat{x}$, $\cA(\hat{x}) = \{ i \,|\, c_i(\hat{x}) = 0 \}$.
+
+\mbox{}
+
+Pour $i \notin \cA(\hat{x})$, $c_i(\hat{x})$, et par la complémentarité, $(z_{k_l})_i \rightarrow 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve (suite)}
+
+Comme $E$ tend vers 0, $\nabla f(x_{k_l}) - J(x_{k_l})^T z_{k_l} \rightarrow 0$, et nous avons
+$$
+\nabla f(x_{k_l}) - \sum_{i \in \cA(\hat{x})} (z_{k_l})_i \nabla c_i(x_{k_l}) \rightarrow 0.
+$$
+
+\mbox{}
+
+Comme $f$ et $c_i \in C^1$, 
+$$
+\nabla f(x_{k_l}) \rightarrow \nabla f(\hat{x}), \quad
+\nabla c_i(x_{k_l}) \rightarrow \nabla c_i(\hat{x}), i \in \cA(\hat{x}).
+$$
+Dès lors, $\nabla f(\hat{x})$ s'écrit comme combinaison linéaire des $\nabla c_i(\hat{x}), i \in \cA(\hat{x})$, qui est unique en vertu de la LICQ. Dès lors, $\exists \hat{z}$ tel que $z_{k_l} \rightarrow \hat{z}$, et comme $z_{k_l} \geq 0$, $\hat{z} \geq 0$.
+
+\mbox{}
+
+Nous avons aussi alors $c(\hat{x})^T \hat{z} = 0$.
+
+\begin{flushright}
+$\blacksquare$
+\end{flushright}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Équation de Newton en présence de non-linéarité de non-convexité}
+
+Dans le cas non-linéaire non-convexe, nous n'avons pas encore établi que le système de Newton était bien définie, i.e. que la matrice multipliant $(\Delta x, \Delta y, \Delta y, \Delta z)$ est non-singulière.
+
+Notant $\Sigma = S^{-1}Z$, remarquons que nous pouvons réécrire le système sous la forme symétrique
+\begin{multline*}
+\begin{pmatrix}
+\nabla^2_{xx} L(x,s,y,z) & 0 &  J^T_{\cE}(x) &  J^T_{\cI}(x) \\
+0 & \Sigma & 0 & -I \\
+J_{\cE}(x) & 0 & 0 & 0 \\
+J_{\cI}(x) & -I & 0 & 0 \\
+\end{pmatrix}
+\begin{pmatrix}
+\Delta x \\
+\Delta s \\
+-\Delta y \\
+-\Delta z	
+\end{pmatrix}
+\\
+= -\begin{pmatrix}
+\nabla f(x) - J^T_{\cE}(x) y - J^T_{\cI} (x) z \\
+z - \mu_k S^{-1} \be \\
+c_{\cE}(x) \\
+c_{\cI}(x)-s
+\end{pmatrix}
+\end{multline*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Solution numérique du système de Newton}
+
+Commençons pas éliminer $\Delta s$
+$$
+\Sigma \Delta s + \Delta z = \mu_k S^{-1} \be - z,
+$$
+ou
+$$
+\Delta s = - \Sigma^{-1} \Delta z + \mu_k \Sigma^{-1}S^{-1} \be - \Sigma^{-1}z = - \Sigma^{-1} \Delta z + \mu_k Z^{-1} \be - s,
+$$
+ce qui donne
+\begin{multline*}
+	\begin{pmatrix}
+		\nabla^2_{xx} L(x,s,y,z) &  J^T_{\cE}(x) &  J^T_{\cI}(x) \\
+		J_{\cE}(x) & 0 & 0 \\
+		J_{\cI}(x) & 0 & -\Sigma^{-1} \\
+	\end{pmatrix}
+	\begin{pmatrix}
+		\Delta x \\
+		-\Delta y \\
+		-\Delta z	
+	\end{pmatrix}
+	\\
+	= -\begin{pmatrix}
+		\nabla f(x) - J^T_{\cE}(x) y - J^T_{\cI} (x) z \\
+		c_{\cE}(x) \\
+		c_{\cI}(x)- \mu_k Z^{-1} \be
+	\end{pmatrix}
+\end{multline*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Solution numérique du système de Newton}
+
+Il est encore possible d'éliminer $\Delta z$ pour obtenir la matrice de coefficients
+$$
+	\begin{pmatrix}
+\nabla^2_{xx} L(x,s,y,z) + J^T_{\cI}(x) \Sigma J_{\cI}(x)&  J^T_{\cE}(x) \\
+J_{\cE}(x) & 0\\
+\end{pmatrix}
+$$
+
+\mbox{}
+
+Bien que le système linéaire devienne généralement mal conditionné comme $\mu_k \rightarrow 0$, les directions de recherche peuvent généralement être calculées avec précision. Le choix de la technique de résolution doit cependant être adaptée (voir la discussion dans Nocedal et Wright).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mise à jour du paramètre barrière}
+
+On doit avoir $\mu_k \rightarrow 0$.
+\begin{itemize}
+	\item décroissance trop lente: beaucoup d'itérations
+	\item décroissance trop rapide: $s$ ou $z$ peuvent approcher zéro prématurément, ralentissant le progrès de l'itération
+\end{itemize}
+
+\mbox{}
+
+Schéma de Fiacco-McCormick:
+$$
+\mu_{k+1} = \sigma_k\mu_k, \quad \sigma_k \in (0,1)
+$$
+Préférable de laisser à $\sigma_k$ de prendre deux valeurs ou plus, avec $\sigma_k$ petit quand les plus récentes itérations ont mené à des progrès significatifs vers la solution.
+On peut aussi prendre $\sigma_k \rightarrow 0$ à proximité de la solution et faire tendre $\tau$ vers 1.
+
+\mbox{}
+
+Peut être sensible au point initial, à la valeur initiale du paramètre barrière, et à l'échelle du problème.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mise à jour du paramètre barrière: stratégies adaptatives}
+
+Varier $\mu$ à chaque itération en fonction du progrès de l'algorithme.
+
+\mbox{}
+
+Exemple de choix:
+$$
+\mu_{k+1} = \sigma_k \frac{s_k^Tz_k}{m},
+$$
+et (LOQO)
+$$
+\sigma_k = 0.1 \min \left( 0.05 \frac{1-\xi_k}{\xi_k}, 2\right)^3
+$$
+avec
+$$
+\xi_k = \frac{\min_i (s_k)_i(z_k)_i}{s_k^Tz_k/m}.
+$$
+\end{frame}
+
+\end{document}

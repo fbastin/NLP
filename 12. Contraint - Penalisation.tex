@@ -1,0 +1,438 @@
+\documentclass[t,usepdftitle=false]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usetheme{Singapore}
+\usepackage{xcolor}
+\setbeamertemplate{footline}[frame number]
+
+% \setbeamercovered{transparent}
+%\usecolortheme{crane}
+\title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation avec contraintes\\Méthodes de pénalité}
+\author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
+\date{}
+
+\usepackage{enumerate}
+\usepackage[francais]{babel}
+
+\usepackage{easybmat}
+\usepackage{graphicx}
+
+\newtheorem{defn}{Définition}
+\newtheorem{lem}{Lemme}
+\newtheorem{thm}{Théorème}
+\newtheorem{coro}{Corollaire}
+
+\def\red{\color{red}}
+\def\blue{\color{blue}}
+
+\def\co{\mathcal{o}}
+
+\def\cA{\mathcal{A}}
+\def\cB{\mathcal{B}}
+\def\cE{\mathcal{E}}
+\def\cI{\mathcal{I}}
+\def\cL{\mathcal{L}}
+\def\cN{\mathcal{N}}
+\def\cR{\mathcal{R}}
+\def\cX{\mathcal{X}}
+\def\cV{\mathcal{V}}
+
+\def\bu{\boldsymbol{u}}
+
+\def\NN{\mathbb{N}}
+\def\RR{\mathbb{R}}
+
+\begin{document}
+\frame{\titlepage}
+
+% ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivations}
+
+Partiellement basé sur \url{https://courses.maths.ox.ac.uk/node/view_material/1377}
+
+\mbox{}
+
+De nombreux problèmes présentent un ensemble réalisable sur lequel il est difficile de calculer des projections, même si cet ensemble est convexe.
+
+\mbox{}
+
+Nous allons tenter de construire des problèmes plus simples, mais permettant d'approcher les solutions des véritables problèmes avec une précision arbitraire (au moins en théorie).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problèmes non-linéaires avec contraintes d'égalité}
+
+Nous nous intéressons dans un premier temps aux problèmes présentant uniquement des contraintes d'égalité, de la forme
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } &g_i(x) = 0,\ i \in \cE
+\end{align*}
+où $f: \cR^N \rightarrow \cR$, $g_i: \cR^n \rightarrow \cR$, $i \in \cE$. De plus, nous supposons que $f$ et $g_i$ ($i \in \cE$) sont des fonction ``douces'' (typiquement deux fois continûment différentiables).
+
+\mbox{}
+
+Notre but est de trouver des solutions locales, ou à tout le moins des points KKT.
+
+\mbox{}
+
+Dans le cas de contraintes d'égalité générales (non linéaires), il est souvent très difficile, voire impossible, de générer des points réalisables.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problèmes non-linéaires avec contraintes d'égalité}
+
+Nous allons déplacer les contraintes dans l'objectif et former un nouveau problème sans contraintes, paramétrisé pour tenir compte du double objectif de minimisation et de satisfaction des contraintes.
+
+\mbox{}
+
+Regroupons les contraintes en une multifonction $g(x): \cR^m \rightarrow \cR$, avec $m = \#\cE$:
+$$
+g(x) = \begin{pmatrix} g_1(x) \\ g_2(x) \\ \vdots \\ g_m(x) \end{pmatrix}
+$$
+Le problème d'optimisation se réécrit
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } &g(x) = 0.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Pénalisation quadratique}
+
+Le problème avec pénalité quadratique s'écrit
+$$
+\min_{x \in \RR^n} \Phi_{\mu}(x) = f(x) + \frac{1}{2\mu} \| g(x) \|^2
+$$
+où $\mu > 0$ est le paramètre de pénalisation.
+
+\mbox{}
+
+Nous pouvons voir le nouveau problème comme un problème bi-objectif où $\mu$ pénalise la violation des contraintes, et $\mu \rightarrow 0$ force les contraintes à être satisfaites, tout en atteignant l'optimalité sur $f$.
+
+\mbox{}
+
+$\Phi_{\mu}$ peut cependant avoir d'autres points stationnaires qui ne sont pas solutions du problème initial, par exemple si $g(x) = 0$ est non consistant (il n'y a pas de solution réalisable pour le problème initial).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Méthode de pénalisation quadratique}
+
+Étant donné $\mu^0 > 0$, soit $k = 0$.
+Jusqu'à ``convergence'', répéter
+\begin{enumerate}
+\item
+Choisir $0 < \mu^{k+1} < \mu^k$.
+\item
+En partant de $x_0^k$ (possiblement $x_0^k := x^k$), utiliser un algorithme de minimisation sans contrainte pour trouver un minimiseur approximatif $x^{k+1}$ de $\Phi_{\mu^{k+1}}$.
+Poser $k := k+1$.
+\end{enumerate}
+
+On doit avoir $\mu^k \rightarrow 0$ comme $k \rightarrow \infty$.
+Par exemple: $\mu^{k+1} := 0.1\mu^k$, $\mu^{k+1} := (\mu^k)^2$, etc.
+
+\mbox{}
+
+Algorithmes de minimization
+\begin{itemize}
+\item
+recherche linéaire, méthode de région de confiance
+\item
+$\mu$ petit: $\Phi_{\mu}$ est très raide dans la direction des contraintes des gradients, aussi observons-nous de rapides changements de $\Phi_{\mu}$ dans ces directions; implication pour la ``forme'' de la région de confiance.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convergence}
+
+\begin{thm}[Convergence globale de la méthode de pénalité]
+Appliquons la méthode de pénalisation quadratique au programme avec contraintes d'égalité.
+Supposons que $f$, $g \in C^1$,
+$$
+y_i^k = \frac{g_i(x^k)}{\mu^k}, i \in \cE,
+$$
+et
+$$
+\left\| \nabla \Phi_{\mu^k}(x^k) \right\| \leq \epsilon^k,
+$$
+où $\epsilon^k \rightarrow 0$, comme $k \rightarrow \infty$
+et $\mu^k \rightarrow 0$, comme $k \rightarrow \infty$.
+
+Supposons de plus que $x^k \rightarrow x^*$, où $\nabla g_i(x^*)$, $i \in \cE$, sont linéairement indépendants.
+
+Alors $x^*$ est un point KKT du problème avec contraintes d'égalité, et $y^k \rightarrow y^*$, où $y^*$ est le vecteur de multiplicateurs de Lagrange des contraintes d'égalité.
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Dérivées de la fonction de pénalité}
+
+\begin{itemize}
+\item
+Soit
+$$
+y(\mu) := \frac{g(x)}{\mu}
+$$
+des estimateurs des multiplicateurs de Lagrange.
+\item
+Soit $L$ la fonction lagrangienne du problème avec contraintes d'égalité:
+$$
+L(x,y) := f(x) + y^Tg(x)
+$$
+\item
+Le gradient de la fonction pénalisée
+$$
+\Phi_{\mu}(x) = f(x) + \frac{1}{2\mu} \| g(x) \|^2
+$$
+vaut
+$$
+\nabla \Phi_{\mu}(x) = \nabla f(x) + \frac{1}{\mu} J(x)^T g(x) = \nabla_x L(x, y(\mu)),
+$$
+où $J(x)$ est la matrice jacobienne, de dimensions $m \times n$, des contraintes $g(x)$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Dérivées de la fonction de pénalité}
+
+\begin{itemize}
+\item
+La matrice hessienne de $\Phi_{\mu}$ est
+\begin{align*}
+\nabla^2 \Phi_{\mu}(x)
+&= \nabla^2 f(x) + \frac{1}{\mu} \sum_{i \in \cE} g_i(x) \nabla^2 g_i(x) + \frac{1}{\mu} J(x)^TJ(x) \\
+&= \nabla^2_{xx} L(x, y(\mu)) + \frac{1}{\mu} J(x)^TJ(x)
+\end{align*}
+\item
+Comme $\mu \rightarrow 0$,
+\begin{itemize}
+\item
+généralement, $g_i(x) \rightarrow 0$ ou $\nabla^2 g_i(x) \rightarrow 0$ au même taux avec $\mu$ pour tous les indices $i$.
+Dès lors, généralement, $\nabla^2_{xx} L(x, y(\mu))$ se comporte bien.
+\item
+Mais
+$$
+\frac{1}{\mu} J(x)^TJ(x) \rightarrow \frac{1}{0} J(x^*)^TJ(x^*) = \infty
+$$
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mauvais conditionnement}
+
+Estimateurs asymptotiques des valeurs propres de
+$
+\nabla^2 \Phi_{\mu^k}(x^k):
+$
+$m$ valeurs propres de $\nabla^2 \Phi_{\mu^k}(x^k)$ sont en $O(1/\mu^k)$ et dès lors, tendent vers l'infini comme $k \rightarrow \infty$ (i.e. $\mu^k \rightarrow 0$); les $m-n$ valeurs propres restantes sont en $O(1)$.
+Dès lors, le nombre de conditionnement de $\nabla^2 \Phi_{\mu^k}(x^k)$ est en $O(1/\mu^k)$ et explose comme $k \rightarrow \infty$.
+
+\ 
+
+Il n'est pas clair que nous puissions calculer précisément les changements sur $x^k$.
+En particulier, que ce soit avec des techniques de recherche linéaire ou de région de confiance, asymptotiquement, nous souhaitons minimiser $\Phi_{\mu^{k+1}}(x)$ au moyen d'un pas de Newton, i.e. en résolvant le système
+$$
+\nabla^2 \Phi_{\mu}(x) s = -\nabla \Phi(x)
+$$
+pour obtenir le pas $s$ à partir de la solution actuelle $x = x_i^k$ et $\mu = \mu^{k+1}$.
+Malgré le mauvais conditionnement présent, il est toujours possible de calculer $s$ avec précision.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcul du pas de Newton}
+
+En utilisant les calculs de dérivées, le système
+$$
+\nabla^2 \Phi_{\mu}(x) s = -\nabla \Phi(x)
+$$
+est équivalent à
+$$
+\left( \nabla^2_{xx} L(x, y(\mu)) + \frac{1}{\mu} J(x)^TJ(x) \right) s = - \left( \nabla f(x) + \frac{1}{\mu} J(x)^T g(x) \right)
+$$
+où $y(\mu) = g(x)/\mu$.
+Définissons la variable auxiliare $w$
+$$
+w = \frac{1}{\mu} \left( J(x)s + g(x) \right)
+$$
+Alors, le système de Newton peut être réécrit comme
+$$
+\begin{pmatrix}
+\nabla^2_{xx} L(x, y(\mu)) & J(x)^T \\
+J(x) & -\mu I
+\end{pmatrix}
+\begin{pmatrix}
+s \\ w
+\end{pmatrix}
+=
+- \begin{pmatrix}
+\nabla f(x) \\ g(x)
+\end{pmatrix}
+$$
+Ce système est essentiellement indépendant de $\mu$ pour de petites valeurs de $\mu$, et dès lors ne souffre pas de mauvais conditionnement comme $\mu \rightarrow 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Calcul du pas de Newton}
+
+Il faut toujours être prudent lors de la minimisation de
+$\Phi_{\mu}$ pour de petits $\mu$.
+
+\mbox{}
+
+Par exemple, en utilisant des régions de confiance, il est bon d'utiliser comme test de contrainte de région de confiance $\| s \|_B \leq \Delta$, où $B$ prend en compte les termes mal-conditionnés de la Hessienne afin d'encourager une décroissance égale du modèle dans toutes les directions.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité perturbées}
+
+Reprenons le problème
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } &g_i(x) = 0,\ i \in \cE
+\end{align*}
+
+Des conditions KKT, nous pouvons considérer le système
+$$
+\begin{cases}
+\nabla f(x) + J(x)^Ty = 0 & \mbox{(annulation du gradient du Lagrangien)} \\
+g(x) = 0 & \mbox{(faisabilité primale)}
+\end{cases}
+$$
+Considérons le problème perturbé
+$$
+\begin{cases}
+\nabla f(x) + J(x)^Ty = 0 & \mbox{(annulation du gradient du Lagrangien)} \\
+g(x) - \mu y = 0 & \mbox{(faisabilité primale)}
+\end{cases}
+$$
+Pour trouver les racines de ce système non-linéaire comme $\mu \rightarrow 0$ ($\mu > 0$), nous pouvons utiliser la méthode de Newton de recherche de racine.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité perturbées}
+
+La méthode de Newton pour le problème pertubé calcule les changements $(\Delta x, \Delta y)$ en résolvant le système
+$$
+\begin{pmatrix}
+\nabla^2_{xx} L(x, y) & J(x)^T \\
+J(x) & -\mu I
+\end{pmatrix}
+\begin{pmatrix}
+\Delta x \\ \Delta y
+\end{pmatrix}
+=
+- \begin{pmatrix}
+\nabla f(x) + J(x)^Ty \\ g(x) - \mu y
+\end{pmatrix}
+$$
+donnant
+\begin{align*}
+\nabla^2_{xx} L(x, y)\Delta x + J(x)^T\Delta y &=  -\nabla f(x) - J(x)^Ty \\
+J(x)\Delta x -\mu \Delta y &= -g(x) + \mu y
+\end{align*}
+La deuxième équation permet d'obtenir
+$$
+\Delta y = \frac{1}{\mu}J(x)\Delta x + \frac{1}{\mu}g(x) - y
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité perturbées}
+
+En remplaçant $\Delta y$ dans l'égalité précédente, nous avons
+\begin{align*}
+&\nabla^2_{xx} L(x, y)\Delta x + J(x)^T\left( \frac{1}{\mu}J(x)\Delta x + \frac{1}{\mu}g(x) - y \right) \\ &=  -\nabla f(x) - J(x)^Ty
+\end{align*}
+ce qui donne
+$$
+\left( \nabla^2_{xx} L(x, y) + \frac{1}{\mu} J(x)^TJ(x) \right) \Delta x = - \left( \nabla f(x) + \frac{1}{\mu} J(x)^T g(x) \right)
+$$
+Similaire au système de Newton pour la pénalité quadratique!
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions d'optimalité perturbées}
+
+{\blue Primal:}
+$$
+\left( \nabla^2_{xx} L(x, y(\mu)) + \frac{1}{\mu} J(x)^TJ(x) \right) s = - \left( \nabla f(x) + \frac{1}{\mu} J(x)^T g(x) \right)
+$$
+où $y(\mu) = g(x)/\mu$.
+
+\mbox{}
+
+{\blue Primal-Dual:}
+$$
+\left( \nabla^2_{xx} L(x, y) + \frac{1}{\mu} J(x)^TJ(x) \right) \Delta x = - \left( \nabla f(x) + \frac{1}{\mu} J(x)^T g(x) \right)
+$$
+
+\mbox{}
+
+La différence réside dans la liberté de choisir $y$ dans $\nabla^2_{xx} L(x, y)$ dans les méthodes primales-duales.
+En termes computationnels, cela fait une différence importante.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Autres fonctions de pénalité}
+
+Considérons le problème général avec contraintes
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } & g_i(x) = 0,\ i \in \cE \\
+& g_i(x) \leq 0,\ i \in \cI
+\end{align*}
+
+{\red Fonction de pénalité exacte}: $\Phi(x, \mu)$ est dite exacte s'il existe un $\mu^* > 0$ tel que si $0< \mu < \mu^*$, n'importe quel minimiseur local du problème avec contraintes est aussi minimiseur local de $\Phi(x, \mu)$.
+
+\mbox{}
+
+Note: la pénalité quadratique est inexacte.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Autres fonctions de pénalité}
+
+Exemples de pénalités exactes:
+\begin{itemize}
+\item 
+fonction de pénalité $\ell_2$ si $\cI = \emptyset$:
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{\mu} \| g(x) \|_2
+$$
+\item 
+fonction de pénalité $\ell_1$:
+notant $z^+ = \max\{z, 0\}$,
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{\mu} \sum_{i \in \cE} | g_i(x) | + \frac{1}{\mu} \sum_{i \in \cI} [ g_i(x) ]^+
+$$
+\end{itemize}
+
+
+Extension de la pénalité quadratique:
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{2\mu} \| g(x) \|^2_2
++ \frac{1}{2\mu} \sum_{i \in \cI} \left( [ g_i(x) ]^+ \right)^2
+$$
+Il s'agit d'une pénalité inexacte, et non nécessairement douce (en particulier, elle peut ne pas être différentiable en tout point).
+
+\end{frame}
+
+\end{document}
