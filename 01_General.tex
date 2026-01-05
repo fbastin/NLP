@@ -1,4 +1,4 @@
-\documentclass[usepdftitle=false]{beamer}
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -15,14 +15,14 @@
 
 \def\red{\color{red}}
 
-\def\rit{\mathcal{R}}
-
 \def\cB{\mathcal{B}}
 \def\cV{\mathcal{V}}
 
 \usepackage{gnuplottex}
 % This variables allows to conditional generate the Gnuplot figures.
 \def \gnuplotx {Generate the figures}
+
+\include{macros}
 
 \newtheorem{defn}{Définition}
 
@@ -34,10 +34,10 @@
 \frametitle{L'objet d'intérêt}
 
 Nous considérons le problème
-\[
+$$
 \min_{x \in S} f(x),
-\]
-où $f: \rit^n \rightarrow \rit$ et $S$ est un sous-ensemble de $\rit^n$.
+$$
+où $f: \RR^n \rightarrow \RR$ et $S$ est un sous-ensemble de $\RR^n$.
 
 \begin{itemize}
 \item
@@ -60,13 +60,13 @@ Tout point $x \in S$ est appelé \textit{solution réalisable} (ou simplement pa
 Idéalement, nous voudrions trouver un {\red minimum global} de $f$ dans $S$, i.e., un point dans $S$ où la fonction atteint sa plus petite valeur.
 Une définition formelle est:
 \begin{defn}[Minimiseur global]
-Un point $x^*$ est un minimiseur global de $f: \rit^n \rightarrow \rit$ dans $S$ si $f(x^*) \leq f(x)$ pour tout $x \in S$.
+Un point $x^*$ est un minimiseur global de $f: \RR^n \rightarrow \RR$ dans $S$ si $f(x^*) \leq f(x)$ pour tout $x \in S$.
 \end{defn}
 
 \mbox{}
 
 $x^*$ est appelé {\sl solution optimale} ou {\sl minimiseur de $f$}.
-$f(x^*)$ est dite {\sl valeur optimale de $f$}, est nous la noterons parfois $f^*$.
+$f(x^*)$ est dite {\sl valeur optimale de $f$}, et nous la noterons parfois $f^*$.
 
 \mbox{}
 
@@ -85,7 +85,7 @@ Un minimum global peut être difficile à obtenir.
 La plupart des algorithmes cherchent seulement un {\red minimum local}, qui est un point qui atteint la plus petite valeur de $f$ dans son voisinage.
 
 \begin{defn}[Minimiseur local]
-Un point $x^*$ de $f: \rit^n \rightarrow \rit$ dans $S$ est un minimiseur local s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) \leq f(x)$ pour $x \in \mathcal{V} \cap S$.
+Un point $x^*$ de $f: \RR^n \rightarrow \RR$ dans $S$ est un minimiseur local s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) \leq f(x)$ pour $x \in \mathcal{V} \cap S$.
 \end{defn}
 
 Un point qui satisfait cette définition est parfois appelé minimiseur local faible, pour le distinguer d'un minimiseur local strict.
@@ -93,6 +93,14 @@ Un point qui satisfait cette définition est parfois appelé minimiseur local fa
 \begin{defn}[Minimiseur local strict]
 Un point $x^*$ est un minimiseur local strict (aussi appelé minimiseur local fort) s'il existe un voisinage $\mathcal{V}$ de $x^*$ tel que $f(x^*) < f(x)$ pour tout $x \in \mathcal{V}$ avec $x \ne x^*$.
 \end{defn}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Illustration}
+
+\centering
+\includegraphics[width=0.9\textwidth]{fonction_hermite.pdf}
 
 \end{frame}
 
@@ -311,8 +319,7 @@ pour tout $x \in S$, et $\delta > 0$ petit.
 \frametitle{Avertissement}
 
 Beaucoup de fausses idées circulent sur les propriétés et les algorithmes d'optimisation.
-Plusieurs sont recensées dans le document ``Myths and Counterexamples in Mathematical Programming'', disponible à l'adresse
-\url{http://glossary.computing.society.informs.org/myths/CurrentVersion/myths.pdf}
+Plusieurs sont recensées dans le document \href{https://www.slashbin.net/doc/myths.pdf}{``Myths and Counterexamples in Mathematical Programming''}.
 
 \mbox{}
 

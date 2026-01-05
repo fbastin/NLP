@@ -1,4 +1,4 @@
-\documentclass[usepdftitle=false]{beamer}
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -23,7 +23,6 @@
 \def\red{\color{red}}
 
 \def\cB{\mathcal{B}}
-\def\cR{\mathcal{R}}
 \def\cX{\mathcal{X}}
 
 \def\RR{\mathbb{R}}
@@ -43,7 +42,7 @@ Concentrons-nous dans un premier temps sur des fonctions univariées.
 Le problème que nous cherchons à résoudre est
 \begin{align*}
 \min_x \ & f(x) \\
-\mbox{t.q. } & x \in \cX \subseteq \cR.
+\mbox{t.q. } & x \in \cX \subseteq \RR.
 \end{align*}
 
 \mbox{}
@@ -55,7 +54,7 @@ Même pour ce problème simple, nous allons devoir étudier les caractéristique
 \begin{frame}[fragile]
 \frametitle{Unimodalité}
 
-Une fonction est dite unimodale si elle possède un seul mode, c'est-à-dire un et un seul point où elle atteint un maximum local, dans le cas d'un problème de maximisation, ou un et un seul point où elle atteint un minimum local, dans le cas d'un problème de minimisation.
+Une fonction est dite \textcolor{blue}{unimodale} si elle possède un seul mode, c'est-à-dire un et un seul point où elle atteint un maximum local, dans le cas d'un problème de maximisation, ou un et un seul point où elle atteint un minimum local, dans le cas d'un problème de minimisation.
 
 {
 \centering
@@ -89,7 +88,7 @@ Une fonction unimodale n'est pas nécessairement continue, et encore moins déri
 \begin{frame}
 \frametitle{Principe général}
 
-Soit $f: [a, b] \rightarrow \cR$ unimodale. Considérons le problème
+Soit $f: [a, b] \rightarrow \RR$ unimodale. Considérons le problème
 $$
 \min_{x \in [a,b]} f(x),
 $$
@@ -204,7 +203,7 @@ $$
 
 \mbox{}
 
-Il est aussi possible de montre (formule de Binet) que
+Il est aussi possible de montrer (formule de Binet) que
 $$
 F_n = \frac{1}{\sqrt{5}}(\tau^n - (1-\tau)^n) 
 $$
@@ -242,15 +241,22 @@ x^D &= x_{\max}-\frac{F_{N-k-1}}{F_{N-k+1}}d_k= x_{\max}-\frac{F_{N-k+1}-F_{N-k}
 \begin{frame}
 \frametitle{Procédure}
 
-\begin{enumerate}[2]
+\begin{enumerate}[3]
 \item
 Une partie de l'intervalle est éliminée en se basant sur l’unimodalité de la fonction.
-Il en résulte un intervalle de longueur $d_{k+1} = \frac{F_{N-k}}{F_{N-k+1}}d_k$.
+Il en résulte un intervalle de longueur
+$$
+d_{k+1} = d_k-\frac{F_{N-k-1}}{F_{N-k+1}}d_k
+= \frac{F_{N-k+1} - F_{N-k-1}}{F_{N-k+1}}d_k = \frac{F_{N-k}}{F_{N-k+1}}d_k,
+$$
+la dernière égalité résultant de la définition des nombres de Fibonacci.
+
 Plus précisément,
 \begin{align*}
 f(x^G) < f(x^D) & \Rightarrow x_{\max} = x^D \\
 f(x^G) > f(x^D) & \Rightarrow x_{\min} = x^G
 \end{align*}
+\item
 $k := k+1$.
 Dans le cas particulier où $f(x^G) = f(x^D)$, on posera $x_{\min} = x^G$ et $x_{\max} = x^D$ et $k := k+2$.
 \end{enumerate}
@@ -275,8 +281,8 @@ Par conséquent, seul $f(x^G_{k+1})$ doit être évaluée à l'itération $k+1$.
 
 \end{frame}
 
-%\begin{frame}
-%\frametitle{Procédure (suite)}
+\begin{frame}
+\frametitle{Longeur d'intervalle}
 
 %\begin{enumerate}
 %\item
@@ -290,17 +296,40 @@ Par conséquent, seul $f(x^G_{k+1})$ doit être évaluée à l'itération $k+1$.
 
 %\end{frame}
 
+Nous avons la propriété.
+$$
+d_k = \frac{F_{N-k+1}}{F_N}d_1,\ k = 1, 2,\ldots, N
+$$
+
+Celle peut être prouvée par récurrence.
+Elle est triviale pour $k = 1$:
+$$
+d_1 = \frac{F_N}{F_N}d_1 = d_1.
+$$
+Supposons à présent
+$$
+d_{k} = \frac{F_{N-k+1}}{F_N}d_1.
+$$
+Alors,
+$$
+d_{k+1} = \frac{F_{N-k}}{F_{N-k+1}}d_k = \frac{F_{N-k}}{F_{N-k+1}}\frac{F_{N-k+1}}{F_N}d_1
+= \frac{F_{N-k}}{F_N}d_1.
+$$
+
+\end{frame}
+
 \begin{frame}
 \frametitle{Note}
 
-L'algorithme place le dernier point $N$ au centre de l'intervalle, superposé au point s’y trouvant déjà.
-En effet, puisqu'en utilisant cette stratégie de sélection des points d'évaluation, nous avons
-$$
-d_k = \frac{F_{N-k+1}}{F_N}d_1,\ k = 2, 3,\ldots, N
-$$
-il s'ensuit que
+L'algorithme place le dernier point $N$ au centre de l'intervalle, superposé au point s'y trouvant déjà.
+En effet, du résultat précédant, nous avons
+%puisqu'en utilisant cette stratégie de sélection des points d'évaluation, nous avons
+%$$
+%d_k = \frac{F_{N-k+1}}{F_N}d_1,\ k = 1, 2,\ldots, N
+%$$
+%il s'ensuit que
 \begin{align*}
-d_{N-1} &= \frac{F_{N-(N-1)+1}}{F_N} = \frac{F_2}{F_N} = \frac{2}{F_N}d_1 \\
+d_{N-1} &= \frac{F_{N-(N-1)+1}}{F_N}d_1 = \frac{F_2}{F_N}d_1 = \frac{2}{F_N}d_1, \\
 d_N &= \frac{F_{N-N+1}}{F_N}d_1 = \frac{F_1}{F_N}d_1 = \frac{1}{F_N}d_1 
 \end{align*}
 et donc
@@ -481,7 +510,7 @@ On ne cherche pas un zéro d'une fonction en optimisation, par contre on peut ap
 
 \mbox{}
 
-Soit $f: \cR \rightarrow \cR$, dérivable en $c$:
+Soit $f: \RR \rightarrow \RR$, dérivable en $c$:
 $$
 f'(c) = \frac{df(c)}{dx} := \lim_{x \rightarrow c} \frac{f(x)-f(c)}{x-c}
 $$
@@ -491,8 +520,8 @@ Si $f'(c) \ne 0$, alors $c$ n'est ni un minimum local ni un maximum local de f.
 
 De plus, si $f'(c) > 0$, il existe un intervalle $(c-\delta, c+\delta)$, avec $\delta > 0$, tel que
 \begin{align*}
-f(x) < f(c) \ \forall x \in (c-\delta, c)\\
-f(c) < f(x) \ \forall x \in (c, c+\delta)\\
+f(x) < f(c) \quad \forall x \in (c-\delta, c)\\
+f(c) < f(x) \quad \forall x \in (c, c+\delta)\\
 \end{align*}
 
 \end{frame}
@@ -500,7 +529,7 @@ f(c) < f(x) \ \forall x \in (c, c+\delta)\\
 \begin{frame}
 \frametitle{Preuve}
 
-Puisque $f'(c) = \lim_{x \rightarrow c, x \ne c} \frac{f(x)-f(c)}{x-c} > 0$, alors $\exists \delta > 0$ tel que
+Puisque $f'(c) = \lim_{x \rightarrow c, x \ne c} \frac{f(x)-f(c)}{x-c} > 0$, alors $\exists\, \delta > 0$ tel que
 $$
 \frac{f(x)-f(c)}{x-c} > 0,\ \forall x \in (c-\delta, c+\delta), x \ne c.
 $$
@@ -522,7 +551,7 @@ f(c) > f(x) \ \forall x \in (c, c+\delta)\\
 \begin{frame}
 \frametitle{Corollaire}
 
-Soit $c \in \cR$.
+Soit $c \in \RR$.
 \begin{enumerate}
 \item 
 si $f'(c) > 0$, il existe un intervalle $(c - \delta, c + \delta)$ avec $\delta > 0$ t.q.
@@ -547,7 +576,7 @@ si $c$ est un minimum ou un maximum local de $f$, alors $f'(c) = 0$.
 \begin{frame}
 \frametitle{Condition nécessaire, non suffisante}
 
-Si $f: \cR \rightarrow \cR$, et $f'(c) = 0$, $c$ n'est pas nécessairement un minimum ou un maximum local.
+Si $f: \RR \rightarrow \RR$, et $f'(c) = 0$, $c$ n'est pas nécessairement un minimum ou un maximum local.
 
 \mbox{}
 
@@ -568,7 +597,7 @@ Nous devrons étudier sous quelles conditions il est possible de garantir qu'un 
 \frametitle{Condition suffisante}
 
 \begin{thm}
-Soit $f: \cR \rightarrow \cR$ deux fois dérivable en $c$ et telle que $f'(c) = 0$.
+Soit $f: \RR \rightarrow \RR$ deux fois dérivable en $c$ et telle que $f'(c) = 0$.
 Supposons également que la dérivée $f'(x)\ \forall x \in \cB(c,\epsilon)$ existe.
 \begin{enumerate}[i)]
 	\item 
@@ -591,7 +620,7 @@ Justification intuitive de ii): si $f''(c)>0$, alors $f'$ est une fonction crois
 \begin{frame}
 \frametitle{Optimisation sous contrainte}
 	
-Soit $f: S \rightarrow \cR$, avec $S \subset \cR$.
+Soit $f: S \rightarrow \RR$, avec $S \subset \RR$.
 
 \mbox{}
 
@@ -599,7 +628,7 @@ Si $x^*$ est à l'intérieur de $S$, les critères sur la dérivée s'appliquent
 
 \mbox{}
 
-Considérons par exemple $f: [-1,1] \rightarrow \cR$, $f(x) = x^3$. Le minimum est atteint en $x^* = -1$, mais $f'(-1) \ne 0$.
+Considérons par exemple $f: [-1,1] \rightarrow \RR$, $f(x) = x^3$. Le minimum est atteint en $x^* = -1$, mais $f'(-1) \ne 0$.
 
 \mbox{}
 
