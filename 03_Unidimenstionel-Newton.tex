@@ -1,4 +1,4 @@
-\documentclass[t,usepdftitle=false]{beamer}
+\documentclass[t,usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -117,7 +117,7 @@ converge vers $x^*$ avec un ordre de convergence d'au moins 2.
 \begin{proof}
 Soient $k_1 > 0$ et $k_2 > 0$ tels que $|f'''(x^*)| < k_1$ et $|f''(x^*)| > k_2$.
 Par continuité de $f'''$ et de $f''$, il existe un scalaire $\epsilon_1 > 0$ tel que pour
-tout $\xi \in \cB(x^*, \epsilon_1) := \{ \xi \,|\, |\xi - x^*| < \epsilon_1 \}$, $|f'''(\xi)| < k_1$ et $|f''(\xi)| > k_2$.
+tout $\xi \in \cB(x^*, \epsilon_1) := \{ x \,|\, |x - x^*| < \epsilon_1 \}$, $|f'''(\xi)| < k_1$ et $|f''(\xi)| > k_2$.
 
 Comme $f'(x^*) = 0$, on peut réécrire la récurrence de Newton comme
 $$
@@ -164,13 +164,14 @@ $$
 \epsilon = \min \left\lbrace \epsilon_1, \frac{2k_2}{k_1} \right\rbrace
 $$
 Soit $x_0 \in \cB(x^*, \epsilon)$.
-Si $| x_k - x^*| < \epsilon$, $x_k \in \cB(x^*, \epsilon_1)$, et donc
-$$
+Si $| x_k - x^*| < \epsilon$, $x_k \in \cB(x^*, \epsilon_1)$, et
+$
 | f'''(x_k) | < k_1 \quad | f''(x_k) | > k_2. 
-$$
-De plus, alors $\exists \gamma \in \cB(x^*,\epsilon_1)$ tel que
+$
+
+Autrement dit, dans ce cas, $\exists \gamma \in \cB(x^*,\epsilon_1)$ tel que
 \begin{align*}
-& f'(x^*) = f'(x_k) + f''(x_k)(x^*-x_k)+\frac{f'''(\gamma)}{2}(x^*-x_k)^2. \\
+& f'(x^*) = f'(x_k) + f''(x_k)(x^*-x_k)+\frac{f'''(\gamma)}{2}(x^*-x_k)^2 \\
 \mbox{et } & | f'''(\gamma) | < k_1,\ | f''(\gamma) | > k_2. 
 \end{align*}
 \end{proof}
@@ -195,9 +196,9 @@ $$
 $$
 et
 $$
-|x_{k+1}-x^*| < |x_k - x^*|
+|x_{k+1}-x^*| < |x_k - x^*|.
 $$
-et la méthode converge.
+La méthode converge donc.
 \end{proof}
 
 \end{frame}
@@ -208,7 +209,7 @@ et la méthode converge.
 \begin{proof}
 De plus, la méthode est au moins d'ordre 2 puisque
 $$
-\frac{|x_{k+1}-x^*|}{(x_k-x^*)^2} = \frac{1}{2}\frac{k_1}{k_2}.
+\frac{|x_{k+1}-x^*|}{(x_k-x^*)^2} < \frac{1}{2}\frac{k_1}{k_2}.
 $$
 \end{proof}
 
@@ -220,8 +221,7 @@ minimum de $f$, et qu'il est possible d'utiliser un $k_2 \ne 0$.
 \begin{frame}
 \frametitle{Méthode de Newton: recherche de zéro}
 
-La méthode de Newton est également utilisée pour déterminer un point où la fonction
-s'annule.
+La méthode de Newton est également utilisée pour déterminer un point où la fonction s'annule.
 
 \mbox{}
 
