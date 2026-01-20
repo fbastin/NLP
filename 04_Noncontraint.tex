@@ -1,4 +1,4 @@
-\documentclass[usepdftitle=false]{beamer}
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -16,6 +16,8 @@
 
 \usepackage{easybmat}
 
+\include{macros}
+
 \newtheorem{defn}{Définition}
 \newtheorem{lem}{Lemme}
 \newtheorem{thm}{Théorème}
@@ -24,12 +26,9 @@
 \def\blue{\color{blue}}
 \def\red{\color{red}}
 
-\def\co{\mathcal{o}}
+\renewcommand{\proofname}{Preuve}
 
 \def\cB{\mathcal{B}}
-\def\cR{\mathcal{R}}
-
-\def\RR{\mathbb{R}}
 
 \def\bu{\boldsymbol{u}}
 
@@ -39,25 +38,72 @@
 % ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \begin{frame}
-\frametitle{Préliminaires}
-
-Soit $Y \subseteq \cR^n$ un ensemble ouvert et $f: Y \rightarrow \cR$.
+	\frametitle{Optimisation sans contrainte}
+	
+	Nous considérons le problème
+	$$
+	\min_{x} f(x),
+	$$
+	où $f: Y \rightarrow \RR$, $f \in C^1$ sur $Y$ et $Y \subseteq \RR^n$ est un ensemble ouvert.
 
 \mbox{}
 
-Notations:
-\begin{enumerate}
-\item
-norme euclidienne (norme 2) de $x \in \cR^n$: $\| x \| = \sqrt{ x^T x }$
-\item
+Gradient:
+%\begin{enumerate}
+%\item
+%norme euclidienne (norme 2) de $x \in \RR^n$: $\| x \| = \sqrt{ x^T x }$
+%\item
 $$
 \nabla_x f(x) = \begin{pmatrix} \frac{df(x)}{dx_1} \\ \frac{df(x)}{dx_2} \\ \vdots \\ \frac{df(x)}{dx_n} \end{pmatrix}
 $$
-\end{enumerate}
+%\end{enumerate}
 
-\begin{defn}[ensemble ouvert]
-$X$ est un ensemble ouvert si $\forall x \in X$, $\exists \epsilon > 0$ tel que $\cB(x,\epsilon) = \lbrace z \in \cR^n \, |  \| z-x \| \, < \epsilon \rbrace \subseteq X$
-\end{defn}
+\end{frame}
+
+\begin{frame}
+\frametitle{Matrice hessienne}
+
+Si $f$ est deux fois différentiable en $x$, la matrice hessienne $\nabla_{xx}^2 f(x)$ s'écrit
+$$
+\nabla^2_{xx} f(x) =
+\begin{pmatrix}
+	\frac{d^2f(x)}{dx_1^2} & \frac{d^2f(x)}{dx_1dx_2} & \cdots & \frac{d^ 2f(x)}{dx_1dx_n} \\
+	\frac{d^2f(x)}{dx_2dx_1} & \frac{d^2f(x)}{dx_2^2} & \cdots & \frac{d^ 2f(x)}{dx_2dx_n} \\
+	\vdots & \vdots & \ddots & \vdots \\
+	\frac{d^2f(x)}{dx_ndx_1} & \frac{d^2f(x)}{dx_ndx_2} & \cdots & \frac{d^ 2f(x)}{dx_n^2}
+\end{pmatrix}.
+$$
+Si $f$ est deux fois continûment différentiable en $x$,
+$$
+\frac{d^2 f(x)}{dx_i dx_j} = \frac{d^2 f(x)}{dx_j dx_i}.
+$$
+Autrement dit, dans ce cas $\nabla^2_{xx} f(x)$ est une matrice symétrique.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Jacobien et matrice hessienne}
+
+Soit $F: \calX \rightarrow \RR^m$, où $\calX \subset \RR^n$ est ouvert.
+Avec $x = (x_1,\ldots,x_n)$, on peut définir $F$ à partir de $m$ fonctions composantes $f_i(x): \calX \rightarrow \RR$, $i = 1,\ldots,m$:
+$$
+F(x) = \begin{pmatrix}
+	f_1(x) \\ \vdots \\ f_m(x)
+\end{pmatrix}.
+$$
+La matrice jacobienne de $F$ en $x$ est
+$$
+J(F(x)) =
+\begin{pmatrix}
+	\nabla_x^T f_1(x) \\ \vdots \\ \nabla_x^T f_m(x)
+\end{pmatrix}.
+$$
+
+
+Ceci permet d'écrire $\nabla^2_{xx} f(x)$ comme la matrice jacobienne du gradient de $f$:
+$$
+\nabla^2_{xx} f(x) = J(\nabla_x f(x)).
+$$
 
 \end{frame}
 
@@ -66,9 +112,8 @@ $X$ est un ensemble ouvert si $\forall x \in X$, $\exists \epsilon > 0$ tel que 
 
 Si $f \in C^1$ sur $Y$, alors $\forall x, y \in Y$,
 $$
-f(y) = f(x) + \nabla f(x)^T(y-x) + o(\| y - x \|)
+f(y) = f(x) + \nabla_x f(x)^T(y-x) + o(\| y - x \|).
 $$
-comme $y \rightarrow x$.
 
 \mbox{}
 
@@ -83,7 +128,7 @@ En d'autres termes, $h(y)$ converge ``plus vite'' vers 0 que $\| y - x \|$.
 
 Le développement linéaire de $f$ autour de $x$ est 
 $$
-\tilde{f}(y) = f(x) + \nabla f(x)^T(y-x)
+\tilde{f}(y) = f(x) + \nabla_x f(x)^T(y-x)
 $$
 
 \end{frame}
@@ -91,10 +136,60 @@ $$
 \begin{frame}
 \frametitle{Développement de Taylor -- version sans résidu}
 
-$\exists z \in \lbrace t \in \cR^n \,|\, t = \lambda x + (1-\lambda) y,\ \lambda \in [0,1] \rbrace$
+$\exists z \in \lbrace t \in \RR^n \,|\, t = \lambda x + (1-\lambda) y,\ \lambda \in [0,1] \rbrace$
 tel que
 $$
-f(y) = f(x) + \nabla f(z)^T(y-x)
+f(y) = f(x) + \nabla_x f(z)^T(y-x)
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Développement de Taylor au deuxième ordre}
+
+Si $f \in C^1$ sur $Y$, alors $\forall x, y \in Y$,
+$$
+f(y) = f(x) + \nabla_x f(x)^T(y-x) + \frac{1}{2}(y-x)^T(y-x) \nabla^2_{xx} f(x) o(\| y - x \|^2).
+$$
+
+Forme explicite du reste (formule de Taylor avec reste intégral) quand $f \in C^3$ sur un voisinage du segment joignant $x$ à $y$:
+$$
+f(x) = f(x) + \nabla_x f(x)^T(y - x) + \frac{1}{2}(y - x)^T \nabla^2_{xx} f(x) (y - x) + R_2(y)
+$$
+avec
+$$
+R_2(y)
+=
+\frac12 \int_0^1 (1-t)^2\,
+D^3 f\big(x+t(y-x)\big)\,[y-x,y-x,y-x]\;dt,
+$$
+où $D^3f(z)$ est le tenseur des dérivées troisièmes de $f$ en $z$, et
+$D^3f(z)[u,v,w]$ désigne son application trilineaire à $(u,v,w)$.
+\end{frame}
+
+\begin{frame}
+\frametitle{Formes alternatives}
+
+Version en coordonnées:
+$$
+R_2(y)
+=
+\frac12
+\sum_{i,j,k=1}^n
+(y_i-x_i)(y_j-x_j)(y_k-x_k)
+\int_0^1 (1-t)^2
+\frac{\partial^3 f}{\partial x_i\partial x_j\partial x_k}
+\left(x+t(y-x)\right)\,dt.
+$$
+
+Forme intégrale avec la matrice hessienne:
+$$
+R_2(y)
+=
+\int_0^1 (1-t)\,
+(y-x)^T
+\left[\nabla_{xx}^2 f(x+t(y-x)) - \nabla_{xx}^2 f(x)\right]
+(y-x)\,dt
 $$
 
 \end{frame}
@@ -108,7 +203,7 @@ D_h f(x) = \lim_{t \rightarrow 0} \frac{f(x+th)-f(x)}{t}
 $$
 
 \begin{lem}
-Soit $f: Y \rightarrow \cR$, où $Y$ est un sous-ensemble ouvert de $\cR^n$, $f \in C^1$, $x \in Y$ et $h \in \cR^n$. Alors
+Soit $f: Y \rightarrow \RR$, où $Y$ est un sous-ensemble ouvert de $\RR^n$, $f \in C^1$, $x \in Y$ et $h \in \RR^n$. Alors
 $$
 D_h f(x) = \nabla f(x)^T h.
 $$
@@ -122,9 +217,9 @@ $$
 \begin{proof}
 Le développement de Taylor nous donne
 $$
-f(x+th) = f(x) + \nabla f(x)^T th + o(\| th \|)
+f(x+th) = f(x) + \nabla f(x)^T th + o(\| th \|).
 $$
-aussi pour $t \ne 0$,
+Dès lors, pour $t \ne 0$,
 $$
 \frac{f(x+th) - f(x)}{t} - \frac{o(\| th \|)}{t} = \nabla f(x)^T h
 $$
@@ -137,13 +232,13 @@ Le résultat suit en faisant tendre $t$ vers 0.
 \frametitle{Direction de descente}
 
 \begin{defn}[Direction réalisable]
-Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
-Étant donné $x \in X$, $d \in \cR^n$ est une direction réalisable en $x$ s'il existe un scalaire $\alpha_{\max}$ tel que $x + \alpha d \in X$  pour tout $\alpha \in [0, \alpha_{\max}]$. 
+Soient $X \subseteq \RR^n$ et $f: X \rightarrow \RR \in C^1$.
+Étant donné $x \in X$, $d \in \RR^n$ est une direction réalisable en $x$ s'il existe un scalaire $\alpha_{\max}$ tel que $x + \alpha d \in X$  pour tout $\alpha \in [0, \alpha_{\max}]$. 
 \end{defn}
 
 \begin{lem}[Direction de descente]
-Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
-Si $d \in \cR^n$ est une direction réalisable en $x$ et $\nabla f(x)^T d < 0$, alors
+Soient $X \subseteq \RR^n$ et $f: X \rightarrow \RR \in C^1$.
+Si $d \in \RR^n$ est une direction réalisable en $x$ et $\nabla f(x)^T d < 0$, alors
 $\exists \kappa > 0$ tel pour tout $\tau \in (0,\kappa]$
 $$
 f(x+\tau d) < f(x)
@@ -174,14 +269,14 @@ $$
 
 %% Luenberger p. 185
 \begin{thm}[Optimalité au premier ordre]
-Soient $X \subseteq \cR^n$ et $f: X \rightarrow \cR \in C^1$.
-Si $x^*$ est un minimum local de $f$ sur $X$, alors pour toute direction $d \in \cR^n$ qui est une direction réalisable en $x^*$, nous avons $\nabla f(x^*)^Td \geq 0.$
+Soient $X \subseteq \RR^n$ et $f: X \rightarrow \RR \in C^1$.
+Si $x^*$ est un minimum local de $f$ sur $X$, alors pour toute direction $d \in \RR^n$ qui est une direction réalisable en $x^*$, nous avons $\nabla f(x^*)^Td \geq 0.$
 \end{thm}
 
 \begin{proof}
 Comme $d$ est une direction réalisable, il existe $\alpha_{\max}$ tel que pour tout $\alpha \in [0,\alpha_{\max}]$, le point $x(\alpha) = x^* + \alpha d \in X$.
 
-Définissions $g(\alpha) = f(x(\alpha))$, $0\leq \alpha \leq \alpha_{\max}$. $g$ a un minimum local en $\alpha = 0$, et en vertu du développement de Taylor autour de 0,
+Définissons $g(\alpha) = f(x(\alpha))$, $0\leq \alpha \leq \alpha_{\max}$. $g$ a un minimum local en $\alpha = 0$, et en vertu du développement de Taylor autour de 0,
 $$
 g(\alpha) - g(0) = g'(0) \alpha + o(\alpha).
 $$
@@ -200,14 +295,13 @@ Or,
 $$
 g'(\alpha) = \nabla f(x(\alpha))^T \frac{d}{d\alpha} x(\alpha) = \nabla f(x(\alpha))^T d.
 $$
-Dès lors, $\nabla f(x^*)^T d \geq 0$.
+Ainsi, $\nabla f(x^*)^T d \geq 0$.
 \end{proof}
 
 \begin{coro}%[Optimalité au premier ordre -- ensemble réalisable ouvert]
-	Soient $X \subseteq \cR^n$ un ensemble ouvert et $f: X \rightarrow \cR \in C^1$.
+	Soient $X \subseteq \RR^n$ un ensemble ouvert et $f: X \rightarrow \RR \in C^1$.
 	Si $x^*$ est un minimum local de $f$ sur $X$, alors $\nabla f(x^*) = 0$.
 \end{coro}
-
 
 \end{frame}
 
@@ -215,7 +309,7 @@ Dès lors, $\nabla f(x^*)^T d \geq 0$.
 \frametitle{Condition nécessaire d'optimalité}
 
 \begin{proof}
-Du théorème précédent, $\forall\, d \in \cR^n$, $\nabla f(x^*)^T d \geq 0$.
+Du théorème précédent, $\forall\, d \in \RR^n$, $\nabla f(x^*)^T d \geq 0$.
 \end{proof}
 
 \begin{proof}[Preuve alternative]
@@ -236,42 +330,25 @@ Dès lors, $d$ est une direction de descente en $x$ et par conséquent il est po
 Comme dans le cas unidimensionnel, les conditions au premier ordre sont rencontrées en un point stationnaire (minimum, maximum, point selle).
 Nous voulons donc avoir plus pour garantir qu'un point stationnaire est bien un minimum.
 
-\mbox{}
-
-Soit $f: X \rightarrow \cR$, avec $X \subseteq \cR^n$ ouvert.
-
-\begin{defn}[Hessien]
-Si $f$ est une fonction deux fois continûment dérivable en $x$, le hessien de $f$ est la matrice des dérivées partielles d'ordre 2:
-$$
-\nabla^2 f(x) =
-\begin{pmatrix}
-\frac{d^2f(x)}{dx_1^2} & \frac{d^2f(x)}{dx_1dx_2} & \cdots & \frac{d^2f(x)}{dx_1dx_n}\\
-\frac{d^2f(x)}{dx_1dx_2} & \frac{d^2f(x)}{dx_n^2} & \cdots & \frac{d^2f(x)}{dx_2dx_n}\\
-\vdots & \vdots & \ddots & \vdots \\
-\frac{d^2f(x)}{dx_1dx_n} & \frac{d^2f(x)}{dx_2dx_n} & \cdots & \frac{d^2f(x)}{dx_n^2}
-\end{pmatrix}
-$$
-\end{defn}
-
 \end{frame}
 
 \begin{frame}
 \frametitle{Matrice (semi-)définie positive}
 
 \begin{defn}[Matrice semi-définie positive]
-Une matrice symétrique $A \in \cR^{n \times n}$ est semi-définie positive si $\forall x \in \cR^n$, $x^TAx \geq 0$.
+Une matrice symétrique $A \in \RR^{n \times n}$ est semi-définie positive si $\forall x \in \RR^n$, $x^TAx \geq 0$.
 \end{defn}
 
 \begin{defn}[Matrice définie positive]
-Une matrice symétrique  $A \in \cR^{n \times n}$ est définie positive si $\forall x \in \cR^n$, $x \ne 0$, $x^TAx > 0$.
+Une matrice symétrique  $A \in \RR^{n \times n}$ est définie positive si $\forall x \in \RR^n$, $x \ne 0$, $x^TAx > 0$.
 \end{defn}
 
 \begin{defn}[Matrice semi-définie négative]
-	Une matrice symétrique  $A \in \cR^{n \times n}$ est semi-définie négative si $\forall x \in \cR^n$, $x^TAx \leq 0$.
+	Une matrice symétrique  $A \in \RR^{n \times n}$ est semi-définie négative si $\forall x \in \RR^n$, $x^TAx \leq 0$.
 \end{defn}
 
 \begin{defn}[Matrice définie négative]
-	Une matrice symétrique  $A \in \cR^{n \times n}$ est définie négative si $\forall x \in \cR^n$, $x \ne 0$, $x^TAx < 0$.
+	Une matrice symétrique  $A \in \RR^{n \times n}$ est définie négative si $\forall x \in \RR^n$, $x \ne 0$, $x^TAx < 0$.
 \end{defn}
 
 \end{frame}
@@ -283,7 +360,7 @@ Une matrice symétrique  $A \in \cR^{n \times n}$ est définie positive si $\for
 Une matrice symétrique  $A$ est semi-définie positive (définie positive) si et seulement si une des conditions suivantes tient
 \begin{enumerate}
 \item
-$\forall x \in \cR^n$ (et $x \ne 0$), $x^TAx \geq 0$ ($> 0$)
+$\forall x \in \RR^n$ (et $x \ne 0$), $x^TAx \geq 0$ ($> 0$)
 \item
 toutes les valeurs propres sont non-négatives (positives)
 \item
@@ -296,7 +373,7 @@ les déterminants de tous les mineurs principaux sont non-négatifs (positifs)
 \begin{frame}
 \frametitle{Mineurs principaux}
 
-Considérons une matrice $A \in \cR^{n \times n}$.
+Considérons une matrice $A \in \RR^{n \times n}$.
 $B_i$ est le $i^e$ mineur principal de $A$ si $B$ est une matrice de dimension $i \times i$, et $B(p,q) = A(p,q)$, $p = 1,\ldots,i$, $q = 1,\ldots,i$.
 
 \[
@@ -335,7 +412,7 @@ Soit la matrice symétrique  $A \in \RR^{n \times n}$.
 \frametitle{Conditions nécessaires de deuxième ordre}
 
 \begin{lem}
-Soient $X \subseteq \cR^n$ un ensemble ouvert et $f: X \rightarrow \cR \in C^2$.
+Soient $X \subseteq \RR^n$ un ensemble ouvert et $f: X \rightarrow \RR \in C^2$.
 Si $x \in X$ est un minimum local de $f$ sur $X$, alors $\nabla f(x) = 0$ et
 $\nabla^2 f(x)$ est une matrice semi-definie positive.
 \end{lem}
@@ -359,7 +436,7 @@ $$
 \frametitle{Conditions nécessaires de deuxième ordre}
 
 \begin{proof}
-Supposons par contradiction que $\nabla^2 f(x)$ n'est pas semi-définie positive, autrement dit $\exists y \in \cR^n$ tel que $y^T \nabla^2 f(x) y < 0$.
+Supposons par contradiction que $\nabla^2 f(x)$ n'est pas semi-définie positive, autrement dit $\exists y \in \RR^n$ tel que $y^T \nabla^2 f(x) y < 0$.
 
 Pour $\tau > 0$ suffisamment petit, $x + \tau y \in \cB(x, \epsilon)$ et
 $$
@@ -398,7 +475,7 @@ Pour $\epsilon > 0$ suffisamment petit, $(-\epsilon/2, -\epsilon/2) \in \cB(x,\e
 \frametitle{Conditions suffisantes de second ordre}
 
 \begin{thm}
-Soient $X \subseteq \cR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
+Soient $X \subseteq \RR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
 Si $\nabla f(x^*) = 0$ et $\nabla^2 f(x^*)$ est une matrice definie positive, alors il existe un $\epsilon > 0$ suffisamment petit tel que $f(x^*) < f(x)$ pour
 tout $x \in \cB (x^*, \epsilon)$.
 \end{thm}
@@ -491,7 +568,7 @@ Il suit que pour $\tau > 0$ suffisamment petit, $x^* + \tau d \in \cB(x^*, \epsi
 \end{proof}
 
 \begin{coro}
-Soient $X \subseteq \cR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
+Soient $X \subseteq \RR^n$ un ensemble ouvert et $f \in C^2$ sur $X$.
 Si $\nabla f(x^*) = 0$ et $\nabla^2 f(x^*)$ est une matrice definie positive, alors $x^*$ est un minimum local de $f$ sur $X$.
 \end{coro}
 
@@ -598,7 +675,7 @@ et comme $\nabla f(x^*) = 0$, $f(y) \geq f(x^*)$.
 \end{frame}
 
 \begin{frame}
-\frametitle{Convexité stricté}
+\frametitle{Convexité stricte}
 
 Soit $f: X \subseteq \RR^n$, $f \in C^2$, $X$ ouvert. $f$ est strictement convexe ssi
 $$
@@ -642,7 +719,7 @@ $$
 \begin{frame}
 \frametitle{Algorithme}
 
-Un algorithme défini sur un sous-ensemble $X \subseteq \cR^n$ est un processus itératif qui, partant d'une solution initiale $x_0 \in X$, génère une suite de points $\{ x_k \}$ dans $X$.
+Un algorithme défini sur un sous-ensemble $X \subseteq \RR^n$ est un processus itératif qui, partant d'une solution initiale $x_0 \in X$, génère une suite de points $\{ x_k \}$ dans $X$.
 
 \mbox{}
 
@@ -663,7 +740,7 @@ Dénotons par $X^* \subseteq X$ l'ensemble des solutions recherchées.
 \frametitle{Algorithme de descente}
 
 \begin{defn}[Algorithme de descente]
-Un algorithme $A$ est un algorithme de descente par rapport à une fonction $z: X \rightarrow \cR$ continue si
+Un algorithme $A$ est un algorithme de descente par rapport à une fonction $z: X \rightarrow \RR$ continue si
 \begin{enumerate}
 \item
 $x \notin X^*$ et $y \in A(x) \Rightarrow z (y) < z(x)$
@@ -690,7 +767,7 @@ Note: la notion de fermeture pour les multi applications correspond à celle de 
 \begin{frame}
 \frametitle{Point d'accumulation et ensemble fermé}
 
-Soit $X \subseteq \cR^n$.
+Soit $X \subseteq \RR^n$.
 
 \begin{defn}[Point d'accumulation]
 Considérons une suite de points $x_k \in X$, $k = 1, 2,\ldots$ telle que $\lim_{k \rightarrow \infty} x_k = x$. $x$ est un point d'accumulation (point limite) de $X$.
@@ -702,42 +779,18 @@ $X$ est un ensemble fermé si tout point d'accumulation de $X$ appartient à $X$
 
 \mbox{}
 
-Par exemple, dans $\cR^2$ l'ensemble
+Par exemple, dans $\RR^2$ l'ensemble
 $$
-\Gamma = \{ [ x, y ] \in \cR^2 \,|\, x \in [ a, b ], y = 0 \}
+\Gamma = \{ [ x, y ] \in \RR^2 \,|\, x \in [ a, b ], y = 0 \}
 $$
 est un ensemble fermé.
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Ensemble ouvert, borné, compact}
-
-\begin{defn}[Ensemble ouvert]
-Soit $X \subseteq \cR^n$.
-$X$ est un ensemble ouvert si $\forall x \in X$, alors la boule $B(x, \epsilon) = \{ z \in R^n \,|\, \| x - z \| < \epsilon \} \subseteq X$.
-\end{defn}
-
-(Contre)-exemple: dans $R^2$ l'ensemble
-$$
-\Gamma = \{ [ x, y ] \in \cR^2 \,|\, x \in ( a, b ), y = 0 \}
-$$
-n'est pas un ensemble ouvert puisque nous ne pouvons pas modifier la valeur de $y$.
-
-\begin{defn}[Ensemble borné]
-Un ensemble $X$ est borné si $\exists M$ t.q. $\forall\, x \in X$, $\| x \| \leq M$.
-\end{defn}
-
-\begin{defn}[Ensemble compact]
-Dans $\cR^n$, un ensemble $X$ est compact si et seulement si il est fermé et borné.
-\end{defn}
-
-\end{frame}
-
-\begin{frame}
 \frametitle{Théorème de convergence globale}
 
-Supposons que $X \subseteq \cR^n$ est un ensemble non vide et fermé, et soit $X^*$ l'ensemble non vide des solutions.
+Supposons que $X \subseteq \RR^n$ est un ensemble non vide et fermé, et soit $X^*$ l'ensemble non vide des solutions.
 Soit $A$ un algorithme défini sur $X$ qui, partant d'un point $x_0 \in X$, génère une suite de points $\{ x_k \}$ comme suit:
 \begin{itemize}
 \item
@@ -746,12 +799,11 @@ si $x_k \in X^*$, l'algorithme s'arrête,
 sinon, soit $x_{k+1} \in A(x_k)$.
 Poser $k \leftarrow k + 1$ et recommencer. %répéter le processus.
 \end{itemize}
-Supposons que la suite de points $\{ x_k \}$ générés par l'algorithme est contenue dans
-un sous ensemble compact de $X$ et qu'il existe une fonction continue $z$ par rapport à laquelle $A$ est un algorithme de descente.
+Supposons que la suite de points $\{ x_k \}$ générés par l'algorithme est contenue dans un sous-ensemble compact de $X$ et qu'il existe une fonction continue $z$ par rapport à laquelle $A$ est un algorithme de descente.
 Sous ces conditions, si la multi application $A$ est fermée aux points appartenant à $X^*$, alors
 \begin{enumerate}
 \item
-soit l'algorithme s'arrête après un nombre fini d'itérations à un point de $X^*$,
+soit l'algorithme s'arrête après un nombre fini d'itérations sur un point de $X^*$,
 \item
 soit il génère une suite infinie de points $\{ x_k \}$ telle que tout point d'accumulation de $\{ x_k \}$ (c'est-à-dire tout point limite d'une sous-suite convergente de $\{ x_k \}$) appartient à $X^*$.
 \end{enumerate}
@@ -761,7 +813,7 @@ soit il génère une suite infinie de points $\{ x_k \}$ telle que tout point d'
 \begin{frame}
 \frametitle{Descente par coordonnées (coordinate descent)}
 
-Soit $f: Y \subseteq \cR^n \rightarrow \cR$.
+Soit $f: Y \subseteq \RR^n \rightarrow \RR$.
 $f$ est minimisée pour chaque coordonnée séquentiellement.
 Ainsi, les directions utilisées en séquence sont
 $$
@@ -831,11 +883,11 @@ Sinon, poser $k := k+1$ et retourner à l'étape 1.
 \frametitle{Méthode de recherche linéaire}
 
 Une méthode de recherche linéaire pour optimiser une fonction $f: R^n \rightarrow R$
-génère une suite de points $\{ x_k \}$ où $x_0$ est un point initial choisi dans $\cR^n$ et où
+génère une suite de points $\{ x_k \}$ où $x_0$ est un point initial choisi dans $\RR^n$ et où
 $$
 x_{k + 1} = x_k + \alpha_k d_k
 $$
-i.e. $x_{k+1}$ est généré à partir de $x_k$ en choisissant une direction $d_k \in R^n$ et en prenant un pas $\alpha_k \in \cR$ dans cette direction pour s'éloigner de $x_k$.
+i.e. $x_{k+1}$ est généré à partir de $x_k$ en choisissant une direction $d_k \in R^n$ et en prenant un pas $\alpha_k \in \RR$ dans cette direction pour s'éloigner de $x_k$.
 Les méthodes diffèrent par leurs choix de direction $d_k$ et de pas $\alpha_k$.
 
 \end{frame}
@@ -852,7 +904,7 @@ Supposons que $f(x)$ soit bornée inférieurement sur $Y$ par $\kappa$. Dès lor
 $f(x_k) > f(x_{k+1}) > \ldots \geq \kappa$.
 
 \begin{thm}
-Toute fonction monotonement décroissante et minorée converge.
+Toute suite monotonement décroissante et minorée converge.
 \end{thm}
 En d'autres termes, $f(x_k)$ converge vers une value $\overline{f}$.
 Mais il se peut que $\overline{f} > f^*$! $d_k$ et $\alpha_k$ doivent être choisis adéquatement pour avoir $\overline{f} = f^*$
@@ -931,7 +983,7 @@ $$
 \frametitle{Méthode de plus forte pente: convergence}
 	
 \begin{proof}
-Comme $f \in C^1$, $f$ et $\nabla f$ sont continus sur $\cR^n$.
+Comme $f \in C^1$, $f$ et $\nabla f$ sont continus sur $\RR^n$.
 En outre, comme
 $$
 \lim_{j \rightarrow \infty} f(x_{k_j}) = f(x^*),
@@ -965,7 +1017,7 @@ Si $\nabla f(x_k) = 0$, alors le résultat tient immédiatement.
 Supposons donc $\nabla f(x_k) \ne 0$.
 Considérons la fonction
 $$
-m: \cR^+ \rightarrow \cR,\ m(\alpha) = f(x_k - \alpha \nabla f(x_k)).
+m: \RR^+ \rightarrow \RR,\ m(\alpha) = f(x_k - \alpha \nabla f(x_k)).
 $$
 Dès lors,
 $$
@@ -1170,7 +1222,7 @@ Considérons par exemple la fonction $f(x) = x^2$ et $x_{0} = 2$. Prenons $d_k =
 \frametitle{Convergence de la recherche linéaire avec Armijo}
 
 \begin{thm}%[Convergence de la méthode de recherche linéaire avec pas d'Armijo]
-Supposons que $f(x) \in C^1$ et que $\nabla f(x)$ est lipschitzienne sur $\cR^n$.
+Supposons que $f(x) \in C^1$ et que $\nabla f(x)$ est lipschitzienne sur $\RR^n$.
 Alors, pour les itérés générés par la méthode de recherche linéaire avec pas d'Armijo par backtracking, une des trois situations suivantes a lieu:
 \begin{enumerate}
 \item

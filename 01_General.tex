@@ -92,25 +92,44 @@ Nous imposerons aussi que l'ensemble réalisable $S$ est connexe, i.e. quels que
 \end{frame}
 
 \begin{frame}
+	\frametitle{Ensemble ouvert, borné, compact}
+	
+\begin{defn}[ensemble ouvert]
+	$X$ est un ensemble ouvert si $\forall x \in X$, $\exists \epsilon > 0$ t.q. la boule ouverte centrée en $x$ de rayon $\epsilon$, $\cB(x,\epsilon) = \lbrace z \in \RR^n \, |  \| z-x \| \, < \epsilon \rbrace$, est incluse dans $X$.
+\end{defn}
+
+	(Contre)-exemple: dans $R^2$ l'ensemble
+	$$
+	\Gamma = \{ [ x, y ] \in \RR^2 \,|\, x \in ( a, b ), y = 0 \}
+	$$
+	n'est pas un ensemble ouvert puisque nous ne pouvons pas modifier la valeur de $y$ tout en restant dans $\Gamma$.
+	
+	\begin{defn}[Ensemble borné]
+		Un ensemble $X$ est borné si $\exists M$ t.q. $\forall\, x \in X$, $\| x \| \leq M$.
+	\end{defn}
+	
+	\begin{defn}[Ensemble compact]
+		Dans $\RR^n$, un ensemble $X$ est compact si et seulement si il est fermé et borné.
+	\end{defn}
+	
+\end{frame}
+
+\begin{frame}
 	\frametitle{Voisinage}
 	
+\begin{defn}[voisinage]
 	Un voisinage $\cV(x)$ d'un point $x$ est un ensemble ouvert contenant $x$.
+\end{defn}
 	
+Nous travaillerons principalement avec la norme 2 (norme euclidienne):
+$$
+\|z-x\|_2 = \sqrt{ (z-x)^T(z-x) }
+$$
+
 	\mbox{}
 	
-	Typiquement, $\cV(x)$ est pris comme un boule ouverte centrée en $x$, de rayon $\epsilon > 0$:
-	$$
-	\cB(x,\epsilon) = \lbrace y \,|\, \| x-y \| < \epsilon\rbrace
-	$$
-	Le choix de la norme n'est pas spécifié, mais la plupart du temps, nous travaillerons avec la norme 2
-	$$
-	\|x-y\|_2 = \sqrt{ (x-y)^T(x-y) }
-	$$
-	
-	\mbox{}
-	
-	Quel que soit $\cV(x)$, $\exists \epsilon > 0$ tel que $\cB(x,\epsilon) \subseteq \cV$.
-	Nous ne perdons dès lors aucune généralité en travaillant avec une boule ouverte centrée en $x$.
+Dès lors, quel que soit $\cV(x)$, $\exists \epsilon > 0$ tel que $\cB(x,\epsilon) \subseteq \cV$.
+Nous ne perdons dès lors aucune généralité en travaillant avec une boule ouverte centrée en $x$.
 	
 \end{frame}
 
