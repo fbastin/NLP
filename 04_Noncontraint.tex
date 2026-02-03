@@ -149,12 +149,12 @@ $$
 
 Si $f \in C^1$ sur $Y$, alors $\forall x, y \in Y$,
 $$
-f(y) = f(x) + \nabla_x f(x)^T(y-x) + \frac{1}{2}(y-x)^T(y-x) \nabla^2_{xx} f(x) o(\| y - x \|^2).
+f(y) = f(x) + \nabla_x f(x)^T(y-x) + \frac{1}{2}(y-x)^T\nabla^2_{xx} f(x)(y-x) + o(\| y - x \|^2).
 $$
 
 Forme explicite du reste (formule de Taylor avec reste intégral) quand $f \in C^3$ sur un voisinage du segment joignant $x$ à $y$:
 $$
-f(x) = f(x) + \nabla_x f(x)^T(y - x) + \frac{1}{2}(y - x)^T \nabla^2_{xx} f(x) (y - x) + R_2(y)
+f(y) = f(x) + \nabla_x f(x)^T(y - x) + \frac{1}{2}(y - x)^T \nabla^2_{xx} f(x) (y - x) + R_2(y)
 $$
 avec
 $$
@@ -1213,7 +1213,7 @@ En pratique, $\gamma_k$ n'est pas connu. Dès lors, nous ne pouvons pas simpleme
 \mbox{}
 
 La condition d'Armijo ne suffit pas à elle seule comme elle ne prévient pas des pas trop petits.
-Considérons par exemple la fonction $f(x) = x^2$ et $x_{0} = 2$. Prenons $d_k = -1$ et $\alpha_k = 2^{-k-1}$. Dans ce cas $x_{k} \rightarrow 1$. Pourtant, la condition d'Armijo est satisfaite pour $c_1$ choisi suffisamment petit.
+Considérons par exemple la fonction $f(x) = x^2$ et $x_{0} = 2$. Prenons $d_k = -1$ et $\alpha_k = 2^{-k-1}$. Dans ce cas $x_{k} \rightarrow 1$. Pourtant, la condition d'Armijo est satisfaite pour $\beta$ choisi suffisamment petit.
 
 
 \end{frame}
