@@ -1,4 +1,4 @@
-\documentclass[usepdftitle=false]{beamer}
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -20,16 +20,18 @@
 \newtheorem{thm}{Théorème}
 \newtheorem{coro}{Corollaire}
 
+\renewcommand{\proofname}{Preuve}
+
 \def\red{\color{red}}
 \def\blue{\color{blue}}
-
-\def\co{\mathcal{o}}
 
 \def\cB{\mathcal{B}}
 \def\cN{\mathcal{N}}
 \def\cR{\mathcal{R}}
 
 \def\bu{\boldsymbol{u}}
+
+\include{macros}
 
 \begin{document}
 \frame{\titlepage}
@@ -39,16 +41,17 @@
 \begin{frame}
 \frametitle{Méthode du gradient conjugué}
 
+\begin{itemize}
+	\item 
+Proposé par Hestenes et Stiefel en 1952 (comme méthode directe).
+	\item
 Cette méthode peut être utilisée quand les exigences mémoire des méthodes quasi-Newton dépassent la mémoire machine disponible, ou alternativement pour résoudre des systèmes d'équations linéaires définis positifs.
-
-\mbox{}
-
+\item
 De plus, elle est particulièrement adaptée pour résoudre le sous-problème quadratique en région de confiance.
+\item
+Note: ces transparents se sont fortement inspirés du cours donné en 2006 par Raphael Hauser à Oxford.
+\end{itemize}
 
-\mbox{}
-
-Note: ces transparents se sont fortement inspirés de
-\url{http://www.numerical.rl.ac.uk/people/nimg/course/lectures/raphael/lectures/lec5slides.pdf}
 
 \end{frame}
 
@@ -85,7 +88,7 @@ mais converge plus rapidement que la méthode de plus forte pente.
 \begin{frame}
 \frametitle{Minimisation de fonctions quadratiques}
 
-Soit $B \succ 0$ une matrice définie positive et considérons le problème
+Soit $B \succ 0$ et considérons le problème
 $$
 \min_{x \in \cR^n} f(x) = \frac{1}{2}x^TBx + b^Tx + a.
 $$
@@ -171,29 +174,21 @@ Considérons l'itéré courant $x_k$ appliquons une recherche linéaire exacte
 \frametitle{Principes généraux}
 
 Comme $B$ est définie positive, il s'agit d'un problème univarié strictement convexe, et la solution peut se calculer en annulant la dérivée par rapport à $\alpha$:
+\begin{align*}
+0 & = \frac{d}{d \alpha} f (x_k + \alpha_k d_k)
+= \nabla_x f(x_k+\alpha_k d_k)^T \frac{d}{d \alpha} (x_k + \alpha_k d_k) \\
+&= \left( B(x_k+\alpha_k d_k) + b \right)^T d_k \\
+&= (x_k+\alpha_k d_k)^T B^T d_k + b^Td_k \\
+&= x_k^TB^T d_k+ \alpha_k d_k^T B^T d_k + d_k^Tb \\
+&= \alpha_k d_k^T B d_k + d_k^T \left( Bx_k + b \right) \\
+&= \alpha_k d_k^T B d_k + d_k^T \nabla_x f(x_k)
+\end{align*}
+et donc
 $$
-\frac{d}{d \alpha} f (x_k + \alpha_k d_k) = 0
+\alpha_k = - \frac{d_k^T \nabla f(x_k)}{d_k^T B d_k}.
 $$
 
 \mbox{}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Principes généraux}
-
-De manière équivalente
-$$
-\alpha_k d_k^T B d_k + d_k^T B x_k + d_k^T b = 0
-$$
-ou encore
-$$
-\alpha_k d_k^T B d_k + d_k^T \nabla f(x_k) = 0
-$$
-et donc
-$$
-\alpha_k = - \frac{d_k^T \nabla f(x_k)}{d_k^T B d_k}
-$$
 
 \end{frame}
 
@@ -204,20 +199,51 @@ En termes de $y_k$, cela donne
 \begin{align*}
 \alpha_k &= \arg \min_{\alpha} g(y_k + \alpha p_k) \\
 & = \arg \min_{\alpha} \frac{1}{2}(y_k + \alpha p_k)^T(y_k + \alpha p_k) \\
-& = \arg \min_{\alpha} \frac{1}{2}\| y_k \|^2 + \alpha p_k^T y_k + \frac{1}{2}\alpha^2 \| p_k \|^2
+& = \arg \min_{\alpha} \frac{1}{2}\| y_k \|^2 + \alpha p_k^T y_k + \frac{1}{2}\alpha^2 \| p_k \|^2,
 \end{align*}
-où en choisissant $p_k = B^{1/2} d_k$, et $\alpha_k = -\frac{p_k^T y_k}{\| p_k \|^2}$, on retrouve le problème précédent.
+dont la solution est
+$$
+\alpha_k = -\frac{p_k^T y_k}{\| p_k \|^2}.
+$$
+De plus, si nous posons
+$
+y_{k+1} = y_k + \alpha_k p_k,
+$
+nous avons
+\begin{align*}
+y_{k+1} = B^{1/2}(x_{k+1}-x^*)
+& = B^{1/2}(x_k+\alpha_k d_k-x^*)
+= B^{1/2}(x_k-x^*) + \alpha_k B^{1/2} d_k \\
+& = y_k + \alpha_k B^{1/2} d_k.
+\end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Principes généraux}
+
+
+Nous pouvons ainsi retrouver la solution précédente en prenant $p_k = B^{1/2} d_k$. En particulier, alors,
+\begin{align*}
+\alpha_k &= -\frac{p_k^T y_k}{\| p_k \|^2} \\
+&= -\frac{d_k^T B^{1/2} B^{1/2}(x_k-x^*) }{d_k^TBd_k} \\
+&= -\frac{d_k^T (Bx_k-Bx^*) }{d_k^TBd_k} \\
+&= -\frac{d_k^T (Bx_k+b) }{d_k^TBd_k} \\
+&= -\frac{d_k^T \nabla_x f(x_k) }{d_k^TBd_k}.
+\end{align*}
+
+%\begin{align*}
+%y_{k+1} &= y_k + \alpha_k p_k \\
+%&= y_k -\frac{p_k^T y_k}{\| p_k \|^2} B^{1/2} d_k \\
+%&= y_k \left( 1 -\frac{d_k^T B^{1/2}}{d_k^TBd_k} B^{1/2} d_k \\
+%\end{align*}
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Directions conjuguées}
 
-Si nous posons
-$$
-y_{k+1} = y_k + \alpha_k p_k,
-$$
-alors
+Remarquons que
 $$
 y_{k+1}^T p_k = y_k^Tp_k + \alpha_k p_k^T p_k
 = y_k^Tp_k -\frac{p_k^T y_k}{\| p_k \|^2} \| p_k \|^2 = 0.
@@ -256,12 +282,23 @@ pour tout $j > k$, ou, de manière équivalente, pour tout $j \geq k + 1$,
 $$
 d^T_k B d_j = 0.
 $$
-Si cette relation tient, nous disons que $d_k$ et $d_j$ sont $B$-conjuguées, qui revient à l'orthogonalité par rapport au produit scalaire euclidien défini par $B$.
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Directions conjuguées}
+
+\begin{definition}[Directions conjuguées]
+Deux vecteurs $d_i, d_j$ sont $B$-conjugu\'es si
+$$
+d_i^T B d_j = 0 \quad (i \neq j)
+$$
+\end{definition}
+Ceci revient à affirmer l'orthogonalité des vecteurs $d_i$ et $d_j$ par rapport au produit scalaire euclidien défini par $B$.
+
+%Si cette relation tient, nous disons que $d_k$ et $d_j$ sont $B$-conjuguées, 
+
+\mbox{}
 
 En répétant l'argumentation à partir de l'itération $k+2$, on peut affirmer que $x_j$ appartiendra à l'hyperplan $\pi_{k+1}$ pour $j \geq k+2$.
 
@@ -275,6 +312,7 @@ Dès lors, nous devons choisir des directions de recherche mutuellement $B$-conj
 $$
 d_i^T B d_j = 0,\ \forall i \ne j.
 $$
+
 
 \end{frame}
 
@@ -305,45 +343,45 @@ Alors $x_n$ est le minimiseur global de $f$.
 
 \end{frame}
 
-\begin{frame}
-\frametitle{Calcul de $\alpha_k$}
+%\begin{frame}
+%\frametitle{Calcul de $\alpha_k$}
 
-Comme le problème est quadratique, la calcul de $\alpha_k$ est aisé.
-Par définition
-$$
-\alpha_k = \arg \min_{\alpha} f(x_k + \alpha d_k)
-$$
-Nous pouvons annuler la dérivée pas rapport à $\alpha$:
-$$
-\frac{d}{d \alpha} f(x_k + \alpha d_k)
-= d_k^T \nabla f(x_k + \alpha d_k)
-$$
-Or
-$$
-\nabla f(x_k + \alpha d_k) = B(x_k + \alpha d_k) + b
-$$
-et donc nous obtenons un système linéaire en $\alpha$:
-$$
-d_k^T(B(x_k + \alpha d_k) + b) = 0
-$$
+%Comme le problème est quadratique, la calcul de $\alpha_k$ est aisé.
+%Par définition
+%$$
+%\alpha_k = \arg \min_{\alpha} f(x_k + \alpha d_k)
+%$$
+%Nous pouvons annuler la dérivée pas rapport à $\alpha$:
+%$$
+%\frac{d}{d \alpha} f(x_k + \alpha d_k)
+%= d_k^T \nabla f(x_k + \alpha d_k)
+%$$
+%Or
+%$$
+%\nabla f(x_k + \alpha d_k) = B(x_k + \alpha d_k) + b
+%$$
+%et donc nous obtenons un système linéaire en $\alpha$:
+%$$
+%d_k^T(B(x_k + \alpha d_k) + b) = 0
+%$$
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}
-\frametitle{Calcul de $\alpha_k$}
+%\begin{frame}
+%\frametitle{Calcul de $\alpha_k$}
 
-Le système peut se réécrire comme
-\begin{align*}
-\alpha d_k^T B d_k &= - d_k^T(Bx_k + b) \\
-& = - d_k^T \nabla f(x_k)
-\end{align*}
-et donc
-\begin{align*}
-\alpha &= - \frac{d_k^T(Bx_k + b)}{2d_k^T B d_k} \\
-& = - \frac{d_k^T \nabla f(x_k)}{d_k^T B d_k}
-\end{align*}
+%Le système peut se réécrire comme
+%\begin{align*}
+%\alpha d_k^T B d_k &= - d_k^T(Bx_k + b) \\
+%& = - d_k^T \nabla f(x_k)
+%\end{align*}
+%et donc
+%\begin{align*}
+%\alpha &= - \frac{d_k^T(Bx_k + b)}{2d_k^T B d_k} \\
+%& = - \frac{d_k^T \nabla f(x_k)}{d_k^T B d_k}
+%\end{align*}
 
-\end{frame}
+%\end{frame}
 
 \begin{frame}
 \frametitle{Directions}

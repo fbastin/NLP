@@ -424,7 +424,7 @@ L'algorithme garantit que le rayon de la région de confiance ne peut être arbi
 	Si à l'itération $k$, nous avons $\nabla f(x_k) \ne 0$ et
 	$$
 	\Delta_k \leq \| \nabla f(x_k) \|_2
-	\min \left\{ \frac{1}{\kappa_s(\kappa_H + \kappa_b)}, \frac{\kappa_s(1-\eta_2)}{2\kappa_d} \right\},\ \forall k,
+	\min \left\{ \frac{1}{\kappa_s(\kappa_H + \kappa_m)}, \frac{\kappa_s(1-\eta_2)}{2\kappa_d} \right\},\ \forall k,
 	$$
 	alors l'itération $k$ est très réussie et $\Delta_{k+1} \geq \Delta_k$.
 \end{thm}
@@ -440,7 +440,7 @@ Soit $\kappa_d = \frac{1}{2} \kappa_l^2 (\kappa_H + \kappa_m)$.
 S'il existe une constante $\epsilon > 0$ telle que $\| \nabla f(x_k) \|_2 \geq \epsilon$ pour tout $k$, alors
 $$
 \Delta_k \geq \kappa_{\epsilon} := \epsilon \gamma_1
-\min \left\{ \frac{1}{\kappa_s(\kappa_H + \kappa_b)}, \frac{\kappa_s(1-\eta_2)}{2\kappa_d} \right\},\ \forall k.
+\min \left\{ \frac{1}{\kappa_s(\kappa_H + \kappa_m)}, \frac{\kappa_s(1-\eta_2)}{2\kappa_d} \right\},\ \forall k.
 $$
 \end{coro}
 
