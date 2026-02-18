@@ -90,7 +90,7 @@ mais converge plus rapidement que la méthode de plus forte pente.
 
 Soit $B \succ 0$ et considérons le problème
 $$
-\min_{x \in \cR^n} f(x) = \frac{1}{2}x^TBx + b^Tx + a.
+\min_{x \in \cR^n} f(x) = \frac{1}{2}x^\top Bx + b^\top x + a.
 $$
 Puisque $f$ est convexe, $\nabla f(x) = 0$ est une condition d'optimalité suffisante.
 Dès lors, ce problème d'optimisation est équivalent à résoudre le système linéaire défini positif
@@ -109,7 +109,7 @@ $$
 
 Ajouter une constante à la fonction objectif du problème
 $$
-\min_{x \in \cR^n} f(x) = \frac{1}{2}x^TBx + b^Tx + a.
+\min_{x \in \cR^n} f(x) = \frac{1}{2}x^\top Bx + b^\top x + a.
 $$
 ne change pas le minimiseur global $x^* = - B^{-1}b$.
 Dès lors, le problème est équivalent à
@@ -118,9 +118,9 @@ $$
 $$
 En effet,
 \begin{align*}
-\frac{1}{2}(x-x^*)^TB(x-x^*) &= \frac{1}{2}x^T B x + \frac{1}{2}(x^*)^T B x^* -2\frac{1}{2} (x^*)^T B x \\
-& = \frac{1}{2}x^T B x + \frac{1}{2}(x^*)^T B x^* + b^T (B^{-1})^T B x \\
-& = \frac{1}{2}x^T B x + \frac{1}{2}(x^*)^T B x^* + b^T x \\
+\frac{1}{2}(x-x^*)^TB(x-x^*) &= \frac{1}{2}x^\top B x + \frac{1}{2}(x^*)^T B x^* -2\frac{1}{2} (x^*)^T B x \\
+& = \frac{1}{2}x^\top B x + \frac{1}{2}(x^*)^T B x^* + b^\top (B^{-1})^T B x \\
+& = \frac{1}{2}x^\top B x + \frac{1}{2}(x^*)^T B x^* + b^\top x \\
 \end{align*}
 
 \end{frame}
@@ -178,8 +178,8 @@ Comme $B$ est définie positive, il s'agit d'un problème univarié strictement 
 0 & = \frac{d}{d \alpha} f (x_k + \alpha_k d_k)
 = \nabla_x f(x_k+\alpha_k d_k)^T \frac{d}{d \alpha} (x_k + \alpha_k d_k) \\
 &= \left( B(x_k+\alpha_k d_k) + b \right)^T d_k \\
-&= (x_k+\alpha_k d_k)^T B^T d_k + b^Td_k \\
-&= x_k^TB^T d_k+ \alpha_k d_k^T B^T d_k + d_k^Tb \\
+&= (x_k+\alpha_k d_k)^T b^\top d_k + b^\top d_k \\
+&= x_k^Tb^\top d_k+ \alpha_k d_k^T b^\top d_k + d_k^Tb \\
 &= \alpha_k d_k^T B d_k + d_k^T \left( Bx_k + b \right) \\
 &= \alpha_k d_k^T B d_k + d_k^T \nabla_x f(x_k)
 \end{align*}
@@ -322,7 +322,7 @@ $$
 \begin{thm}
 Soit
 $$
-f(x) := \frac{1}{2}x^T Bx + b^T x + a,
+f(x) := \frac{1}{2}x^\top Bx + b^\top x + a,
 $$
 où $B \succ 0$.
 Pour $k = 0,\ldots, n-1$, soit $d_k$ choisi tel que
@@ -667,36 +667,36 @@ Note: En algèbre linéaire, une matrice carrée $A$ à coefficients complexes e
 \begin{frame}
 \frametitle{Algorithme du gradient conjugué préconditionné}
 
-Idée: appliquer le gradient conjugué après un changement linéaire de coordonnées au moyen d'une matrice $R$ inversible: $x = R^{-1}y$.
+\textcolor{red}{Idée}: appliquer le gradient conjugué après un changement linéaire de coordonnées au moyen d'une matrice $R$ inversible:
+$$
+x = R^{-1}y.
+$$ Nous cherchons alors à résoudre
+$$
+BR^{-1}y = -b,
+$$
+ou, de manière équivalente, avec $c = -b$,
+$$
+R^{-\top}BR^{-1}y = R^{-\top}c.
+$$
+Si $B \succ 0$, $R^{-\top}BR^{-1} \succ 0$ vu que $\forall x \ne 0$,
+$$
+x^\top R^{-\top}BR^{-1}x > 0.
+$$
+Nous pouvons dès lors utiliser le gradient conjugué comme précédemment.
 
 \mbox{}
 
-Utiliser le gradient conjugué pour résoudre
-$$
-R^{-T}BR^{-1}y = R^{-T}c
-$$
-avec $c = -\frac{1}{2}b$.
+%Soit $y^*$ la solution de ce nouveau problème d'optimisation. On obtient la solution du problème de départ en prenant
+%$$
+%x^* = R^{-1} y^*.
+%$$
 
-\mbox{}
-
-Soit $y^*$ la solution de ce nouveau problème d'optimisation. On obtient la solution du problème de départ en prenant
-$$
-x^* = R^{-1} y^*.
-$$
-
-\mbox{}
-
-Le but recherché est que la matrice de transformation inversible $R$ soit choisie de sorte à regrouper les valeurs problèmes de la matrice hessienne transformée
-$
-\overline{B} := R^{-T}BR^{-1}
-$
 \end{frame}
 
 \begin{frame}
 \frametitle{Algorithme du gradient conjugué préconditionné}
 
-Cependant, nous ne voulons pas former explicitement $\overline{B} = R^{-T}BR^{-1}$ et $\overline{c} = R^{-T}c$ comme $\overline{B}$ pourrait être dense alors que $B$ serait creuse.
-Nous souhaitons plutôt une méthode implicite.
+Nous voudrions choisir $R$ tel que $\kappa(R^{-\top}BR^{-1}) \approx 1$ afin d'accélérer la convergence, ce qui se fait cependant au coût additionnel de la multiplication par $R^{-1}$ à chaque itération.
 
 \mbox{}
 
@@ -704,11 +704,196 @@ Cas extrême: $R = B$.
 
 \mbox{}
 
-On cherche un compromis entre une convergence accélérée, au coût additionnel de la multiplication par $R^{-1}$ à chaque itération.
+Notons
+$$
+\overline{B} := R^{-\top}BR^{-1}, \quad \overline{c} = R^{-\top}c.
+$$
+Ne voulons pas former explicitement $\overline{B}$ et $\overline{c}$ comme $\overline{B}$ pourrait être dense alors que $B$ serait creuse.
+Nous souhaitons plutôt une méthode implicite.
 
 \mbox{}
 
 Le but est de trouver $R$ facile à inverser et qui approxime bien $B$, en regroupant les valeurs de propres de $R^{-1}B$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Factorisation de Cholesky exacte}
+
+Si nous calculons la factorisation de Cholesky exacte
+\[
+B = L L^{\top},
+\]
+alors en choisissant $R = L^\top$, nous obtenons
+\[
+R^{-\top} B R^{-1} = I,
+\]
+et le gradient conjugué converge en une seule itération.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Factorisation de Cholesky exacte}
+
+La Cholesky exacte vérifie les relations
+\[
+R_{ii}
+= \sqrt{ B_{ii} - \sum_{k<i} R_{k i}^2 },
+\]
+\[
+R_{ij}
+= \frac{1}{R_{ii}}
+\left(
+B_{ij} - \sum_{k<i} R_{k i} R_{k j}
+\right),
+\quad j>i.
+\]
+
+Ces formules introduisent naturellement du \emph{remplissage}, et par conséquent cette factorisation est souvent trop coûteuse pour les matrices
+creuses de grande taille.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Factorisation de Cholesky incomplète}
+
+La factorisation de Cholesky incomplète consiste à construire une matrice
+triangulaire $R$ telle que
+\[
+B \approx R^\top R,
+\]
+tout en imposant une structure de parcimonie prédéfinie.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cholesky incomplète IC(0)}
+
+	Soit
+\[
+\mathcal S = \{(i,j)\mid B_{ij} \neq 0,\ i \le j\}.
+\]
+
+La factorisation \textbf{IC(0)} cherche une matrice triangulaire supérieure $R$
+vérifiant
+\[
+R_{ij} = 0 \quad \text{si } (i,j)\notin \mathcal S,
+\]
+et telle que
+\[
+R^\top R \approx B.
+\]
+
+Autrement dit :
+\begin{itemize}
+	\item la structure creuse de $R$ est fixée \emph{a priori},
+	\item aucun nouveau coefficient non nul (\emph{fill-in}) n’est autorisé.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Modification IC(0)}
+
+Pour IC(0), on modifie la seconde relation comme suit :
+\[
+R_{ij} =
+\begin{cases}
+	\dfrac{1}{R_{ii}}
+	\left(
+	B_{ij}
+	- \sum\limits_{\substack{k<i \\ (k,i),(k,j)\in\mathcal S}}
+	R_{k i} R_{k j}
+	\right),
+	& \text{si } (i,j)\in\mathcal S, \\[2ex]
+	0,
+	& \text{si } (i,j)\notin\mathcal S.
+\end{cases}
+\]
+
+Ainsi :
+\begin{itemize}
+	\item les mises à jour hors du motif $\mathcal S$ sont simplement ignorées,
+	\item aucun nouveau coefficient non nul n’est créé,
+	\item la factorisation reste peu coûteuse.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Effet spectral du préconditionnement}
+
+Nous pouvons écrire
+\[
+B = R^\top R + E,
+\]
+où $E$ est une matrice d’erreur symétrique.
+
+Le préconditionneur est alors
+\[
+M = R^\top R.
+\]
+
+Le système préconditionné s’écrit
+\[
+R^{-\top} B R^{-1}
+= I + R^{-\top} E R^{-1}.
+\]
+
+Si $E$ est de norme faible, les valeurs propres de la matrice préconditionnée
+sont regroupées autour de $1$, ce qui entraîne une convergence rapide
+du gradient conjugué.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Définie-positivité et échec possible de la Cholesky incomplète}
+
+La factorisation de Cholesky exacte construit une factorisation
+\[
+B = R^\top R,
+\]
+pour laquelle tous les pivots intermédiaires sont strictement positifs :
+\[
+B_{ii} - \sum_{k<i} R_{k i}^2 > 0,
+\qquad i = 1,\dots,n.
+\]
+les pivots calculés sont alors
+\[
+R_{ii}
+= \sqrt{
+	B_{ii}
+	- \sum_{\substack{k<i \\ (k,i)\in\mathcal S}} R_{k i}^2
+},
+\]
+où $\mathcal S$ désigne le motif de parcimonie imposé.
+
+Même si $B$ est symétrique définie positive, la factorisation de Cholesky
+incomplète (IC) peut cependant \emph{échouer}, vu que
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Définie-positivité et échec possible de la Cholesky incomplète}
+
+Il peut arriver que
+\[
+B_{ii}
+- \sum_{\substack{k<i \\ (k,i)\in\mathcal S}} R_{k i}^2
+\le 0,
+\]
+malgré la définie-positivité globale de $B$. Dans ce cas, la racine carrée
+n’est pas définie et la factorisation échoue.
+
+\mbox{}
+
+Cet échec est dû au caractère \emph{approché} de la factorisation et à la
+suppression de contributions nécessaires à la positivité des pivots
+intermédiaires.
+
+\mbox{}
+
+Plusieurs stratégies existent face à ce problème. La plus simple est d'arrêter la factorisation si ce cas se produit.
 
 \end{frame}
 
@@ -720,7 +905,7 @@ Le but est de trouver $R$ facile à inverser et qui approxime bien $B$, en regro
 Étant donné $y_0$, poser $\overline{g}_0 = \overline{B}y_0 + \overline{c}$ et $\overline{d}_0 = -\overline{g}_0$.
 Pour $k = 0,1,2,\ldots$, jusqu'à convergence, faire
 \begin{align*}
-\alpha_k &= \frac{\| \overline{g}_k \|^2_2}{\overline{d}_k^T\overline{B}\,\overline{d}_k} \\
+\alpha_k &= \frac{\| \overline{g}_k \|^2_2}{\overline{d}_k^\top\overline{B}\,\overline{d}_k} \\
 y_{k+1} &= y_k + \alpha_k \overline{d}_k \\
 \overline{g}_{k+1} &= \overline{g}_k + \alpha_k \overline{B}\, \overline{d}_k \\
 \beta_k &= \frac{\| \overline{g}_{k+1} \|^2_2 }{ \| \overline{g}_k \|^2_2 } \\
@@ -751,7 +936,7 @@ $$
 
 \mbox{}
 
-Similairement, prenons $\overline{g}_k = R^{-T} g_k$.
+Similairement, prenons $\overline{g}_k = R^{-\top} g_k$.
 Alors
 $$
 \overline{g}_{k+1} = \overline{g}_k + \alpha_k \overline{B}\, \overline{d}_k
@@ -769,9 +954,9 @@ $$
 De même
 $$
 \| \overline{g}_k \|^2_2
-= \| R^{-T}g_k \|^2_2
-= \left\langle R^{-T}g_k, R^{-T}g_k \right\rangle
-= \left\langle g_k, R^{-1}R^{-T}g_k \right\rangle
+= \| R^{-\top}g_k \|^2_2
+= \left\langle R^{-\top}g_k, R^{-\top}g_k \right\rangle
+= \left\langle g_k, R^{-1}R^{-\top}g_k \right\rangle
 $$
 
 \mbox{}
@@ -782,11 +967,11 @@ $$
 $$
 devient
 $$
-Rd_{k+1} = -R^{-T}g_{k+1} + \beta_k Rd_k
+Rd_{k+1} = -R^{-\top}g_{k+1} + \beta_k Rd_k
 $$
 ou
 $$
-d_{k+1} = -R^{-1}R^{-T}g_{k+1} + \beta_k d_k
+d_{k+1} = -R^{-1}R^{-\top}g_{k+1} + \beta_k d_k
 $$
 
 \end{frame}
@@ -796,19 +981,19 @@ $$
 
 Les constantes deviennent quant à elles
 $$
-\alpha_k = \frac{\langle g_k, R^{-1}R^{-T}g_k \rangle}{\langle Rd_k, R^{-T}BR^{-1} Rd_k\rangle}
-= \frac{\langle g_k, R^{-1}R^{-T}g_k \rangle}{\langle d_k, B d_k \rangle}
+\alpha_k = \frac{\langle g_k, R^{-1}R^{-\top}g_k \rangle}{\langle Rd_k, R^{-\top}BR^{-1} Rd_k\rangle}
+= \frac{\langle g_k, R^{-1}R^{-\top}g_k \rangle}{\langle d_k, B d_k \rangle}
 $$
 et
 $$
-\beta_k = \frac{\langle g_{k+1}, R^{-1}R^{-T}g_{k+1} \rangle}{\langle g_k, R^{-1}R^{-T}g_k \rangle}
+\beta_k = \frac{\langle g_{k+1}, R^{-1}R^{-\top}g_{k+1} \rangle}{\langle g_k, R^{-1}R^{-\top}g_k \rangle}
 $$
 
 \mbox{}
 
 En définissant
 $$
-M = R^TR
+M = R^{\top}R
 $$
 et
 $$
@@ -844,22 +1029,22 @@ $M$ est appelé préconditionneur.
 \begin{frame}
 \frametitle{Vitesse de convergence}
 
-Notons tout d'abord que les valeurs propres de $M^{-1}B$ sont les mêmes que celles de $R^{-T}BR^{-1}$.
+Notons tout d'abord que les valeurs propres de $M^{-1}B$ sont les mêmes que celles de $R^{-\top}BR^{-1}$.
 En effet, si $\lambda$ est valeur propre de $M^{-1}B$, il existe un $u$ tel que
 $$
 M^{-1}B u = \lambda u
 $$
 et nous pouvons écrire
 $$
-R^{-1}R^{-T}B u = \lambda u
+R^{-1}R^{-\top}B u = \lambda u
 $$
 ou
 $$
-R^{-T}B u = \lambda Ru
+R^{-\top}B u = \lambda Ru
 $$
 Soit $\nu := Ru$. Nous obtenons
 $$
-R^{-T}B R^{-1}\nu = \lambda \nu
+R^{-\top}B R^{-1}\nu = \lambda \nu
 $$
 \end{frame}
 
