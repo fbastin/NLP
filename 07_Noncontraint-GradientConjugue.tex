@@ -62,7 +62,7 @@ Note: ces transparents se sont fortement inspirés du cours donné en 2006 par R
 \item
 L'utilisation de la mémoire dans un ordinateur a longtemps été un sujet de préoccupation en raison du coût de celle-ci et de sa capacité limitée. Aujourd'hui, des défis demeurent comme les modèles peuvent être de grandes tailles, avec plusieurs millions de variables.
 \item
-Supposons que nous avons $n$ variables.
+Supposons que nous avons $n$ variables. \textcolor{blue}{Décomposition spectrale}:
 Les méthods quasi-Newton doivent maintenir en mémoire une matrice de dimensions $n \times n$, représentant une approximation de la matrice hessienne ou de son inverse, ou le facteur de Cholesky de cette matrice. Dans tous les cas, le coût de stockage est en $O(n^2)$.
 \item
 La méthode de plus forte pente a seulement des besoins mémoire en $O(n)$, pour stocker $x_k$ et $\nabla f(x_k)$, et peut donc traiter des problèmes de plus grandes tailles, mais a tendance à exiger beaucoup plus d'itérations pour converger.
@@ -88,7 +88,7 @@ mais converge plus rapidement que la méthode de plus forte pente.
 \begin{frame}
 \frametitle{Minimisation de fonctions quadratiques}
 
-Soit $B \succ 0$ et considérons le problème
+Soit $B \succ 0$; considérons le problème
 $$
 \min_{x \in \cR^n} f(x) = \frac{1}{2}x^\top Bx + b^\top x + a.
 $$
@@ -1073,10 +1073,10 @@ Si $M^{-1}B$ a $\ell$ valeurs propres distinctes, l'algorithme du gradient conju
 Il est à noter dans l'algorithme qu'il n'est jamais nécessaire de connaître $B$ explicitement, seul son ``effet'' est important, i.e. étant donné un vecteur $y$, nous devons pouvoir calculer $Bv$.
 Remarquons que
 \begin{align*}
-\nabla_x (\nabla_x f(x) v) &= \nabla_x \left( \sum_{i = 1}^n \frac{df(x)}{dx_i} v_i \right) \\
+\nabla_x (\nabla_x f(x)^\top v) &= \nabla_x \left( \sum_{i = 1}^n \frac{df(x)}{dx_i} v_i \right) \\
 &= \sum_{i = 1}^n \nabla_x \frac{df(x)}{dx_i} v_i \\
 &= \sum_{i = 1}^n \begin{pmatrix} \frac{d^2f(x)}{dx_ix_1} \\ \frac{d^2f(x)}{dx_ix_2} \\ \vdots \\ \frac{d^2f(x)}{dx_ix_n} \end{pmatrix} v_i \\
-&= Hv.
+&= Bv.
 \end{align*}
 	
 \end{frame}
