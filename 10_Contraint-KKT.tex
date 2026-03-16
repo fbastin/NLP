@@ -1,4 +1,4 @@
-\documentclass[usepdftitle=false]{beamer}
+\documentclass[usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -14,6 +14,8 @@
 
 \usepackage{easybmat}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{patterns,arrows.meta,decorations.markings,calc,positioning}
 
 \newtheorem{defn}{Définition}
 \newtheorem{lem}{Lemme}
@@ -41,6 +43,8 @@
 
 \setbeamertemplate{footline}[frame number]
 
+\renewcommand{\proofname}{Preuve}
+
 \begin{document}
 \frame{\titlepage}
 
@@ -63,7 +67,7 @@
 	$$
 	et la fonction duale lagrangienne
 	$$
-	\cL(\lambda, \mu) = \min_{x \in \mathbb{R}^n} L(x, \lambda, \mu)
+	\cL(\lambda, \mu) = \min_{x \in \mathbb{R}^n} L(x, \lambda, \mu).
 	$$
 	
 \end{frame}
@@ -74,7 +78,7 @@
 Considérons le problème de programmation mathématique suivant
 \begin{align*}
 \min_{x \in \cX} \ & f(x) \\
-\mbox{t.q. } & g_i(x) = 0,\ i = 1,\ldots,m.
+\mbox{t.q. } & g_i(x) = 0,\ i = 1,\ldots,m,
 \end{align*}
 où $\cX \subset \RR^n$, $f: \RR^n \rightarrow \RR$, $g_i: \RR^n \rightarrow \RR$, $i = 1,\ldots,m$.
 
@@ -119,7 +123,7 @@ Par conséquent, pour tout $\lambda$,
 $$
 f(\overline{x}) + \sum_{i = 1}^{m} \lambda_i g_i(\overline{x}) < f(x^*) + \sum_{i = 1}^{m} \lambda_i g_i(x^*).
 $$
-En prenant $\lambda = \lambda^*$, la relation précédente contredit le fait que est un
+En prenant $\lambda = \lambda^*$, la relation précédente contredit le fait que $x^*$ est un
 minimum local du Lagrangien lorsque $\lambda = \lambda^*$.
 \end{proof}
 
@@ -182,7 +186,7 @@ Le problème dual est
 Propriétés importantes:
 \begin{itemize}
 \item
-Le problème dual est toujours convexe, i.e. $\cL$ est toujours concave (même si la problème primal n'est pas convexe).
+Le problème dual est toujours convexe, i.e. $\cL$ est toujours concave (même si le problème primal n'est pas convexe).
 \item
 Les valeurs optimales (globales) primale et duale, $f^*$ et $\cL^*$, satisfont toujours la dualité faible: $f^* \geq \cL^*$.
 \item {\blue Dualité forte}: sous certaines conditions (qualifications de contraintes), $f^* = \cL^*$.
@@ -193,7 +197,7 @@ Les valeurs optimales (globales) primale et duale, $f^*$ et $\cL^*$, satisfont t
 \begin{frame}
 \frametitle{Saut de dualité}
 
-Étant donné une solution primale réalisable $x$ et une solution duale réalisable $(\lambda, \mu)$, la quantité $f(x) - \cL(\lambda, \mu)$ est appelé le saut de dualité entre $x$ et $(\lambda, \mu)$.
+Étant donné une solution primale réalisable $x$ et une solution duale réalisable $(\lambda, \mu)$, la quantité $f(x) - \cL(\lambda, \mu)$ est appelé le \textcolor{red}{saut de dualité} entre $x$ et $(\lambda, \mu)$.
 Notons que
 $$
 f(x) - f^* \leq f(x) - \cL(\lambda, \mu)
@@ -211,7 +215,7 @@ D'un point de vue algorithmique, si la dualité forte tient, ceci fournit un cri
 
 Désignons l'ensemble réalisable par
 $$
-\cX = \{ x \,|\, g_i(x), i = 1,\ldots,m, h_j(x), j = 1,\ldots,r \}.
+\cX = \{ x \,|\, g_i(x) \leq 0, i = 1,\ldots,m, h_j(x) = 0, j = 1,\ldots,r \}.
 $$
 Considérons $x^*$ un minimum local de $f(\cdot)$, i.e.
 $$
@@ -362,7 +366,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 \begin{frame}
 	\frametitle{Suffisance des conditions KKT}
 	
-	S'il existent $x^*$, $(\lambda^*, \mu^*)$ satisfaisant les conditions KKT, alors
+	S'il existe $x^*$, $(\lambda^*, \mu^*)$ satisfaisant les conditions KKT, alors
 	\begin{align*}
 	L(\lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
 	&= f(x^*)
@@ -377,7 +381,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 
 	\mbox{}
 
-	Dans la cas non-convexe, $x^*$ est un minimum local, pas nécessairement global, voire un point-selle.
+	Dans le cas non-convexe, $x^*$ est un minimum local, pas nécessairement global, voire un point-selle.
 	% donner un exemple du dernier cas
 	
 	%Si $x^*$ n'est pas un minimum global, la fonction dual lagrangienne n'est pas non plus minimisée globalement. Si on considère le minimum global de la fonction duale lagrangienne, le saut de dualité n'est pas nul.
@@ -398,7 +402,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	$$
 	\cX = \lbrace x \,|\, Ax = b \rbrace
 	$$
-	en considérant la norme-2 ou la norme engendré par une matrice $H$ définie positive
+	en considérant la norme-2 ou la norme engendrée par une matrice $H$ définie positive
 	$$
 	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
 	$$
@@ -453,7 +457,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	Hy \\ b
 	\end{pmatrix}
 	$$
-	Si $H$ est inversible, ce qui sera le cas dans nos problèmes comme nous prendrons $H$ définie positive, nous pouvons résoudre le système en isolant $x$ et en le susbtituant.
+	Si $H$ est inversible, ce qui sera le cas dans nos problèmes comme nous prendrons $H$ définie positive, nous pouvons résoudre le système en isolant $x$ et en le substituant.
 	Tout d'abord, nous avons
 	$$
 	x = H^{-1}Hy+H^{-1}A^T \lambda = y+H^{-1}A^T \lambda
@@ -570,8 +574,8 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	L'article de Rosen considère le cas plus général de contraintes sous la forme
 	\begin{align*}
-	a_i x = b_i,\ i = 1,\ldots,m_1 \\
-	a_i x \leq b_i,\ i = m_1,\ldots,m \\
+	a_i^T x = b_i,\ i = 1,\ldots,m_1 \\
+	a_i^T x \leq b_i,\ i = m_1,\ldots,m \\
 	\end{align*}
 	L'algorithme doit alors considérer quelles sont les contraintes actives.
 	
@@ -589,7 +593,7 @@ L'ensemble actif $\cA(x)$ du problème d'optimisation
 \end{align*}
 en un point réalisable $x$ est l'ensemble des indices des contraintes d'égalité et l'ensemble des indices $i$ des contraintes d'inégalité telles que $g_i(x) = 0$, c'est-à-dire
 $$
-\cA(x) = \cE U \{ i \in \cI \,|\, g_i(x) = 0 \}
+\cA(x) = \cE \cup \{ i \in \cI \,|\, g_i(x) = 0 \}
 $$
 \end{defn}
 
@@ -768,7 +772,7 @@ $$
 En particulier, nous avons $h(x^*,0) = 0$, et donc $x(0) = x^*$.
 De plus, $h(x(t), t) = 0$ donne, par définition de $h$,
 $$
-g_i(x(t)) = td^T \nabla g(x^*)
+g_i(x(t)) = td^T \nabla g_i(x^*)
 $$
 pour tout $i \in \cA(x^*)$ et $t \in (-\delta, \delta)$.
 Les conditions du lemme sur $d$ impliquent dès lors que
@@ -779,7 +783,7 @@ g_i(x(t)) &\leq 0,\ i \in \cA(x^*) \cap \cI,\ t \in [0,\delta)
 
 D'autre part, puisque $g_i(x^*) < 0$, $i \notin \cA(x^*)$, la continuité de $x(t)$ implique qu'il existe $\epsilon \in (0,\delta)$ tel que
 $$
-g_j(x^*) < 0,\ j \in \cI \setminus \cA(x^*),\ t \in (-\epsilon, \epsilon).
+g_j(x(t)) < 0,\ j \in \cI \setminus \cA(x^*),\ t \in (-\epsilon, \epsilon).
 $$
 
 Finalement, du théorème des fonctions implicites, nous pouvons tirer que
@@ -792,7 +796,7 @@ $$
 \begin{frame}
 \frametitle{Retour au cône tangent}
 
-Il est également possible de montre que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
+Il est également possible de montrer que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
 $$
 T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0, i \in \cE, \ d^T\nabla g_i(x) \leq 0, i \in \cA(x) \cap \cI \}
 $$
@@ -823,6 +827,84 @@ Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, l
 	
 	Nous pouvons imaginer que $x(t)$ est un morceau lisse de trajectoire d'une particule passant à travers $x^*$ au temps $t = 0$ avec une vitesse non nulle $d$ et qui se déplace dans le domaine réalisable.
 	
+\end{frame}
+
+\begin{frame}
+\frametitle{Chemin de sortie réalisable: illustration}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.72, every node/.style={transform shape},
+  constraint/.style={thick, blue!70!black},
+  gradient/.style={-{Stealth[length=6pt]}, thick},
+  point/.style={circle, fill=red!80!black, inner sep=2.2pt},
+]
+
+% Axes
+\draw[->,gray!50] (-0.8,0) -- (7.5,0) node[right,gray] {$x_1$};
+\draw[->,gray!50] (0,-0.8) -- (0,6.5) node[above,gray] {$x_2$};
+
+% Feasible region
+\fill[green!8, opacity=0.7] (0,0) -- (5,0) -- (2,3) -- (0,2) -- cycle;
+
+% Constraint boundaries
+\draw[constraint] (-0.3,5.3) -- (5.8,-0.8)
+  node[pos=0.08, above right, blue!70!black, font=\small] {$g_1(x) = 0$};
+\draw[constraint, blue!50!red] (-0.5,1.75) -- (4,4)
+  node[pos=0.95, above left, blue!50!red, font=\small] {$g_2(x) = 0$};
+
+\node[green!40!black, font=\small] at (1.8,1.2) {$\cX$};
+
+% Point x*
+\coordinate (xstar) at (2,3);
+\node[point] at (xstar) {};
+\node[left=3pt, font=\bfseries] at (xstar) {$x^*$};
+
+% Gradients
+\draw[gradient, red!70!black, dashed] (xstar) -- ++(0.9,0.9)
+  node[right, font=\small, red!70!black] {$\nabla g_1(x^*)$};
+\draw[gradient, orange!80!black, dashed] (xstar) -- ++(-0.6,1.2)
+  node[above, font=\small, orange!80!black] {$\nabla g_2(x^*)$};
+
+% Tangent cone
+\fill[black!70!green, opacity=0.08] (xstar) -- ++(2.2,-2.2) arc(-45:-135:3.11) -- cycle;
+\draw[thin, black!50!green, dashed] (xstar) -- ++(2.2,-2.2);
+\draw[thin, black!50!green, dashed] (xstar) -- ++(-2.2,-2.2);
+\node[black!60!green, font=\scriptsize] at (1.2,1.0) {$T_{\cX}(x^*)$};
+
+% Tangent direction d
+\draw[gradient, black!80!green, very thick] (xstar) -- ++(1.1,-1.1)
+  node[below right, font=\small\bfseries, black!70!green] {$d = \frac{d}{dt}x(0)$};
+
+% Feasible departure path x(t)
+\draw[very thick, red!60!black,
+  decoration={markings,
+    mark=at position 0.25 with {\arrow{Stealth[length=5pt]}},
+    mark=at position 0.55 with {\arrow{Stealth[length=5pt]}},
+    mark=at position 0.82 with {\arrow{Stealth[length=5pt]}}
+  }, postaction={decorate}
+]
+  (xstar) .. controls ++(1.3,-1.3) and ++(0.8,0.6) .. (4.5,0.8)
+  node[pos=0.6, below left, font=\small, red!60!black] {$x(t)$};
+
+% Points along path
+\fill[red!60!black] (2.65,2.15) circle (1.5pt);
+\fill[red!60!black] (3.45,1.45) circle (1.5pt);
+\fill[red!60!black] (4.15,1.0) circle (1.5pt);
+
+% Annotations
+\draw[<-, thin, gray] (3.5,0.7) -- (5.5,0.3)
+  node[right, font=\small, text width=4.5cm, gray!70!black] {%
+    $g_i(x(t)) \leq 0,\ i \in \cI$\\
+    pour $t \in [0, \epsilon)$};
+
+\draw[<-, thin, gray] (2.9,2.8) -- (5,4.5)
+  node[right, font=\small, text width=4.5cm, gray!70!black] {%
+    Chemin $C^2$, $x(0) = x^*$\\
+    $\frac{d}{dt}x(0) = d$};
+
+\end{tikzpicture}
+\end{center}
+
 \end{frame}
 
 \end{document}

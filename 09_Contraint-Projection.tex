@@ -17,6 +17,7 @@
 
 \usepackage{amsmath}
 \usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.markings,calc}
 
 \newtheorem{defn}{Définition}
 \newtheorem{lem}{Lemme}
@@ -26,7 +27,7 @@
 \def\red{\color{red}}
 \def\blue{\color{blue}}
 
-\include{macros}
+\input{macros}
 
 \def\co{\mathcal{o}}
 
@@ -42,8 +43,6 @@
 \def\cX{\calX}
 
 \def\bu{\boldsymbol{u}}
-
-\setbeamertemplate{footline}[frame number]
 
 \begin{document}
 \frame{\titlepage}
@@ -93,7 +92,7 @@ Nous devons tout d'abord revoir nos conditions d'optimalité pour le cas contrai
 \mbox{}
 
 \begin{thm}[Condition nécessaire au premier ordre]
-Soit $f$ continûment différentiable sur $\cX \in \bbR^n$, avec $\cX$ fermé et non vide.
+Soit $f$ continûment différentiable sur $\cX \subseteq \bbR^n$, avec $\cX$ fermé et non vide.
 Si $x^*$ est un minimum local de $f$, alors
 \[
 -\nabla_x f(x^*) \in \calN_{\cX}(x^*),
@@ -112,7 +111,7 @@ Si $f$ est convexe, la condition est nécessaire et suffisante.
 
 \begin{defn}[Cône]
 Un sous-ensemble $\cC$ d'un espace vectoriel $V$ est un {\red cône} linéaire
-ssi	$\alpha x$ appartient à $\cC$ pour tout $x \in C$ et tout scalaire $\alpha > 0$.\\
+ssi	$\alpha x$ appartient à $\cC$ pour tout $x \in \cC$ et tout scalaire $\alpha > 0$.\\
 Le cône est pointé si $\forall \alpha \geq 0,\ \alpha x \in \cC$.
 \end{defn}
 
@@ -161,8 +160,8 @@ $$
 
 La condition nécessaire d'optimalité devient alors
 $$	
-\nabla f(x^*)^T (y-x^*) \geq 0\ \forall y \in \cX
-$$.
+\nabla f(x^*)^T (y-x^*) \geq 0\ \forall y \in \cX.
+$$
 	
 %\mbox{}
 	
@@ -719,6 +718,137 @@ $$
 s_k = P_{\cX}(x_k + \alpha d_k)-x_k.
 $$
 La condition est alors appelée \textcolor{blue}{condition de Goldstein}.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparaison: direction projetée vs chemin projeté}
+
+\begin{center}
+\begin{tikzpicture}[
+  >=Stealth,
+  scale=0.72, every node/.style={transform shape},
+  vect/.style={->, very thick},
+  dot/.style={fill=black, circle, inner sep=1.6pt},
+  ghost/.style={dashed, thick, red!40!black, opacity=0.45},
+  bluearr/.style={very thick, blue!75!black,
+    decoration={markings, mark=at position 0.55
+      with {\arrow{Stealth[length=4pt]}}}, postaction={decorate}},
+]
+
+%% (a) Direction projetée + Armijo
+\begin{scope}[xshift=0cm]
+
+  \node[font=\bfseries\normalsize, transform shape=false] at (3.5, 6.8) {(a) Direction projetée (Armijo)};
+
+  \fill[cyan!10] (0,0) rectangle (7.0,5.0);
+  \draw[blue!55!black, thick] (0,0) rectangle (7.0,5.0);
+  \node[cyan!35!black] at (6.2,0.4) {$\cX$};
+
+  \coordinate (X) at (4.5, 1.0);
+  \coordinate (unconstrained) at (3.0, 6.0);
+  \coordinate (proj) at (3.0, 5.0);
+
+  \draw[ghost] (X) -- (unconstrained);
+  \fill[red!40!black, opacity=0.5] (unconstrained) circle (2pt);
+  \node[red!40!black, font=\footnotesize, above=2pt] at (unconstrained)
+    {$x_k {-} \nabla f(x_k)$};
+
+  \draw[ghost, opacity=0.3] (unconstrained) -- (proj);
+
+  \fill[red!65!black] (proj) circle (2.8pt);
+  \node[red!65!black, font=\footnotesize, below left=2pt] at (proj)
+    {$P_{\cX}(x_k {-} \nabla f(x_k))$};
+
+  \draw[blue!40!black, dashed, thin] (X) -- ($(X)!1.12!(proj)$);
+
+  \coordinate (X1) at ($(X)!0.7!(proj)$);
+  \draw[bluearr] (X) -- (X1);
+
+  \node[dot] at (X) {};
+  \node[font=\small, right=3pt] at (X) {$x_k$};
+  \node[dot] at (X1) {};
+  \node[font=\small, left=4pt] at (X1) {$x_{k+1}$};
+  \node[dot] at (proj) {};
+
+  \draw[vect, green!55!black] (X) -- ($(X)!0.2!(proj)$)
+    node[right=2pt, font=\small] {$d_k$};
+
+  \draw[vect, red!60!black] (X) -- +(-0.45, 1.5)
+    node[right=1pt, font=\small] {$-\nabla f$};
+
+  \draw[gray, thin, ->] (proj) -- +(0.5, 0.0)
+    node[right, font=\scriptsize, gray] {$\alpha{=}1$};
+
+  \node[font=\scriptsize, text width=5.5cm, align=center] at (3.5, -0.7) {
+    $d_k = P_{\cX}(x_k {-} \nabla f(x_k)) - x_k$\\[2pt]
+    Armijo le long de $x_k + \alpha\, d_k$
+  };
+
+\end{scope}
+
+%% (b) Chemin projeté + Goldstein
+\begin{scope}[xshift=9.5cm]
+
+  \node[font=\bfseries\normalsize, transform shape=false] at (3.5, 6.8) {(b) Chemin projeté (Goldstein)};
+
+  \fill[cyan!10] (0,0) rectangle (7.0,5.0);
+  \draw[blue!55!black, thick] (0,0) rectangle (7.0,5.0);
+  \node[cyan!35!black] at (6.2,0.4) {$\cX$};
+
+  \coordinate (Y) at (4.5, 1.0);
+  \coordinate (farpoint) at (3.0, 6.0);
+
+  \draw[ghost] (Y) -- (farpoint);
+  \fill[red!40!black, opacity=0.5] (farpoint) circle (2pt);
+  \node[red!40!black, font=\footnotesize, above=2pt] at (farpoint)
+    {$x_k {-} \alpha\nabla f(x_k)$};
+
+  \draw[vect, red!60!black] (Y) -- +(-0.45, 1.5)
+    node[right=1pt, font=\small] {$-\nabla f$};
+
+  \coordinate (contact) at (3.3, 5.0);
+
+  \draw[very thick, green!55!black,
+    decoration={markings, mark=at position 0.5
+      with {\arrow{Stealth[length=4pt]}}}, postaction={decorate}]
+    (Y) -- (contact);
+
+  \node[font=\small, green!45!black, rotate=73] at ($(Y)!0.5!(contact)+(-0.55, 0.0)$)
+    {phase libre};
+
+  \coordinate (Y1) at (1.8, 5.0);
+
+  \draw[very thick, orange!70!black,
+    decoration={markings, mark=at position 0.5
+      with {\arrow{Stealth[length=4pt]}}}, postaction={decorate}]
+    (contact) -- (Y1);
+
+  \node[font=\small, orange!55!black, above=3pt]
+    at ($(contact)!0.5!(Y1)$) {glissement sur $\partial\cX$};
+
+  \fill[orange!75!black] (contact) circle (2.5pt);
+  \node[orange!75!black, font=\small, below=4pt] at (contact) {contact};
+
+  \node[dot] at (Y1) {};
+  \node[font=\small, below=4pt] at (Y1) {$x_{k+1}$};
+
+  \node[dot] at (Y) {};
+  \node[font=\small, right=3pt] at (Y) {$x_k$};
+
+  \draw[thick, blue!65!black, dashed, ->]
+    (Y) -- (Y1)
+    node[midway, below right=2pt, font=\small, blue!55!black] {$s_k$};
+
+  \node[font=\scriptsize, text width=5.5cm, align=center] at (3.5, -0.7) {
+    $s_k = P_{\cX}(x_k {+} \alpha d_k) - x_k$\\[2pt]
+    Goldstein: $f(x_k {+} s_k) \leq f(x_k) + \beta\, \nabla f(x_k)^T s_k$
+  };
+
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
 
 \end{frame}
 
