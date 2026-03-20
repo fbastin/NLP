@@ -5,6 +5,11 @@
 \usepackage{xcolor}
 \setbeamertemplate{footline}[frame number]
 
+% --- Blocs colorés pour théorèmes, définitions, etc. ---
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamercolor{block title}{fg=white, bg=structure.fg!75!black}
+\setbeamercolor{block body}{fg=black, bg=structure.fg!10!white}
+
 \title[IFT3515]{IFT 3515\\Fonctions à plusieurs variables\\Optimisation sous contraintes\\Méthodes de projection}
 \author[Fabian Bastin]{Fabian Bastin\\DIRO\\Université de Montréal}
 \date{}
@@ -34,7 +39,6 @@
 % \RR est déjà défini dans macros.tex comme \mathbb{R} = \bbR
 
 \def\cB{\calB}
-\def\cC{\calC}
 \def\cL{\calL}
 \def\cN{\calN}
 \def\cR{\calR}
@@ -110,15 +114,15 @@ Si $f$ est convexe, la condition est nécessaire et suffisante.
 \frametitle{Définitions}
 
 \begin{defn}[Cône]
-Un sous-ensemble $\cC$ d'un espace vectoriel $V$ est un {\red cône} linéaire
-ssi	$\alpha x$ appartient à $\cC$ pour tout $x \in \cC$ et tout scalaire $\alpha > 0$.\\
-Le cône est pointé si $\forall \alpha \geq 0,\ \alpha x \in \cC$.
+Un sous-ensemble $\calC$ d'un espace vectoriel $V$ est un {\red cône} linéaire
+ssi	$\alpha x$ appartient à $\calC$ pour tout $x \in \calC$ et tout scalaire $\alpha > 0$.\\
+Le cône est pointé si $\forall \alpha \geq 0,\ \alpha x \in \calC$.
 \end{defn}
 
 \mbox{}
 	
 \begin{defn}[Cône convexe]
-Un {\red cône convexe} $\cC$ est un cône fermé sous les combinaisons convexes, i.e. ssi $\alpha x + \beta y \in \cC$, $\forall \alpha,\ \beta > 0$, avec $\alpha + \beta = 1$.
+Un {\red cône convexe} $\calC$ est un cône fermé sous les combinaisons convexes, i.e. ssi $\alpha x + \beta y \in \calC$, $\forall \alpha,\ \beta > 0$, avec $\alpha + \beta = 1$.
 \end{defn}
 
 \end{frame}
@@ -203,14 +207,6 @@ Rappelons que $d$ est une \textbf{direction réalisable} en $x \in \cX$ s'il exi
 
 Le cône tangent est la \textbf{fermeture} du cône des directions réalisables : il inclut en plus les directions limites, obtenues comme limites de directions réalisables. Cela est nécessaire lorsque $x$ est un point frontière de $\cX$ où la marge de manœuvre tend vers zéro.
 
-\mbox{}
-
-\textbf{Cas particuliers :}
-\begin{itemize}
-  \item Si $x \in \mathrm{int}(\cX)$, alors $T_{\cX}(x) = \bbR^n$ : toutes les directions sont réalisables.
-  \item Si $x$ est sur la frontière de $\cX$, le cône tangent est un demi-espace ou un cône plus restrictif, selon la géométrie locale de $\cX$ en $x$.
-\end{itemize}
-
 \end{frame}
 
 \begin{frame}
@@ -283,6 +279,92 @@ Gauche : $x$ au sommet de $\Omega$ — $T_\Omega(x)$ est le cône des directions
 $N_\Omega(x)$ est le cône des directions opposées.
 \quad
 Droite : $x$ sur la frontière courbe de $\Omega$ — $T_\Omega(x)$ est le demi-espace délimité par la tangente en $x$, $N_\Omega(x)$ est la demi-droite normale extérieure.}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exemple : cône tangent et cône normal sur $\bbR^2_+$}
+
+Soit $\cX = \bbR^2_+$.
+Comme $\cX$ est convexe, $T_{\cX}(x) = cl\lbrace \theta(x_0-x) \,|\, \theta \geq 0,\, x_0 \in \cX \rbrace$.
+
+\medskip
+
+\textbf{Cas 1}: $x = (2, 1) \in \mathrm{int}(\cX)$.\\
+Pour tout $d \in \bbR^2$, on peut choisir $x_0 = x + d/\theta \in \cX$ pour $\theta$ assez grand.\\
+$\Rightarrow$ $T_{\cX}(x) = \bbR^2$, \quad $N_{\cX}(x) = \lbrace 0 \rbrace$.
+
+\medskip
+
+\textbf{Cas 2}: $x = (3, 0)$, sur l'arête $x_2 = 0$.\\
+$x_0 \in \cX$ impose $[x_0]_2 \geq 0$, donc $\theta([x_0]_2 - 0) \geq 0$ : la composante 2 ne peut être négative. La composante 1 est libre car $[x_0]_1 \geq 0$ est satisfaisable pour tout signe de $[x_0]_1 - 3$.\\
+$\Rightarrow$ $T_{\cX}(x) = \bbR \times \bbR_+$, \quad
+$N_{\cX}(x) = \lbrace 0 \rbrace \times \bbR_-$.
+
+\medskip
+
+\textbf{Cas 3}: $x = (0, 0)$, au sommet.\\
+$x_0 \in \cX$ impose $x_0 \geq 0$, donc $\theta(x_0 - 0) \geq 0$ dans les deux composantes.\\
+$\Rightarrow$ $T_{\cX}(x) = \bbR^2_+$, \quad
+$N_{\cX}(x) = \bbR^2_-$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exemple : projection sur le cône tangent}
+
+Toujours avec $\cX = \bbR^2_+$.
+La projection sur $T_{\cX}(x)$ s'obtient en « coupant » les composantes interdites.
+
+\medskip
+
+\begin{minipage}[t]{0.48\linewidth}
+\textbf{Cas 2}: $x = (3, 0)$, $T_{\cX}(x) = \bbR \times \bbR_+$.\\
+Soit $d = (-1, -3)$:
+$$
+P_{T_{\cX}(x)}(d) = (-1,\, \max\{0, -3\}) = (-1, 0).
+$$
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\textbf{Cas 3}: $x = (0, 0)$, $T_{\cX}(x) = \bbR^2_+$.\\
+Soit $d = (-2, 5)$:
+$$
+P_{T_{\cX}(x)}(d) = (\max\{0,-2\},\, 5) = (0, 5).
+$$
+\end{minipage}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.62]
+  %% --- Cas 2 ---
+  \begin{scope}[xshift=-4.5cm]
+    \fill[cyan!15] (-2.0,0) rectangle (2.0,2.2);
+    \draw[blue!60!black, thick] (-2.0,0) -- (2.0,0);
+    \node[cyan!40!black, font=\small] at (1.4,1.6) {$T_{\cX}(x)$};
+    \coordinate (O) at (0,0);
+    \draw[->, very thick, red!70!black] (O) -- (-0.8,-1.8)
+      node[right, font=\small] {$d$};
+    \draw[->, very thick, blue!80!black] (O) -- (-0.8,0)
+      node[above left, font=\small] {$P_{T}(d)$};
+    \draw[dashed, gray] (-0.8,-1.8) -- (-0.8,0);
+    \fill (O) circle (2pt) node[above right, font=\small] {$x{=}(3,0)$};
+  \end{scope}
+  %% --- Cas 3 ---
+  \begin{scope}[xshift=4.5cm]
+    \fill[cyan!15] (0,0) rectangle (2.2,2.2);
+    \draw[blue!60!black, thick] (0,0) -- (2.2,0);
+    \draw[blue!60!black, thick] (0,0) -- (0,2.2);
+    \node[cyan!40!black, font=\small] at (1.6,0.8) {$T_{\cX}(x)$};
+    \coordinate (O2) at (0,0);
+    \draw[->, very thick, red!70!black] (O2) -- (-1.2,1.8)
+      node[above left, font=\small] {$d$};
+    \draw[->, very thick, blue!80!black] (O2) -- (0,1.8)
+      node[above right, font=\small] {$P_{T}(d)$};
+    \draw[dashed, gray] (-1.2,1.8) -- (0,1.8);
+    \fill (O2) circle (2pt) node[below left, font=\small] {$x{=}(0,0)$};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
 
 \end{frame}
 
@@ -395,23 +477,26 @@ $$
 \begin{frame}
 \frametitle{Chemin du gradient projeté}
 
-De ce qui précède, un point $x^*$ est un point critique au premier ordre si $-\nabla f(x^*) \in N_{\cX}(x^*)$.
+%De ce qui précède, un point
+$x^*$ est un point critique au premier ordre si $-\nabla f(x^*) \in N_{\cX}(x^*)$.
 
 \mbox{}
 
 Considérons les points de long de l'arc de Cauchy à partir de $x$:
-$$
-\lbrace x-t\nabla f(x) \,|\, t \geq 0 \rbrace
-$$
-et définissons le chemin du gradient projeté:
+$
+\lbrace x-t\nabla f(x) \,|\, t \geq 0 \rbrace.
+$
+
+\begin{defn}[Chemin du gradient projeté]
 $$
 p(t,x) := P_{\cX}(x-t\nabla f(x)), \ \forall t \geq 0.
 $$
+\end{defn}
+
 Si $\cX$ est convexe et $x^*$ est critique au premier ordre, alors
-$\forall t \geq 0$
-$$
-\nabla f(x^*)^T(x^*-P_{\cX}(x^*-t\nabla f(x^*))) \leq 0.
-$$
+$\forall t \geq 0$, $
+\nabla f(x^*)^T(x^*-p(t,x^*)) \leq 0.
+$
 
 \mbox{}
 
@@ -896,11 +981,11 @@ et au moins une des conditions
 \begin{frame}
 \frametitle{Point de Cauchy généralisé}
 
-\begin{align*}
-\| s_k(t_j) \|_2 & \geq \mu \Delta_k \\
-m_k(p(t_j,x_k)) & \geq \beta_2 \nabla f(x_k)^T s_k(t_j), \\
-\left\| P_{T(p(t_j,x_k))}(-\nabla f(x_k)) \right\|_2 &\leq \nu \frac{ \left| \nabla f(x_k)^Ts_k(t_j) \right| }{\Delta_k},
-\end{align*}
+\begin{align}
+\| s_k(t_j) \|_2 & \geq \mu \Delta_k \tag{C1} \\
+m_k(p(t_j,x_k)) & \geq \beta_2 \nabla f(x_k)^T s_k(t_j) \tag{C2} \\
+\left\| P_{T(p(t_j,x_k))}(-\nabla f(x_k)) \right\|_2 &\leq \nu \frac{ \left| \nabla f(x_k)^Ts_k(t_j) \right| }{\Delta_k} \tag{C3}
+\end{align}
 avec $0 < \beta_1 < \beta_2 < 1$, $\mu \in (0,1)$, et $\nu \in (0, \frac{1}{2})$.
 
 \mbox{}
@@ -922,7 +1007,7 @@ est le \textcolor{blue}{point de Cauchy généralisé} (approximatif).
 	\item[Étape 1] Calculer $m_k(p(t_j,x_k))$.
 	\item[Étape 2] Si $\| s_k(t_j) \| > \Delta_k$ ou
 	$m_k(p(t_j,x_k)) > \beta_1 \nabla f(x_k)^T s_k(t_j)$, poser $t_{\max} = t_j$ et aller à l'étape 3.\\
-	Si $\| s_k(t_j) \|_2 < \mu \Delta_k$, $m_k(p(t_j,x_k)) < \beta_2 \nabla f(x_k)^T s_k(t_j)$ et $\left\| P_{T(p(t_j,x_k))}(-\nabla f(x_k)) \right\|_2 > \nu \frac{ \left| \nabla f(x_k)^Ts_k(t_j) \right| }{\Delta_k}$, poser $t_{\min} = t_j$ et aller à l'étape 3.
+	Si les trois conditions (C1)--(C3) sont violées, poser $t_{\min} = t_j$ et aller à l'étape 3.
 	Sinon retourner $x_k^{GC} = p(t_j,x_k)$.
 	\item[Étape 3] Si $t_{\max} = +\infty$, poser $t_{j+1} = 2t_j$.
 	Sinon, poser $t_{j+1} = \left(t_{\min}+t_{\max}\right)/2$.
@@ -1103,7 +1188,7 @@ Ceci est cohérent avec la projection sur le cône tangent: $\max\{0, [d]_i\}$ l
     \coordinate (A) at (1.1, 0);
     % Gradient : bas-droite ([nabla f]_2 < 0 sort par borne inf)
     \draw[vect, red!70!black] (A) -- ++(1.0, -1.0)
-      node[right, font=\small] {$\nabla f(x)$};
+      node[right, font=\small] {$-\nabla f(x)$};
     % Composante bloquée (vers le bas)
     \draw[proj, orange!90!black] (A) -- ++(0, -1.0)
       node[left, font=\small] {bloquée};
@@ -1125,7 +1210,7 @@ Ceci est cohérent avec la projection sur le cône tangent: $\max\{0, [d]_i\}$ l
     \coordinate (B) at (2.8, 0);
     % Gradient : haut-droite ([nabla f]_1 > 0 sort, [nabla f]_2 > 0 entre)
     \draw[vect, red!70!black] (B) -- ++(0.9, 1.0)
-      node[right, font=\small] {$\nabla f(x)$};
+      node[right, font=\small] {$-\nabla f(x)$};
     % Composante 1 bloquée (vers la droite, hors de X)
     \draw[proj, orange!90!black] (B) -- ++(0.9, 0)
       node[below, font=\small] {bloquée};
