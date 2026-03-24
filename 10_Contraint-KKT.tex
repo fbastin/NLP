@@ -10,12 +10,12 @@
 \date{}
 
 \usepackage{enumerate}
-\usepackage[francais]{babel}
+\usepackage[french]{babel}
 
 \usepackage{easybmat}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{patterns,arrows.meta,decorations.markings,calc,positioning}
+\usetikzlibrary{patterns,arrows.meta,decorations.markings,decorations.pathreplacing,calc,positioning}
 
 \newtheorem{defn}{Définition}
 \newtheorem{lem}{Lemme}
@@ -24,8 +24,6 @@
 
 \def\red{\color{red}}
 \def\blue{\color{blue}}
-
-\def\co{\mathcal{o}}
 
 \def\cA{\mathcal{A}}
 \def\cB{\mathcal{B}}
@@ -40,8 +38,6 @@
 \def\bu{\boldsymbol{u}}
 
 \def\RR{\mathbb{R}}
-
-\setbeamertemplate{footline}[frame number]
 
 \renewcommand{\proofname}{Preuve}
 
@@ -197,16 +193,74 @@ Les valeurs optimales (globales) primale et duale, $f^*$ et $\cL^*$, satisfont t
 \begin{frame}
 \frametitle{Saut de dualité}
 
-Étant donné une solution primale réalisable $x$ et une solution duale réalisable $(\lambda, \mu)$, la quantité $f(x) - \cL(\lambda, \mu)$ est appelé le \textcolor{red}{saut de dualité} entre $x$ et $(\lambda, \mu)$.
+Étant donné une solution primale réalisable $x$ et une solution duale réalisable $(\lambda, \mu)$, la quantité $f(x) - \cL(\lambda, \mu)$ est appelée le \textcolor{red}{saut de dualité} entre $x$ et $(\lambda, \mu)$.
 Notons que
 $$
 f(x) - f^* \leq f(x) - \cL(\lambda, \mu)
 $$
-de sorte que si le saut de dualité est nul, alors $x$ est optimal primal (et similairement, $\lambda$ et $\mu$ sont optimaux duaux).
+de sorte que si le saut de dualité est nul, alors $x$ est optimal primal (et de même, $\lambda$ et $\mu$ sont optimaux duaux).
 
 \mbox{}
 
 D'un point de vue algorithmique, si la dualité forte tient, ceci fournit un critère d'arrêt: si $f(x) - \cL(\lambda, \mu) \leq \epsilon$, nous avons alors la garantie que $f(x) - f^* \leq \epsilon$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Saut de dualité: illustration}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.82, every node/.style={transform shape}]
+
+% Vertical axis
+\draw[->, thick, gray!50] (0,-0.3) -- (0,7.2);
+\node[above, gray, font=\small] at (0,7.2) {valeur};
+
+% Dual region shading
+\fill[blue!6] (-0.6, -0.1) rectangle (0.6, 2.5);
+% Primal region shading
+\fill[red!6] (-0.6, 4.0) rectangle (0.6, 6.8);
+
+% L(lambda, mu) - dual feasible
+\draw[thick, blue!60!black] (-0.4, 0.8) -- (0.4, 0.8);
+\node[left=8pt, blue!60!black, font=\small] at (-0.4, 0.8) {$\cL(\lambda, \mu)$};
+
+% L*
+\draw[very thick, blue!70!black] (-0.55, 2.5) -- (0.55, 2.5);
+\node[left=8pt, blue!70!black, font=\small\bfseries] at (-0.55, 2.5) {$\cL^*$};
+
+% f*
+\draw[very thick, red!70!black] (-0.55, 4.0) -- (0.55, 4.0);
+\node[left=8pt, red!70!black, font=\small\bfseries] at (-0.55, 4.0) {$f^*$};
+
+% f(x) - primal feasible
+\draw[thick, red!60!black] (-0.4, 5.8) -- (0.4, 5.8);
+\node[left=8pt, red!60!black, font=\small] at (-0.4, 5.8) {$f(x)$};
+
+% Duality gap brace
+\draw[decorate, decoration={brace, amplitude=8pt, mirror}, very thick, black!60!green]
+  (0.85, 2.5) -- (0.85, 4.0);
+\node[right=12pt, black!60!green, font=\small, align=left] at (0.85, 3.25) 
+  {saut de dualité\\$f^* - \cL^* \geq 0$};
+
+% Sub-optimality bound brace
+\draw[decorate, decoration={brace, amplitude=7pt, mirror}, thick, orange!80!black]
+  (4.8, 2.5) -- (4.8, 5.8);
+\node[right=11pt, orange!80!black, font=\small, align=left] at (4.8, 4.15) 
+  {$f(x) - \cL(\lambda,\mu)$\\$\geq f(x) - f^*$};
+
+% Upward arrows between levels
+\draw[-{Stealth[length=4pt]}, gray!40, thick] (0, 0.1) -- (0, 0.65);
+\draw[-{Stealth[length=4pt]}, gray!40, thick] (0, 1.1) -- (0, 2.35);
+\draw[-{Stealth[length=4pt]}, gray!40, thick] (0, 4.15) -- (0, 5.65);
+\draw[-{Stealth[length=4pt]}, gray!40, thick] (0, 6.0) -- (0, 6.8);
+
+% Annotations
+\node[blue!60!black, font=\scriptsize, align=center] at (0, -0.7) {dualité faible: $\cL^* \leq f^*$ (toujours)};
+\node[red!60!black, font=\scriptsize, align=center] at (5.5, 6.6) {dualité forte: $f^* = \cL^*$};
+
+\end{tikzpicture}
+\end{center}
 
 \end{frame}
 
@@ -272,10 +326,78 @@ Soient $f, g_i, h_j \in C^1$, $i = 1,\ldots,m$, $j = 1,\ldots,r$, et le problèm
 Conditions de Karush-Kuhn-Tucker (KKT):
 \begin{align*}
 \nabla_x L(x,\lambda,\mu) &= 0 & \mbox{(stationarité)}\\
-\lambda_i g_i(x) &= 0 & \mbox{(écarts de complémentarités)} \\
-g_i(x) \leq 0, &\ h_j(x) = 0\ \forall i,j & \mbox{(faisabilité primale)} \\
+\lambda_i g_i(x) &= 0 & \mbox{(écarts de complémentarité)} \\
+g_i(x) &\leq 0,\ h_j(x) = 0,\ \forall i,j & \mbox{(faisabilité primale)} \\
 \lambda_i &\geq 0\ \forall i & \mbox{(faisabilité duale)}
 \end{align*}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditions KKT: interprétation géométrique}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.68, every node/.style={transform shape},
+  constraint/.style={thick},
+  gradient/.style={-{Stealth[length=6pt]}, thick},
+  point/.style={circle, fill=red!80!black, inner sep=2.2pt},
+]
+
+% Axes
+\draw[->,gray!50] (-0.5,0) -- (7,0) node[right,gray] {$x_1$};
+\draw[->,gray!50] (0,-0.5) -- (0,6.5) node[above,gray] {$x_2$};
+
+% Feasible region: triangle (3,3)-(1,1)-(5,1)
+\fill[green!10, opacity=0.7] (3,3) -- (1,1) -- (5,1) -- cycle;
+\node[green!40!black, font=\small] at (3,1.6) {$\cX$};
+
+% Constraint lines
+\draw[constraint, blue!70!black] (-0.2,6.2) -- (6.2,-0.2)
+  node[pos=0.15, above right, blue!70!black, font=\small] {$g_1(x) = 0$};
+\draw[constraint, blue!50!red] (0,0) -- (5,5)
+  node[pos=0.88, below right, blue!50!red, font=\small] {$g_2(x) = 0$};
+\draw[constraint, gray!70, dashed] (-0.3,1) -- (6.5,1)
+  node[pos=0.95, below, gray!70, font=\small] {$g_3(x) = 0$};
+
+% Contour arcs of f(x) = (x1-3)^2 + (x2-5)^2, centered at (3,5)
+\draw[thin, gray!50, dashed] (3,5) +(-160:2) arc(-160:-20:2);
+\draw[thin, gray!50, dashed] (3,5) +(-155:2.83) arc(-155:-25:2.83);
+\draw[thin, gray!50, dashed] (3,5) +(-148:3.61) arc(-148:-32:3.61);
+\node[gray!60, font=\scriptsize] at (6.2,3.5) {courbes de};
+\node[gray!60, font=\scriptsize] at (6.2,3.0) {niveau de $f$};
+
+% Unconstrained minimizer
+\node[circle, fill=gray!60, inner sep=1.5pt] at (3,5) {};
+\node[right=2pt, gray!60, font=\scriptsize] at (3,5) {min $f$ (non réalisable)};
+
+% Point x*
+\node[point] at (3,3) {};
+\node[below left=2pt, font=\bfseries] at (3,3) {$x^*$};
+
+% Gradient of g1: (1,1) direction, scaled
+\draw[gradient, red!70!black, dashed] (3,3) -- ++(0.85,0.85)
+  node[right, font=\small, red!70!black] {$\nabla g_1(x^*)$};
+
+% Gradient of g2: (-1,1) direction, scaled
+\draw[gradient, orange!80!black, dashed] (3,3) -- ++(-0.85,0.85)
+  node[left, font=\small, orange!80!black] {$\nabla g_2(x^*)$};
+
+% -nabla f: (0, 4) direction, scaled to (0, 1.4)
+\draw[gradient, red!70!black, very thick] (3,3) -- ++(0,1.4)
+  node[right=2pt, font=\small\bfseries, red!70!black] {$-\nabla f(x^*)$};
+
+% Stationarity annotation
+\draw[<-, thin, gray] (3.15,4.1) -- (6,5.5)
+  node[right, font=\small, text width=5cm, gray!70!black] {%
+    $-\nabla f(x^*) = \lambda_1^* \nabla g_1(x^*) + \lambda_2^* \nabla g_2(x^*)$\\[2pt]
+    $\lambda_1^*, \lambda_2^* > 0$ \quad (stationarité)};
+
+% Complementarity annotation for g3
+\draw[<-, thin, gray] (3,1) -- (6,0.3)
+  node[right, font=\small, gray!70!black] {$g_3(x^*) < 0 \Rightarrow \lambda_3^* = 0$ (complémentarité)};
+
+\end{tikzpicture}
+\end{center}
 
 \end{frame}
 
@@ -286,8 +408,8 @@ Soient $x^*$ minimum pour $x \in \cB(x^*,\epsilon)$, $\epsilon > 0$, et $(\lambd
 Alors
 \begin{align*}
 f(x^*) &= \cL(\lambda^*, \mu^*) \\
-&= \min_{x \in \cB(x^*,\epsilon)} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{i = 1}^r \mu_i^* h_i(x) \right) \\
-& \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
+&= \min_{x \in \cB(x^*,\epsilon)} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{j = 1}^r \mu_j^* h_j(x) \right) \\
+& \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{j = 1}^r \mu_j^* h_j(x^*) \\
 & \leq f(x^*)
 \end{align*}
 Dès lors, $x^*$ est un minimum de $L(x, \lambda^*, \mu^*)$ sur $\cB(x^*,\epsilon)$.
@@ -333,7 +455,7 @@ Dès lors, l'hypothèse de dualité forte apparaît importante. Elle sera garant
 \item
 Programme linéaire. La dualité forte tient toujours.
 \item
-Programme convexe. Condition de Slater: $\exists x$ tel que $g_i(x) < 0$, $i = 1,\ldots,m$ et $h_i(x) = 0$, $i = 1,\ldots,r$.
+Programme convexe. Condition de Slater: $\exists x$ tel que $g_i(x) < 0$, $i = 1,\ldots,m$ et $h_j(x) = 0$, $j = 1,\ldots,r$.
 \item
 Programme non-convexe.
 Hypothèse de qualification de contraintes.
@@ -350,9 +472,9 @@ Si $x^*$ est une solution locale de
 \begin{align*}
 \min_{x \in \cX} \ & f(x) \\
 \mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m \\
-& h_i(x) = 0,\ i = 1,\ldots,r,
+& h_j(x) = 0,\ j = 1,\ldots,r,
 \end{align*}
-où les fonctions $f$, $g_i$ et $h_i$, $i = 1,\ldots,m$, sont continûment différentiables, et qu'une condition de qualification de contrainte tient en $x^*$.
+où les fonctions $f$, $g_i$ et $h_j$, $i = 1,\ldots,m$, $j = 1,\ldots,r$, sont continûment différentiables, et qu'une condition de qualification de contrainte tient en $x^*$.
 Alors, il existe un vecteur de multiplicateurs de Lagrange  $(\lambda^*, \mu^*)$ tel que les conditions KKT sont satisfaites en $(x^*,\lambda^*, \mu^*)$.
 \end{thm}
 
@@ -368,7 +490,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	S'il existe $x^*$, $(\lambda^*, \mu^*)$ satisfaisant les conditions KKT, alors
 	\begin{align*}
-	L(\lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
+	L(x^*, \lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{j = 1}^r \mu_j^* h_j(x^*) \\
 	&= f(x^*)
 	\end{align*}
 	
@@ -404,10 +526,57 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	$$
 	en considérant la norme-2 ou la norme engendrée par une matrice $H$ définie positive
 	$$
-	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
+	\min_x \frac{1}{2} \| y - x \|_H^2 \mbox{ tel que } Ax = b.
 	$$
 	Nous allons résoudre ce problème en utilisant les conditions d'optimalité de Karush-Kuhn-Tucker (KKT).
 	
+\end{frame}
+
+\begin{frame}
+\frametitle{Projection sur un sous-espace affine: illustration}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+  gradient/.style={-{Stealth[length=6pt]}, thick},
+  point/.style={circle, fill=red!80!black, inner sep=2.2pt},
+]
+
+% Affine subspace (line Ax = b)
+\draw[very thick, blue!70!black] (-0.5,0.75) -- (7.5,4.75)
+  node[pos=0.92, above left, blue!70!black, font=\small] {$\cX = \{x \,|\, Ax = b\}$};
+
+% Point y
+\coordinate (y) at (3, 5.2);
+\node[point, fill=red!70!black] at (y) {};
+\node[above=3pt, font=\bfseries, red!70!black] at (y) {$y$};
+
+% Projection p = P_X(y), computed: (3.8, 2.9)
+\coordinate (p) at (3.8, 2.9);
+\node[point, fill=green!60!black] at (p) {};
+\node[below right=2pt, font=\bfseries, green!60!black] at (p) {$P_{\cX}(y)$};
+
+% Orthogonal segment y -> p
+\draw[thick, dashed, red!60!black] (y) -- (p);
+
+% Right angle mark
+\coordinate (along) at ($(p) + (0.4, 0.2)$);
+\coordinate (perp) at ($(p) + (-0.16, 0.32)$);
+\coordinate (corner) at ($(along) + (-0.16, 0.32)$);
+\draw[thin, gray!70] (along) -- (corner) -- (perp);
+
+% Label for orthogonality
+\draw[<-, thin, gray] (3.3,4.0) -- (5.5,5.5)
+  node[right, font=\small, text width=5cm, gray!70!black] {%
+    $y - P_{\cX}(y) \perp \cX$\\[2pt]
+    $\|y - P_{\cX}(y)\|_H = \min_{x \in \cX} \|y - x\|_H$};
+
+% H-norm ball (ellipse) tangent to line at p
+\draw[thin, gray!50, dashed] (y) ellipse (1.5 and 2.5);
+\node[gray!50, font=\scriptsize, right] at (4.5,5.2) {$\|y - x\|_H = c$};
+
+\end{tikzpicture}
+\end{center}
+
 \end{frame}
 
 \begin{frame}
@@ -415,7 +584,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	Considérons le problème
 	$$
-	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
+	\min_x \frac{1}{2} \| y - x \|_H^2 \mbox{ tel que } Ax = b.
 	$$
 	Le problème est convexe, et satisfait la condition de Slater s'il existe au moins un point réalisable.
 	
@@ -430,7 +599,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	\end{align*}
 	ou
 	\begin{align*}
-	H(y-x) + A^T \lambda &= 0 \\
+	-H(y-x) + A^T \lambda &= 0 \\
 	Ax & = b \\
 	\end{align*}
 	
@@ -441,7 +610,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	Le problème peut être réorganisé comme
 	\begin{align*}
-	Hx - A^T \lambda &= Hy \\
+	Hx + A^T \lambda &= Hy \\
 	Ax + 0\lambda & = b
 	\end{align*}
 	donnant lieu au système linéaire
@@ -450,7 +619,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	H & A^T \\ A & 0
 	\end{pmatrix}
 	\begin{pmatrix}
-	x \\ -\lambda
+	x \\ \lambda
 	\end{pmatrix}
 	=
 	\begin{pmatrix}
@@ -460,11 +629,11 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	Si $H$ est inversible, ce qui sera le cas dans nos problèmes comme nous prendrons $H$ définie positive, nous pouvons résoudre le système en isolant $x$ et en le substituant.
 	Tout d'abord, nous avons
 	$$
-	x = H^{-1}Hy+H^{-1}A^T \lambda = y+H^{-1}A^T \lambda
+	x = H^{-1}Hy - H^{-1}A^T \lambda = y - H^{-1}A^T \lambda
 	$$
 	et donc
 	$$
-	A\left(y+H^{-1}A^T \lambda\right) = b
+	A\left(y - H^{-1}A^T \lambda\right) = b
 	$$
 	
 \end{frame}
@@ -474,11 +643,11 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	On en tire
 	$$
-	AH^{-1}A^T \lambda = b - Ay
+	AH^{-1}A^T \lambda = Ay - b
 	$$
 	puis, une fois $\lambda$ déterminé
 	$$
-	Hx = Hy + A^T \lambda
+	Hx = Hy - A^T \lambda
 	$$
 	
 	%Supposons que nous pouvons obtenir deux matrices de rang plein $R$ et $N$ dont les colonnes donnent une base au domaine et à l'espace nul de $A$, respectivement.
@@ -528,12 +697,71 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	De ce qui précède, en prenant $H = I$, et en notant $\overline{d}_k$ la projection de $d_k$,
 	\begin{align*}
-	\overline{d}_k &= d_k + A^T\lambda \\
+	\overline{d}_k &= d_k - A^T\lambda \\
 	&= d_k - A^T(AA^T)^{-1}Ad_k \\
 	&= \left(I-A^T(AA^T)^{-1}A\right)d_k \\
 	&= -\left(I-A^T(AA^T)^{-1}A\right)\nabla f(x_k) 
 	\end{align*}
 	
+\end{frame}
+
+\begin{frame}
+\frametitle{Projection de la plus forte pente: illustration}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+  gradient/.style={-{Stealth[length=6pt]}, thick},
+  point/.style={circle, fill=red!80!black, inner sep=2.2pt},
+]
+
+% Affine subspace (line Ax = b, direction (2,1))
+\draw[very thick, blue!70!black] (-0.5,0.75) -- (7.5,4.75)
+  node[pos=0.95, below right, blue!70!black, font=\small] {$Ax = b$};
+
+% Point x_k on the line at (2,2)
+\coordinate (xk) at (2,2);
+\node[point] at (xk) {};
+\node[below=4pt, font=\bfseries] at (xk) {$x_k$};
+
+% -nabla f(x_k) = (1,3), endpoint at (3, 5)
+\coordinate (neggradf) at (3,5);
+\draw[gradient, red!70!black, very thick] (xk) -- (neggradf)
+  node[above left=2pt, font=\small\bfseries, red!70!black] {$-\nabla f(x_k)$};
+
+% Projected direction d_bar_k = (2,1), endpoint at (4,3)
+\coordinate (dbar) at (4,3);
+\draw[gradient, black!70!green, very thick] (xk) -- (dbar)
+  node[below right=2pt, font=\small\bfseries, black!70!green] {$\overline{d}_k$};
+
+% Parallelogram completion (dashed)
+\draw[thin, dashed, gray!60] (dbar) -- (neggradf);
+\draw[thin, dashed, gray!60] (xk) -- +(-1,2) -- (neggradf);
+
+% Right angle mark at x_k
+% d_bar direction: (2,1), perp direction: (-1,2)
+\coordinate (ra1) at ($(xk) + (0.28,0.14)$);
+\coordinate (ra2) at ($(xk) + (0.14,0.42)$);
+\coordinate (racorner) at ($(ra1) + (-0.14,0.28)$);
+\draw[thin, gray!70] (ra1) -- (racorner) -- (ra2);
+
+% Label for perpendicular component
+\node[gray!60, font=\scriptsize, align=center] at (0.3,3.7) {composante\\$\perp$ au noyau de $A$};
+
+% Label for tangential component
+\draw[<-, thin, gray] (4.2,3.2) -- (6.8,4.8)
+  node[right, font=\small, text width=5cm, gray!70!black] {%
+    $\overline{d}_k = \left(I-A^T(AA^T)^{-1}A\right)(-\nabla f(x_k))$\\[2pt]
+    projection sur $\ker(A)$};
+
+% Next iterate suggestion
+\coordinate (xk1) at (5.2,3.6);
+\node[circle, fill=red!80!black, inner sep=1.8pt] at (xk1) {};
+\node[below=3pt, font=\small] at (xk1) {$x_{k+1}$};
+\draw[-{Stealth[length=4pt]}, thick, gray!50, dashed] (xk) -- (xk1);
+
+\end{tikzpicture}
+\end{center}
+
 \end{frame}
 
 \begin{frame}
@@ -599,87 +827,47 @@ $$
 
 \end{frame}
 
+%%% -----------------------------------------------------------------------
+%%% LICQ : définition
+%%% -----------------------------------------------------------------------
+
 \begin{frame}
 \frametitle{LICQ}
 
 \begin{defn}[LICQ]
 Étant donné le point $x$ et l'ensemble actif $\cA(x)$, nous disons que la qualification de contraintes d'indépendance linéaire (linear
-independence constraint qualification -- LICQ) tient si l'ensemble des contraintes actives $\nabla_x g_i(x), i \in \cA(x)$ est linéairement indépendant.
+independence constraint qualification -- LICQ) tient si l'ensemble des gradients des contraintes actives $\nabla g_i(x)$, $i \in \cA(x)$, est linéairement indépendant.
 \end{defn}
 
+\end{frame}
+
+%%% -----------------------------------------------------------------------
+%%% Lemme LICQ : énoncé complet
+%%% -----------------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Lemme (LICQ)}
+
 \begin{lem}
-	Soit $x^*$ un point du problème de programmation nonlinéaire où la LICQ tient et soit $d \in \RR^n$ un vecteur tel que
+	Soit $x^*$ un point réalisable du PNL où la LICQ tient et soit $d \in \RR^n$ tel que
 	\begin{align*}
-	d & \ne 0 \\
-	d^T \nabla g_i(x^*) &= 0,\ i \in \cE \\
-	d^T \nabla g_i(x^*) &\leq 0,\ i \in \cA(x^*) \cap \cI
+	d & \ne 0, \\
+	d^T \nabla g_i(x^*) &= 0,\ i \in \cE, \\
+	d^T \nabla g_i(x^*) &\leq 0,\ i \in \cA(x^*) \cap \cI.
 	\end{align*}
+	Alors, pour $\epsilon > 0$ assez petit, il existe un chemin $\tilde{x}(\cdot) \in C^2 \left((-\epsilon, \epsilon), \RR^n \right)$ tel que
+	\begin{align*}
+	\tilde{x}(0) &= x^*, \quad \frac{d}{dt} \tilde{x}(0) = d, \\
+	g_i(\tilde{x}(t)) &= td^T\nabla g_i(x^*),\ i \in \cA(x^*),\ t \in (-\epsilon, \epsilon),
+	\end{align*}
+	de sorte que $g_i(\tilde{x}(t)) = 0$ pour $i \in \cE$, $t \in (-\epsilon, \epsilon)$, et $g_i(\tilde{x}(t)) \leq 0$ pour $i \in \cI$, $t \in [0, \epsilon)$.
 \end{lem}
 
 \end{frame}
 
-\begin{frame}
-\frametitle{LICQ}
-
-\begin{lem}[suite]
-Alors pour $\epsilon > 0$ assez petit, il existe un chemin $x(\cdot) \in C^2 \left((-\epsilon, \epsilon), \RR^n \right)$ tel que
-\begin{align*}
-x(0) &= x^* \\
-\frac{d}{dt} x(0) &= d \\
-g_i(x(t)) &= td^T\nabla g_i(x^*),\ i \in \cA(x^*),\ t \in (-\epsilon, \epsilon)
-\end{align*}
-de sorte que
-\begin{align*}
-g_i(x(t)) &= 0,\ i \in \cE,\ t \in (-\epsilon, \epsilon) \\
-g_i(x(t)) &\leq 0,\ i \in \cI,\ t \in [0, \epsilon)
-\end{align*}
-\end{lem}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Preuve}
-
-Soit $\ell = \#\cA$.
-Puisque la LICQ tient, il est possible de choisir $Z \in \RR^{(n-\ell) \times n}$ telle que
-$$
-\begin{pmatrix}
-\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\
-Z
-\end{pmatrix}
-$$
-soit une matrice nonsingulière.
-
-\mbox{}
-
-Soit une fonction $h: \RR^n \times \RR$ définie par
-$$
-h(x,t) =
-\begin{pmatrix}
-
-\begin{pmatrix}
-g_i(x), \ i \in \cA(x^*)
-\end{pmatrix}
--t
-\begin{pmatrix}
-\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\
-\end{pmatrix}
-d
-\\
-
-Z(x-x^*-td)
-
-\end{pmatrix}
-$$
-La matrice jacobienne de $h$ en $(x^*, 0)$ vaut
-$$
-D h(x^*, 0) =
-\begin{pmatrix}
-D_x h(x^*, 0) & D_t h(x^*, 0)
-\end{pmatrix}
-$$
-
-\end{frame}
+%%% -----------------------------------------------------------------------
+%%% Rappels (avant la preuve)
+%%% -----------------------------------------------------------------------
 
 \begin{frame}
 \frametitle{Rappel: matrice jacobienne}
@@ -706,54 +894,16 @@ Si $n = m$, le jacobien de $F$ est le déterminant de $DF$.
 \end{frame}
 
 \begin{frame}
-\frametitle{Preuve}
-Les éléments de
-$$
-D h(x^*, 0) =
-\begin{pmatrix}
-D_x h(x^*, 0) & D_t h(x^*, 0)
-\end{pmatrix}
-$$
-sont
-$$
-D_x h(x^*, 0) =
-\begin{pmatrix}
-\begin{pmatrix}
-\nabla g_i(x^*)^T, \ i \in \cA(x^*)
-\end{pmatrix} \\
- Z
-\end{pmatrix}
-$$
-et
-$$
-D_t h(x^*, 0) =
-- \begin{pmatrix}
-\begin{pmatrix}
-\nabla g_i(x^*)^T, \ i \in \cA(x^*)
-\end{pmatrix}d \\
-Zd
-\end{pmatrix}
-= -D_x h(x^*, 0)d
-$$
+\frametitle{Rappel: théorème des fonctions implicites (TFI)}
 
-Puisque $D_x h(x^*, 0)$ est non singulier, le théorème des fonctions implicites implique que pour $\delta > 0$ assez petit, il existe une fonction unique $x \in C^2: (-\delta, \delta) \rightarrow \RR^n$ et un voisinage $\cV(x^*)$ tel que pour $x \in \cV(x^*)$, $t \in (-\delta, \delta)$,
-$$
-h(x,t) = 0 \Leftrightarrow x = x(t)
-$$
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Rappel: théorème des fonctions implicites}
-
-Soit $F \in C^k: \Omega \subseteq \cR^n\times\cR^p \rightarrow \cR^p$, notée
+Soit $F \in C^k: \Omega \subseteq \RR^n\times\RR^p \rightarrow \RR^p$, notée
 $$
 F(x,y) = \left( F_1(x,y), F_2(x,y), \ldots, F_p(x,y) \right)
 $$
-S'il existe $(a,b)$ tel que $F(a,b) = 0$ et pour lequel le jacobien de $D_yF$ ($D_yF$ est inversible) est non nul, alors
+S'il existe $(a,b)$ tel que $F(a,b) = 0$ et pour lequel $D_yF(a,b)$ est inversible, alors
 \begin{enumerate}
 \item
-il existe un voisinage $A$ de $a$ dans $\cR^n$ et un voisinage $B$ de $b$ dans $\cR^p$, une fonction $f \in C^k(A,B)$, tels que $A \times B \subseteq \Omega$ et que $\forall\, (x,y) \in A \times B$,
+il existe un voisinage $A$ de $a$ dans $\RR^n$ et un voisinage $B$ de $b$ dans $\RR^p$, une fonction $f \in C^k(A,B)$, tels que $A \times B \subseteq \Omega$ et que $\forall\, (x,y) \in A \times B$,
 $$
 F(x,y) = 0 \Leftrightarrow y=f(x).
 $$
@@ -766,43 +916,107 @@ $$
 
 \end{frame}
 
+%%% -----------------------------------------------------------------------
+%%% Preuve du lemme LICQ
+%%% -----------------------------------------------------------------------
+
 \begin{frame}
-\frametitle{Preuve}
+\frametitle{Preuve du lemme -- Construction de la fonction auxiliaire}
 
-En particulier, nous avons $h(x^*,0) = 0$, et donc $x(0) = x^*$.
-De plus, $h(x(t), t) = 0$ donne, par définition de $h$,
+Posons $\ell = \#\cA(x^*)$.
+Puisque la LICQ tient, les $\ell$ gradients $\nabla g_i(x^*)$, $i \in \cA(x^*)$, sont linéairement indépendants. Nous pouvons donc choisir $Z \in \RR^{(n-\ell) \times n}$ telle que la matrice
 $$
-g_i(x(t)) = td^T \nabla g_i(x^*)
+M = \begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\[3pt]
+Z
+\end{pmatrix}
+\in \RR^{n \times n}
 $$
-pour tout $i \in \cA(x^*)$ et $t \in (-\delta, \delta)$.
-Les conditions du lemme sur $d$ impliquent dès lors que
-\begin{align*}
-g_i(x(t)) &= 0,\ i \in \cE \\
-g_i(x(t)) &\leq 0,\ i \in \cA(x^*) \cap \cI,\ t \in [0,\delta)
-\end{align*}
+soit non singulière.
 
-D'autre part, puisque $g_i(x^*) < 0$, $i \notin \cA(x^*)$, la continuité de $x(t)$ implique qu'il existe $\epsilon \in (0,\delta)$ tel que
-$$
-g_j(x(t)) < 0,\ j \in \cI \setminus \cA(x^*),\ t \in (-\epsilon, \epsilon).
-$$
+\mbox{}
 
-Finalement, du théorème des fonctions implicites, nous pouvons tirer que
+Définissons $h: \RR^n \times \RR \rightarrow \RR^n$ par
 $$
-\frac{d}{dt} x(0) = -(D_x h(x^*, 0))^{-1} D_th(x^*, 0) = d
+h(x,t) =
+\begin{pmatrix}
+g_i(x) - t\, d^T\nabla g_i(x^*), \ i \in \cA(x^*) \\[3pt]
+Z(x-x^*-td)
+\end{pmatrix}.
+$$
+La composante supérieure ($\ell$ lignes) mesure l'écart entre les contraintes actives et leur linéarisation le long de $d$; la composante inférieure ($n - \ell$ lignes) ancre le mouvement dans la direction $d$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Preuve du lemme -- Application du TFI}
+
+La matrice jacobienne de $h$ en $(x^*, 0)$ se décompose en
+$$
+Dh(x^*, 0) =
+\begin{pmatrix}
+D_x h(x^*, 0) & D_t h(x^*, 0)
+\end{pmatrix}.
+$$
+On obtient
+$$
+D_x h(x^*, 0) =
+\begin{pmatrix}
+\nabla g_i(x^*)^T, \ i \in \cA(x^*) \\[3pt]
+Z
+\end{pmatrix}
+= M,
+$$
+et $D_t h(x^*, 0) = -Md$, de sorte que $D_x h(x^*, 0) = M$ est non singulière.
+
+\mbox{}
+
+Puisque $h(x^*, 0) = 0$ (car $g_i(x^*) = 0$ pour $i \in \cA(x^*)$), le TFI garantit que pour $\delta > 0$ assez petit, il existe une unique fonction $\tilde{x} \in C^2\!\left((-\delta, \delta),\, \RR^n\right)$ telle que
+$$
+h(x,t) = 0 \Leftrightarrow x = \tilde{x}(t), \quad t \in (-\delta, \delta).
 $$
 
 \end{frame}
+
+\begin{frame}
+\frametitle{Preuve du lemme -- Conséquences}
+
+\textbf{Condition initiale.} De $h(\tilde{x}(0), 0) = 0$, on tire $\tilde{x}(0) = x^*$.
+
+\mbox{}
+
+\textbf{Contraintes actives.}
+Par la composante supérieure de $h(\tilde{x}(t), t) = 0$,
+$$
+g_i(\tilde{x}(t)) = t\, d^T \nabla g_i(x^*), \quad i \in \cA(x^*),\ t \in (-\delta, \delta).
+$$
+Les hypothèses sur $d$ impliquent alors: $g_i(\tilde{x}(t)) = 0$ pour $i \in \cE$, et $g_i(\tilde{x}(t)) \leq 0$ pour $i \in \cA(x^*) \cap \cI$, $t \in [0,\delta)$.
+
+\mbox{}
+
+\textbf{Contraintes inactives.}
+Pour $i \notin \cA(x^*)$, $g_i(x^*) < 0$. La continuité de $\tilde{x}(t)$ implique qu'il existe $\epsilon \in (0,\delta)$ tel que
+$g_i(\tilde{x}(t)) < 0$ pour $i \in \cI \setminus \cA(x^*)$, $t \in (-\epsilon, \epsilon)$.
+
+\mbox{}
+
+\textbf{Vecteur tangent.}
+Du TFI, $\frac{d}{dt} \tilde{x}(0) = -(D_x h(x^*, 0))^{-1} D_th(x^*, 0) = M^{-1}Md = d$. \qed
+
+\end{frame}
+
+%%% -----------------------------------------------------------------------
 
 \begin{frame}
 \frametitle{Retour au cône tangent}
 
 Il est également possible de montrer que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
 $$
-T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0, i \in \cE, \ d^T\nabla g_i(x) \leq 0, i \in \cA(x) \cap \cI \}
+T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0,\, i \in \cE, \ d^T\nabla g_i(x) \leq 0,\, i \in \cA(x) \cap \cI \}
 $$
 Dès lors,
 $$
-\frac{d}{dt} x(0) \in T_{\cX}(x^*).
+\frac{d}{dt} \tilde{x}(0) \in T_{\cX}(x^*).
 $$
 
 \mbox{}
@@ -865,17 +1079,20 @@ Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, l
 \draw[gradient, orange!80!black, dashed] (xstar) -- ++(-0.6,1.2)
   node[above, font=\small, orange!80!black] {$\nabla g_2(x^*)$};
 
-% Tangent cone
-\fill[black!70!green, opacity=0.08] (xstar) -- ++(2.2,-2.2) arc(-45:-135:3.11) -- cycle;
+% Tangent cone (boundary rays and filled region)
+% Ray 1: direction (1,-1), orthogonal to nabla g1 = (1,1). Angle = -45 deg.
+% Ray 2: direction (-2,-1), orthogonal to nabla g2 = (-1,2). Angle = -153.4 deg.
+\fill[black!70!green, opacity=0.08]
+  (xstar) -- ++(2.2,-2.2) arc(-45:-153.4:3.11) -- cycle;
 \draw[thin, black!50!green, dashed] (xstar) -- ++(2.2,-2.2);
-\draw[thin, black!50!green, dashed] (xstar) -- ++(-2.2,-2.2);
-\node[black!60!green, font=\scriptsize] at (1.2,1.0) {$T_{\cX}(x^*)$};
+\draw[thin, black!50!green, dashed] (xstar) -- ++(-2.78,-1.39);
+\node[black!60!green, font=\scriptsize] at (1.5,0.8) {$T_{\cX}(x^*)$};
 
-% Tangent direction d
-\draw[gradient, black!80!green, very thick] (xstar) -- ++(1.1,-1.1)
-  node[below right, font=\small\bfseries, black!70!green] {$d = \frac{d}{dt}x(0)$};
+% Tangent direction d (strictly inside the cone, direction approx (1,-2))
+\draw[gradient, black!80!green, very thick] (xstar) -- ++(0.75,-1.5)
+  node[right=2pt, font=\small\bfseries, black!70!green] {$d = \frac{d}{dt}x(0)$};
 
-% Feasible departure path x(t)
+% Feasible departure path x(t) -- stays inside cX
 \draw[very thick, red!60!black,
   decoration={markings,
     mark=at position 0.25 with {\arrow{Stealth[length=5pt]}},
@@ -883,21 +1100,21 @@ Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, l
     mark=at position 0.82 with {\arrow{Stealth[length=5pt]}}
   }, postaction={decorate}
 ]
-  (xstar) .. controls ++(1.3,-1.3) and ++(0.8,0.6) .. (4.5,0.8)
-  node[pos=0.6, below left, font=\small, red!60!black] {$x(t)$};
+  (xstar) .. controls ++(0.9,-1.8) and ++(0.3,0.8) .. (3.2,0.6)
+  node[pos=0.55, right=4pt, font=\small, red!60!black] {$x(t)$};
 
 % Points along path
-\fill[red!60!black] (2.65,2.15) circle (1.5pt);
-\fill[red!60!black] (3.45,1.45) circle (1.5pt);
-\fill[red!60!black] (4.15,1.0) circle (1.5pt);
+\fill[red!60!black] (2.50,2.14) circle (1.5pt);
+\fill[red!60!black] (2.90,1.61) circle (1.5pt);
+\fill[red!60!black] (3.28,0.98) circle (1.5pt);
 
 % Annotations
-\draw[<-, thin, gray] (3.5,0.7) -- (5.5,0.3)
+\draw[<-, thin, gray] (3.2,0.5) -- (5.5,0.3)
   node[right, font=\small, text width=4.5cm, gray!70!black] {%
     $g_i(x(t)) \leq 0,\ i \in \cI$\\
     pour $t \in [0, \epsilon)$};
 
-\draw[<-, thin, gray] (2.9,2.8) -- (5,4.5)
+\draw[<-, thin, gray] (2.5,2.3) -- (5,4.5)
   node[right, font=\small, text width=4.5cm, gray!70!black] {%
     Chemin $C^2$, $x(0) = x^*$\\
     $\frac{d}{dt}x(0) = d$};
