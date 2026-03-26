@@ -585,12 +585,15 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	\mbox{}
 	
 	Les conditions KKT s'écrivent
-	\begin{align*}
+\begin{equation}
+	\begin{aligned}
 	\nabla_x \frac{1}{2} \langle y-x, H(y-x) \rangle
 	+ \nabla_x(Ax - b)^T \lambda &= 0 \\
 	Ax - b & = 0 %\\
 	%\lambda^T(Ax - b) &= 0
-	\end{align*}
+	\end{aligned}
+\label{eq:kkt_projection}
+\end{equation}
 	ou
 	\begin{align*}
 	-H(y-x) + A^T \lambda &= 0 \\
@@ -646,7 +649,9 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	\mbox{}
 	
-	Note: Si $H$ est définie positive et $A$ de rang plein, il est facile de montrer que $AH^{-1}A^T$ est définie positive.
+	\textcolor{blue}{Note}: Si $H$ est définie positive et $A$ de rang plein, il est facile de montrer que $AH^{-1}A^T$ est définie positive.
+	
+	Il s'agit du \textcolor{red}{complément de Schur} relativement au système \eqref{eq:kkt_projection}.
 	
 	%Supposons que nous pouvons obtenir deux matrices de rang plein $R$ et $N$ dont les colonnes donnent une base au domaine et à l'espace nul de $A$, respectivement.
 	%$x$ peut alors être représenté comme
