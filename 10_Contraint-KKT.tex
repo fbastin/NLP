@@ -35,8 +35,6 @@
 \def\cX{\mathcal{X}}
 \def\cV{\mathcal{V}}
 
-\def\bu{\boldsymbol{u}}
-
 \def\RR{\mathbb{R}}
 
 \renewcommand{\proofname}{Preuve}
@@ -407,16 +405,12 @@ g_i(x) &\leq 0,\ h_j(x) = 0,\ \forall i,j & \mbox{(faisabilité primale)} \\
 Soient $x^*$ minimum pour $x \in \cB(x^*,\epsilon)$, $\epsilon > 0$, et $(\lambda^*, \mu^*)$ solution du dual si $x$ est restreint à $\cB(x^*,\epsilon)$, avec un saut de dualité nul (la dualité forte tient).
 Alors
 \begin{align*}
-f(x^*) &= \cL(\lambda^*, \mu^*) \\
+f(x^*) &= \cL_{\cB(x^*,\epsilon)}(\lambda^*, \mu^*) \\
 &= \min_{x \in \cB(x^*,\epsilon)} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{j = 1}^r \mu_j^* h_j(x) \right) \\
 & \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{j = 1}^r \mu_j^* h_j(x^*) \\
-& \leq f(x^*)
+& \leq f(x^*)/
 \end{align*}
-Dès lors, $x^*$ est un minimum de $L(x, \lambda^*, \mu^*)$ sur $\cB(x^*,\epsilon)$.
-
-\mbox{}
-
-Par conséquent, $\nabla_x L(x^*, \lambda^*, \mu^*) = 0$.
+Dès lors, $x^*$ est un minimum (local) de $L(x, \lambda^*, \mu^*)$ sur $\cB(x^*,\epsilon)$ et $\nabla_x L(x^*, \lambda^*, \mu^*) = 0$.
 
 \mbox{}
 
@@ -650,6 +644,10 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	Hx = Hy - A^T \lambda
 	$$
 	
+	\mbox{}
+	
+	Note: Si $H$ est définie positive et $A$ de rang plein, il est facile de montrer que $AH^{-1}A^T$ est définie positive.
+	
 	%Supposons que nous pouvons obtenir deux matrices de rang plein $R$ et $N$ dont les colonnes donnent une base au domaine et à l'espace nul de $A$, respectivement.
 	%$x$ peut alors être représenté comme
 	%$$
@@ -684,7 +682,7 @@ Voir par exemple Nocedal \& Wright, ``Numerical Optimization'', Section 12.4.
 	
 	\mbox{}
 	
-	Étant donné la direction de recherche $d_k$, nous devons dès lors avoir $Ad_k = 0$
+	Étant donné la direction de recherche $\overline{d}_k$, nous devons dès lors avoir $A\overline{d}_k = 0$
 	
 \end{frame}
 
