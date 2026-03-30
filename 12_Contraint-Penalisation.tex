@@ -1,4 +1,4 @@
-\documentclass[t,usepdftitle=false]{beamer}
+\documentclass[t,usepdftitle=false,aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usetheme{Singapore}
@@ -16,6 +16,8 @@
 
 \usepackage{easybmat}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,decorations.markings}
 
 \newtheorem{defn}{Définition}
 \newtheorem{lem}{Lemme}
@@ -33,6 +35,7 @@
 \def\cI{\mathcal{I}}
 \def\cL{\mathcal{L}}
 \def\cN{\mathcal{N}}
+\def\cT{\mathcal{T}}
 \def\cR{\mathcal{R}}
 \def\cX{\mathcal{X}}
 \def\cV{\mathcal{V}}
@@ -50,7 +53,7 @@
 \begin{frame}
 \frametitle{Motivations}
 
-Partiellement basé sur \url{https://courses.maths.ox.ac.uk/node/view_material/1377}
+%Partiellement basé sur \url{https://courses.maths.ox.ac.uk/node/view_material/1377}
 
 \mbox{}
 
@@ -70,7 +73,7 @@ Nous nous intéressons dans un premier temps aux problèmes présentant uniqueme
 \min_{x \in \RR^n}\ & f(x) \\
 \mbox{t.q. } &g_i(x) = 0,\ i \in \cE
 \end{align*}
-où $f: \cR^N \rightarrow \cR$, $g_i: \cR^n \rightarrow \cR$, $i \in \cE$. De plus, nous supposons que $f$ et $g_i$ ($i \in \cE$) sont des fonction ``douces'' (typiquement deux fois continûment différentiables).
+où $f: \RR^n \rightarrow \RR$, $g_i: \RR^n \rightarrow \RR$, $i \in \cE$. De plus, nous supposons que $f$ et $g_i$ ($i \in \cE$) sont des fonction ``douces'' (typiquement deux fois continûment différentiables).
 
 \mbox{}
 
@@ -89,7 +92,7 @@ Nous allons déplacer les contraintes dans l'objectif et former un nouveau probl
 
 \mbox{}
 
-Regroupons les contraintes en une multifonction $g(x): \cR^m \rightarrow \cR$, avec $m = \#\cE$:
+Regroupons les contraintes en une multifonction $g: \RR^n \rightarrow \RR^m$, avec $m = \#\cE$:
 $$
 g(x) = \begin{pmatrix} g_1(x) \\ g_2(x) \\ \vdots \\ g_m(x) \end{pmatrix}
 $$
@@ -138,7 +141,7 @@ Par exemple: $\mu^{k+1} := 0.1\mu^k$, $\mu^{k+1} := (\mu^k)^2$, etc.
 
 \mbox{}
 
-Algorithmes de minimization
+Algorithmes de minimisation
 \begin{itemize}
 \item
 recherche linéaire, méthode de région de confiance
@@ -227,25 +230,150 @@ $$
 
 \end{frame}
 
+% ---------- frame 1a : référence aux cônes, spécialisation ----------
 \begin{frame}
-\frametitle{Mauvais conditionnement}
+\frametitle{Mauvais conditionnement: cônes tangent et normal}
 
-Estimateurs asymptotiques des valeurs propres de
-$
-\nabla^2 \Phi_{\mu^k}(x^k):
-$
-$m$ valeurs propres de $\nabla^2 \Phi_{\mu^k}(x^k)$ sont en $O(1/\mu^k)$ et dès lors, tendent vers l'infini comme $k \rightarrow \infty$ (i.e. $\mu^k \rightarrow 0$); les $m-n$ valeurs propres restantes sont en $O(1)$.
-Dès lors, le nombre de conditionnement de $\nabla^2 \Phi_{\mu^k}(x^k)$ est en $O(1/\mu^k)$ et explose comme $k \rightarrow \infty$.
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+Le jeu de transparents sur les méthodes de projection introduit les cônes $T_{\cX}(x^*)$ et $N_{\cX}(x^*)$ dans leur forme générale. Le jeu sur les conditions d'optimalité établit ensuite que sous la LICQ:
+$$
+T_{\cX}(x^*) = \ker J(x^*),\quad N_{\cX}(x^*) = \mathrm{Im}\,J(x^*)^T.
+$$
+$J^TJ\,v = 0 \Leftrightarrow Jv = 0$, donc $\ker(J^TJ) = \ker J$:
+\begin{itemize}
+  \item val.\ prop.\ \textbf{nulles}: $v \in T_{\cX}(x^*)$ \textbf{(tangentes)}
+  \item val.\ prop.\ $\sigma_i^2>0$: $v \in N_{\cX}(x^*)$ \textbf{(normales)}
+\end{itemize}
+\end{column}
+\begin{column}{0.42\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.5,>=Stealth]
+  % Hyperbola x1*x2=1, x1 in [0.35,2.6]
+  \draw[thick,blue!70!black,domain=0.38:2.55,samples=80,smooth]
+    plot (\x, {1/\x});
+  \node[blue!70!black,right,font=\small] at (2.1,0.52) {$x_1x_2=1$};
+  % Axes
+  \draw[->] (0,0) -- (2.7,0) node[right,font=\small] {$x_1$};
+  \draw[->] (0,0) -- (0,2.7) node[above,font=\small] {$x_2$};
+  % x* = (1,1)
+  \fill[red] (1,1) circle (1.8pt) node[below right,font=\small] {$x^*$};
+  % Tangent direction: (1,-1)/sqrt(2), scaled by 0.75
+  \draw[->,thick,green!60!black] (1,1) -- ++(0.53,-0.53)
+    node[right,font=\small,green!60!black] {$T_{\cX}$};
+  \draw[->,thick,green!60!black] (1,1) -- ++(-0.53,0.53);
+  % Normal direction: (1,1)/sqrt(2), scaled by 0.65
+  \draw[->,thick,orange!80!black] (1,1) -- ++(0.46,0.46)
+    node[right,font=\small,orange!80!black] {$N_{\cX}$};
+  % Tangent line (dashed)
+  \draw[dashed,green!50!black,thin] (0.35,1.65) -- (1.65,0.35);
+\end{tikzpicture}
+\end{column}
+\end{columns}
 
-\ 
+\end{frame}
+
+\begin{frame}
+\frametitle{Mauvais conditionnement: analyse spectrale}
+
+Dans la décomposition $\nabla^2\Phi_\mu = \nabla^2_{xx}L(x,y(\mu)) + \frac{1}{\mu}J^TJ$, pour $\mu \rightarrow 0$:
+\begin{itemize}
+  \item directions \textbf{normales} $v \in N_{\cX}(x^*)$ ($Jv \ne 0$):
+  $$\frac{1}{\mu}J^TJ\,v = \frac{\sigma^2}{\mu}\,v \;\longrightarrow\; +\infty$$
+  La pénalité pénalise de plus en plus toute sortie de $\cX$ dans ces directions.
+  \item directions \textbf{tangentes} $v \in T_{\cX}(x^*)$ ($Jv = 0$):
+  $$\frac{1}{\mu}J^TJ\,v = 0, \quad \text{contribution } O(1) \text{ de } \nabla^2_{xx}L$$
+  Ces directions restent dans $\cX$ au premier ordre: la pénalité ne les affecte pas.
+\end{itemize}
+
+\mbox{}
+
+Les $m = \dim N_{\cX}(x^*)$ valeurs propres divergent en $O(1/\mu)$; les $n-m = \dim T_{\cX}(x^*)$ restantes sont en $O(1)$. Le nombre de conditionnement est donc en $O(1/\mu) \rightarrow \infty$.
+
+\end{frame}
+
+% ---------- frame 2/3 : exemple numérique ----------
+\begin{frame}
+\frametitle{Mauvais conditionnement: exemple numérique}
+
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+$\min \tfrac{1}{2}(x_1^2+x_2^2)$ s.c.\ $x_1x_2=1$, $x^*\!=\!(1,1)^T$.
+
+En $x^*$: $\nabla^2\Phi_\mu = \begin{pmatrix}1+\tfrac{1}{\mu}&\tfrac{1}{\mu}\\[1pt]\tfrac{1}{\mu}&1+\tfrac{1}{\mu}\end{pmatrix}.$
+
+$\lambda_1=1+\tfrac{2}{\mu}$ ($\in N_{\cX}$), $\lambda_2=1$ ($\in T_{\cX}$).
+
+\begin{center}\small
+\begin{tabular}{c|c|c}
+$\mu$ & $\lambda_1$ & $\kappa$ \\\hline
+$1$     & $3$    & $3$    \\
+$0.3$   & $\approx 8$ & $\approx 8$ \\
+$0.1$   & $21$   & $21$   \\
+\end{tabular}
+\end{center}
+$\kappa \sim 2/\mu \rightarrow \infty$: Newton s'écrase dans $N_{\cX}$.
+\end{column}
+\begin{column}{0.45\textwidth}
+\centering
+% Ellipses of level set d^T H d = 1
+% H eigenvectors: v1=(1,1)/sqrt2 (normal), v2=(1,-1)/sqrt2 (tangent)
+% semi-axes: a=1/sqrt(lambda1) along v1, b=1/sqrt(lambda2)=1 along v2
+% Rotation by 45 deg: axes along (1,1) and (1,-1)
+\begin{tikzpicture}[scale=1.1]
+  % Axes with labels for directions
+  \draw[->] (-1.3,0)--(1.3,0) node[right,font=\tiny] {};
+  \draw[->] (0,-1.3)--(0,1.3) node[above,font=\tiny] {};
+  % Diagonal axis labels
+  \draw[->,gray!60,thin] (-1.1,-1.1)--(1.1,1.1)
+    node[above right,font=\tiny,gray!60] {$N_{\cX}$};
+  \draw[->,gray!60,thin] (1.1,-1.1)--(-1.1,1.1)
+    node[above left,font=\tiny,gray!60] {$T_{\cX}$};
+  % mu=1: a=0.577, b=1 rotated 45deg
+  % ellipse in rotated frame: (u/a)^2+(v/b)^2=1, u along (1,1)/sqrt2, v along (1,-1)/sqrt2
+  % parametric: x=a*cos(t)*(1,1)/sqrt2 + b*sin(t)*(1,-1)/sqrt2
+  \draw[blue,thick,domain=0:360,samples=120,smooth]
+    plot ({0.577*cos(\x)*0.7071 + 1.0*sin(\x)*0.7071},
+         {0.577*cos(\x)*0.7071 - 1.0*sin(\x)*0.7071})
+    node[above right,font=\tiny,blue] {$\mu\!=\!1$};
+  % mu=0.3: a=0.361, b=1
+  \draw[orange,thick,domain=0:360,samples=120,smooth]
+    plot ({0.361*cos(\x)*0.7071 + 1.0*sin(\x)*0.7071},
+         {0.361*cos(\x)*0.7071 - 1.0*sin(\x)*0.7071})
+    node[right,font=\tiny,orange] {$\mu\!=\!0.3$};
+  % mu=0.1: a=0.218, b=1
+  \draw[red,thick,domain=0:360,samples=120,smooth]
+    plot ({0.218*cos(\x)*0.7071 + 1.0*sin(\x)*0.7071},
+         {0.218*cos(\x)*0.7071 - 1.0*sin(\x)*0.7071})
+    node[right,font=\tiny,red] {$\mu\!=\!0.1$};
+  % Origin
+  \fill (0,0) circle (1.5pt);
+\end{tikzpicture}
+
+{\small\centering Courbes de niveau de $d^T\nabla^2\Phi_\mu\, d=1$}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------- frame 3/3 : conséquence pour Newton ----------
+\begin{frame}
+\frametitle{Mauvais conditionnement: conséquence pour Newton}
 
 Il n'est pas clair que nous puissions calculer précisément les changements sur $x^k$.
-En particulier, que ce soit avec des techniques de recherche linéaire ou de région de confiance, asymptotiquement, nous souhaitons minimiser $\Phi_{\mu^{k+1}}(x)$ au moyen d'un pas de Newton, i.e. en résolvant le système
+En particulier, asymptotiquement, nous souhaitons minimiser $\Phi_{\mu^{k+1}}(x)$ au moyen d'un pas de Newton, i.e. en résolvant
 $$
-\nabla^2 \Phi_{\mu}(x) s = -\nabla \Phi(x)
+\nabla^2 \Phi_{\mu}(x)\, s = -\nabla \Phi_{\mu}(x)
 $$
-pour obtenir le pas $s$ à partir de la solution actuelle $x = x_i^k$ et $\mu = \mu^{k+1}$.
-Malgré le mauvais conditionnement présent, il est toujours possible de calculer $s$ avec précision.
+pour obtenir le pas $s$ à partir de la solution courante $x = x_i^k$, $\mu = \mu^{k+1}$.
+
+\mbox{}
+
+Pour l'exemple précédent ($x_1x_2=1$), à $x^* = (1,1)^T$ et $\mu = 0.001$, $\kappa \approx 2001$: les erreurs d'arrondi en flottant double ($\epsilon_{\rm mach} \approx 10^{-16}$) se propagent en $\kappa\,\epsilon_{\rm mach} \approx 2\times 10^{-13}$.
+
+\mbox{}
+
+Malgré ce mauvais conditionnement apparent, il est toujours possible de calculer $s$ avec précision en reformulant le système (voir transparent suivant).
 
 \end{frame}
 
@@ -279,12 +407,15 @@ s \\ w
 \nabla f(x) \\ g(x)
 \end{pmatrix}
 $$
-Ce système est essentiellement indépendant de $\mu$ pour de petites valeurs de $\mu$, et dès lors ne souffre pas de mauvais conditionnement comme $\mu \rightarrow 0$.
 
 \end{frame}
 
 \begin{frame}
 \frametitle{Calcul du pas de Newton}
+
+Ce système est essentiellement indépendant de $\mu$ pour de petites valeurs de $\mu$, et dès lors ne souffre pas de mauvais conditionnement comme $\mu \rightarrow 0$.
+
+\mbox{}
 
 Il faut toujours être prudent lors de la minimisation de
 $\Phi_{\mu}$ pour de petits $\mu$.
@@ -386,6 +517,183 @@ $$
 
 La différence réside dans la liberté de choisir $y$ dans $\nabla^2_{xx} L(x, y)$ dans les méthodes primales-duales.
 En termes computationnels, cela fait une différence importante.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Intérêt de l'approche primale-duale: mise en place}
+
+Reprenons: $\min \tfrac{1}{2}(x_1^2+x_2^2)$ s.c.\ $g(x)=x_1x_2-1=0$.
+
+Le Lagrangien est $L(x,y) = \tfrac{1}{2}(x_1^2+x_2^2) + y(x_1x_2-1)$, d'où:
+$$
+\nabla^2 f = I_2, \quad \nabla^2 g = \begin{pmatrix}0&1\\1&0\end{pmatrix},
+\quad
+\nabla^2_{xx}L(x,y) = I_2 + y\begin{pmatrix}0&1\\1&0\end{pmatrix} = \begin{pmatrix}1&y\\y&1\end{pmatrix}.
+$$
+
+Les valeurs propres de $\begin{pmatrix}1&y\\y&1\end{pmatrix}$ vérifient $(1-\lambda)^2-y^2=0$, donc $\lambda = 1\pm|y|$. La matrice est définie positive ssi $|y|<1$, singulière si $|y|=1$, indéfinie si $|y|>1$.
+
+\mbox{}
+
+Les conditions KKT en $x^*$ donnent $\nabla f(x^*) + y^*\nabla g(x^*)=0$:
+$$
+\begin{pmatrix}1\\1\end{pmatrix} + y^*\begin{pmatrix}x_2^*\\x_1^*\end{pmatrix}
+= \begin{pmatrix}1\\1\end{pmatrix} + y^*\begin{pmatrix}1\\1\end{pmatrix} = 0
+\implies y^* = -1,
+$$
+ce qui correspond bien à $|y^*|=1$: la Hessienne du Lagrangien est singulière à la solution (cas limite).
+
+\end{frame}
+
+\begin{frame}[shrink=2]
+\frametitle{Intérêt de l'approche primale-duale: approche primale}
+
+Itéré infaisable: $x^k=(2,1)^T$, $g(x^k) = 2\cdot 1-1 = 1$.
+
+Dans l'approche \textbf{primale}, le multiplicateur est entièrement déterminé par la pénalisation:
+$$
+y(\mu) = \frac{g(x^k)}{\mu} = \frac{1}{\mu} \xrightarrow{\mu\to 0} +\infty.
+$$
+
+Ainsi $\nabla^2_{xx}L(x^k,y(\mu)) = \begin{pmatrix}1&1/\mu\\1/\mu&1\end{pmatrix}$, de valeurs propres $1\pm 1/\mu$:
+\begin{center}
+\begin{tabular}{c|c|c|c}
+$\mu$ & $y(\mu)=1/\mu$ & val.\ prop.\ $1\pm y(\mu)$ & statut de $\nabla^2_{xx}L$ \\\hline
+$1$    & $1$   & $0,\ 2$       & singulière \\
+$0.5$  & $2$   & $-1,\ 3$     & \textcolor{red}{indéfinie} \\
+$0.1$  & $10$  & $-9,\ 11$    & \textcolor{red}{très indéfinie} \\
+$0.01$ & $100$ & $-99,\ 101$  & \textcolor{red}{diverge} \\
+\end{tabular}
+\end{center}
+
+À partir de $\mu < 1$ (i.e.\ $|y(\mu)|>1$), la Hessienne du Lagrangien devient indéfinie, ce qui compromet la résolution du système de Newton et la descente du modèle quadratique.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approche primale-duale: itération de Newton}
+
+Le système KKT est résolu par Newton. À chaque itération, on résout:
+$$
+\begin{pmatrix}\nabla^2_{xx}L(x^k,y^k) & J(x^k)^T \\ J(x^k) & 0\end{pmatrix}
+\begin{pmatrix}\Delta x \\ \Delta y\end{pmatrix}
+= -\begin{pmatrix}\nabla_x L(x^k,y^k) \\ g(x^k)\end{pmatrix}
+$$
+puis $x^{k+1} = x^k + \Delta x$, $y^{k+1} = y^k + \Delta y$.
+
+\mbox{}
+
+\textbf{Itération $k=0$:} $x^0=(2,1)^T$, $y^0=0$.
+
+$J(x^0) = (1,\,2)$, $\nabla^2_{xx}L(x^0,0) = I_2$, $g(x^0)=1$, $\nabla_x L(x^0,0) = (2,1)^T$.
+
+Le système de Newton $K^0(\Delta x, \Delta y)^T = -(2,1,1)^T$ s'écrit:
+$$
+\begin{pmatrix}1&0&1\\0&1&2\\1&2&0\end{pmatrix}\begin{pmatrix}\Delta x_1\\\Delta x_2\\\Delta y\end{pmatrix} = \begin{pmatrix}-2\\-1\\-1\end{pmatrix}.
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approche primale-duale: itération $k=0$ (suite)}
+
+Des lignes 1 et 2: $\Delta x_1 = -2-\Delta y$, $\Delta x_2 = -1-2\Delta y$. En substituant dans la ligne 3:
+$$
+(-2-\Delta y)+2(-1-2\Delta y) = -1 \;\Longrightarrow\; -5\Delta y = 3 \;\Longrightarrow\; \Delta y = -\tfrac{3}{5}.
+$$
+Donc $\Delta x_1=-\tfrac{7}{5}$, $\Delta x_2=\tfrac{1}{5}$, et
+$$
+x^1=\bigl(\tfrac{3}{5},\,\tfrac{6}{5}\bigr)^T = (0.6,\,1.2)^T, \qquad y^1=-\tfrac{3}{5} = -0.6.
+$$
+
+On vérifie: $g(x^1)=\tfrac{3}{5}\cdot\tfrac{6}{5}-1 = \tfrac{18}{25}-1 = -\tfrac{7}{25}$, $\nabla^2_{xx}L(x^1,y^1)=\begin{pmatrix}1&-0.6\\-0.6&1\end{pmatrix}$ ($\kappa=4$, \textcolor{blue}{$\succ 0$}).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approche primale-duale: itération de Newton (suite)}
+
+\textbf{Itération $k=1$:} $x^1=(\tfrac{3}{5},\tfrac{6}{5})^T$, $y^1=-\tfrac{3}{5}$.
+$$
+J(x^1)=\bigl(\tfrac{6}{5},\tfrac{3}{5}\bigr),\quad
+\nabla^2_{xx}L = \begin{pmatrix}1&-\tfrac{3}{5}\\-\tfrac{3}{5}&1\end{pmatrix},\quad
+g(x^1)=\tfrac{18}{25}-1=-\tfrac{7}{25}.
+$$
+$$
+\nabla_x L = \begin{pmatrix}\tfrac{3}{5}\\[2pt]\tfrac{6}{5}\end{pmatrix}
++ \Bigl(-\tfrac{3}{5}\Bigr)\begin{pmatrix}\tfrac{6}{5}\\[2pt]\tfrac{3}{5}\end{pmatrix}
+= \begin{pmatrix}-\tfrac{3}{25}\\[2pt]\tfrac{21}{25}\end{pmatrix}.
+$$
+
+Résolution numérique: $\Delta x \approx (0.407, -0.348)^T$, $\Delta y \approx -0.413$.
+$$
+x^2 \approx (1.007,\; 0.852)^T, \qquad y^2 \approx -1.013.
+$$
+
+\mbox{}
+
+Après $k=1$, $x^2$ est quasi-faisable ($g(x^2)\approx -0.142$) et $y^2 \approx y^*$: la convergence quadratique s'amorce.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Approche primale-duale: convergence}
+
+\begin{columns}[T]
+\begin{column}{0.50\textwidth}
+\begin{center}\small
+\begin{tabular}{c|c|c|c}
+$k$ & $x_1^k$ & $x_2^k$ & $g(x^k)$ \\\hline
+0 & 2.0000 & 1.0000 &  $+1.000$ \\
+1 & 0.6000 & 1.2000 &  $-0.280$ \\
+2 & 1.0072 & 0.8523 &  $-0.142$ \\
+3 & 1.0000 & 0.9989 &  $-0.001$ \\
+4 & 1.0000 & 1.0000 &  $\approx 0$ \\
+\end{tabular}
+\end{center}
+\vspace{2pt}
+\begin{itemize}\small
+  \item 4 itérations depuis un point infaisable.
+  \item Convergence quadratique après $k=2$.
+  \item $y^k \to y^*=-1$ indépendamment de $\mu$.
+\end{itemize}
+\end{column}
+\begin{column}{0.47\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.35,>=Stealth]
+  % Axes
+  \draw[->] (0,0)--(2.5,0) node[right,font=\small] {$x_1$};
+  \draw[->] (0,0)--(0,2.0) node[above,font=\small] {$x_2$};
+  % Hyperbola x1*x2=1
+  \draw[thick,blue!70!black,domain=0.52:2.35,samples=80,smooth]
+    plot (\x,{1/\x});
+  \node[blue!70!black,font=\small] at (2.0,0.62) {$x_1x_2=1$};
+  % Iterates
+  \coordinate (p0) at (2.0,1.0);
+  \coordinate (p1) at (0.6,1.2);
+  \coordinate (p2) at (1.007,0.852);
+  \coordinate (p3) at (1.0,0.999);
+  \coordinate (p4) at (1.0,1.0);
+  % Arrows between iterates
+  \draw[->,thick,red!70!black] (p0)--(p1);
+  \draw[->,thick,red!70!black] (p1)--(p2);
+  \draw[->,thick,red!70!black] (p2)--(p3);
+  \draw[->,thick,red!70!black] (p3)--(p4);
+  % Points
+  \foreach \p/\lbl/\pos in {
+    p0/$k=0$/above right,
+    p1/$k=1$/left,
+    p2/$k=2$/below right,
+    p4/$x^*$/above right}{
+    \fill[red!80!black] (\p) circle (1.6pt);
+    \node[\pos,font=\tiny] at (\p) {\lbl};
+  }
+  % x* highlighted
+  \fill[green!50!black] (p4) circle (2pt);
+\end{tikzpicture}
+\end{column}
+\end{columns}
 
 \end{frame}
 
