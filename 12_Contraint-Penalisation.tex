@@ -234,21 +234,21 @@ $$
 \begin{frame}
 \frametitle{Mauvais conditionnement: cônes tangent et normal}
 
+Sous la LICQ, le cône tangent s'écrit
+$$
+T_{\cX}(x^*) = \{ d \,|\, d^T\nabla g_i(x^*) = 0,\ i \in \cE,\  d^T\nabla g_i(x^*) \leq 0,\ i \in \cA(x^*) \cap \cI \}.
+$$
+
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
-Le jeu de transparents sur les méthodes de projection introduit les cônes $T_{\cX}(x^*)$ et $N_{\cX}(x^*)$ dans leur forme générale. Le jeu sur les conditions d'optimalité établit ensuite que sous la LICQ:
+Ici nous n'avons que des contraintes d'égalité ($\cI = \emptyset$), donc les conditions se réduisent à $J(x^*)d = 0$:
 $$
-T_{\cX}(x^*) = \ker J(x^*),\quad N_{\cX}(x^*) = \mathrm{Im}\,J(x^*)^T.
+T_{\cX}(x^*) = \ker J(x^*).
 $$
-$J^TJ\,v = 0 \Leftrightarrow Jv = 0$, donc $\ker(J^TJ) = \ker J$:
-\begin{itemize}
-  \item val.\ prop.\ \textbf{nulles}: $v \in T_{\cX}(x^*)$ \textbf{(tangentes)}
-  \item val.\ prop.\ $\sigma_i^2>0$: $v \in N_{\cX}(x^*)$ \textbf{(normales)}
-\end{itemize}
 \end{column}
 \begin{column}{0.42\textwidth}
 \centering
-\begin{tikzpicture}[scale=1.5,>=Stealth]
+\begin{tikzpicture}[scale=1.4,>=Stealth]
   % Hyperbola x1*x2=1, x1 in [0.35,2.6]
   \draw[thick,blue!70!black,domain=0.38:2.55,samples=80,smooth]
     plot (\x, {1/\x});
@@ -270,6 +270,45 @@ $J^TJ\,v = 0 \Leftrightarrow Jv = 0$, donc $\ker(J^TJ) = \ker J$:
 \end{tikzpicture}
 \end{column}
 \end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mauvais conditionnement: cône normal et décomposition}
+
+Le cône normal $N_{\cX}(x^*)$ est le complément orthogonal du cône tangent:
+$$
+N_{\cX}(x^*) = T_{\cX}(x^*)^\perp = (\ker J(x^*))^\perp.
+$$
+
+Or, pour toute matrice $A \in \RR^{m \times n}$, la décomposition fondamentale de l'algèbre linéaire donne $\RR^n = \ker A \oplus \mathrm{Im}\,A^T$, i.e.\ $(\ker A)^\perp = \mathrm{Im}\,A^T$. En prenant $A = J(x^*)$:
+$$
+N_{\cX}(x^*) = \mathrm{Im}\,J(x^*)^T.
+$$
+
+\mbox{}
+
+Les colonnes de $J(x^*)^T$ sont les gradients $\nabla g_i(x^*)$, $i \in \cE$: le cône normal est engendré par les gradients des contraintes, conformément à l'intuition géométrique.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mauvais conditionnement: valeurs propres de $J^TJ$}
+
+La matrice symétrique $J^TJ$ ($n \times n$) a les mêmes espaces propres que la décomposition $\ker J \oplus \mathrm{Im}\,J^T$:
+
+\begin{itemize}
+\item $J^TJ\,v = 0 \Leftrightarrow \|Jv\|^2 = v^TJ^TJv = 0 \Leftrightarrow Jv = 0$, donc $\ker(J^TJ) = \ker J = T_{\cX}(x^*)$.
+\item Si $v \in \mathrm{Im}\,J^T = N_{\cX}(x^*)$, alors $v = J^Tu$ pour un certain $u$, et $J^TJv = J^T(JJ^Tu) \ne 0$. Les valeurs propres non nulles de $J^TJ$ sont les $\sigma_i^2 > 0$ (carrés des valeurs singulières de $J$).
+\end{itemize}
+
+\mbox{}
+
+En résumé, les vecteurs propres de $J^TJ$ se répartissent en:
+\begin{itemize}
+  \item val.\ prop.\ \textbf{nulles}: $v \in T_{\cX}(x^*)$ --- directions \textbf{tangentes}
+  \item val.\ prop.\ $\sigma_i^2>0$: $v \in N_{\cX}(x^*)$ --- directions \textbf{normales}
+\end{itemize}
 
 \end{frame}
 
@@ -740,6 +779,300 @@ $$
 + \frac{1}{2\mu} \sum_{i \in \cI} \left( [ g_i(x) ]^+ \right)^2
 $$
 Il s'agit d'une pénalité inexacte, et non nécessairement douce (en particulier, elle peut ne pas être différentiable en tout point).
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Pourquoi la norme est exacte mais le carré ne l'est pas}
+
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+La distinction tient au \textbf{comportement au voisinage de la faisabilité} ($g(x) = 0$).
+
+\begin{itemize}
+\item
+$\|g\|_2$ (ou $\|g\|_1$): \textbf{non différentiable} en $g=0$ (``coude''). La pénalité contribue à l'ordre~$t$:
+$\tfrac{1}{\mu}\|g(x^*\!+td)\| = \tfrac{t}{\mu}\|Jd\| + O(t^2)$.
+Pour $1/\mu$ assez grand, ce coût \textbf{linéaire} domine la décroissance de~$f$ et verrouille le minimum en~$x^*$.
+\item
+$\|g\|_2^2$: \textbf{lisse} en $g=0$, dérivée nulle. La pénalité ne contribue qu'à l'ordre~$t^2$, le même que~$f$: compétition au même ordre, d'où un biais $x_\mu = x^* - O(\mu)$.
+\end{itemize}
+\end{column}
+\begin{column}{0.42\textwidth}
+\centering
+\begin{tikzpicture}[scale=0.85,>=Stealth]
+  % Axes
+  \draw[->] (-2.2,0)--(2.2,0) node[right,font=\small] {$g$};
+  \draw[->] (0,-0.3)--(0,3.2) node[above,font=\small] {};
+  % |g| = l1/l2 penalty (V shape)
+  \draw[thick,blue,domain=-2:2,samples=2]
+    plot (\x, {abs(\x)});
+  \node[blue,font=\small] at (1.7,2.4) {$|g|$};
+  % g^2 penalty (parabola)
+  \draw[thick,red,domain=-1.7:1.7,samples=60,smooth]
+    plot (\x, {\x*\x});
+  \node[red,font=\small] at (-1.5,2.6) {$g^2$};
+  % Kink annotation
+  \fill[blue] (0,0) circle (2pt);
+  \draw[->,thick,green!60!black] (0.8,-0.15) -- (0.15,-0.02);
+  \node[green!60!black,font=\tiny,right] at (0.8,-0.2) {coude};
+\end{tikzpicture}
+
+{\small La non-différentiabilité (le coude) est ce qui rend la pénalité exacte: c'est un \emph{feature}, pas un bug.}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: énoncé}
+
+\begin{thm}[Pénalité exacte $\ell_1$]
+Considérons le problème
+\begin{align*}
+\min_{x \in \RR^n}\ & f(x) \\
+\mbox{t.q. } & g_i(x) = 0,\ i \in \cE, \quad g_i(x) \leq 0,\ i \in \cI,
+\end{align*}
+et la fonction de pénalité $\ell_1$
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{\mu} \sum_{i \in \cE} | g_i(x) | + \frac{1}{\mu} \sum_{i \in \cI} [ g_i(x) ]^+.
+$$
+\end{thm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: énoncé (suite)}
+
+\begin{thm}[Pénalité exacte $\ell_1$ -- suite]
+Supposons que $x^*$ est un minimiseur local satisfaisant les conditions KKT avec des multiplicateurs $y^*$, que la LICQ est satisfaite en $x^*$, et que les conditions suffisantes du second ordre sont vérifiées.
+
+\mbox{}
+
+Alors il existe $\mu^* > 0$ tel que pour tout $0 < \mu < \mu^*$, $x^*$ est un minimiseur local strict de $\Phi(\cdot, \mu)$.
+\end{thm}
+
+\mbox{}
+
+Nous allons prouver ce résultat dans le cas de contraintes d'égalité uniquement; l'extension aux inégalités sera discutée séparément.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: cadre de la preuve}
+
+Concentrons-nous sur le cas avec contraintes d'égalité uniquement ($\cI = \emptyset$):
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{\mu} \| g(x) \|_1 = f(x) + \frac{1}{\mu} \sum_{i \in \cE} |g_i(x)|.
+$$
+
+\mbox{}
+
+Par les conditions KKT en $x^*$:
+$$
+\nabla f(x^*) + J(x^*)^T y^* = 0, \qquad g(x^*) = 0.
+$$
+
+\mbox{}
+
+Pour tout $x$ faisable ($g(x) = 0$) dans un voisinage de $x^*$:
+$$
+\Phi(x, \mu) = f(x) \geq f(x^*) = \Phi(x^*, \mu)
+$$
+par optimalité locale de $x^*$. La difficulté est de montrer que $\Phi(x^*,\mu) \leq \Phi(x,\mu)$ aussi pour les points $x$ \textbf{non réalisables} proches de $x^*$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: preuve (direction $d$)}
+
+Soit $d \in \RR^n$ une direction quelconque avec $\| d \| = 1$. On étudie
+$$
+\varphi(t) := \Phi(x^* + td, \mu) - \Phi(x^*, \mu)
+$$
+pour $t > 0$ petit. Par développement de Taylor:
+$$
+f(x^*+td) = f(x^*) + t\,\nabla f(x^*)^T d + \tfrac{t^2}{2}\,d^T\nabla^2 f(x^*)\,d + o(t^2),
+$$
+$$
+g_i(x^*+td) = t\,\nabla g_i(x^*)^T d + O(t^2), \quad i \in \cE,
+$$
+car $g(x^*) = 0$. Donc pour $t > 0$ petit:
+$$
+|g_i(x^*+td)| = t\,|\nabla g_i(x^*)^T d| + O(t^2).
+$$
+
+\mbox{}
+
+On obtient alors
+$$
+\varphi(t) = t\,\nabla f(x^*)^Td + \frac{t}{\mu}\sum_{i \in \cE} |\nabla g_i(x^*)^Td| + O(t^2).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: preuve (cas 1)}
+
+\textbf{Cas 1:} $Jd \ne 0$, i.e.\ $d \notin \ker J(x^*)$.
+Le terme dominant dans $\varphi(t)$ est d'ordre $t$:
+$$
+\varphi(t) = t\underbrace{\left[\nabla f(x^*)^Td + \frac{1}{\mu}\sum_{i \in \cE} |\nabla g_i(x^*)^Td|\right]}_{\displaystyle =: \alpha(d,\mu)} + O(t^2).
+$$
+
+Par l'inégalité triangulaire et les conditions KKT ($\nabla f(x^*) = -J(x^*)^Ty^*$):
+\begin{align*}
+\alpha(d,\mu) &\geq -\sum_{i \in \cE} |y_i^*|\,|\nabla g_i(x^*)^Td| + \frac{1}{\mu}\sum_{i \in \cE} |\nabla g_i(x^*)^Td| \\
+&= \sum_{i \in \cE} \left(\frac{1}{\mu} - |y_i^*|\right)|\nabla g_i(x^*)^Td|.
+\end{align*}
+
+Si $\mu < \mu_1^* := 1/\max_{i \in \cE}|y_i^*|$, chaque terme est $> 0$. Comme $Jd \ne 0$, au moins un $|\nabla g_i(x^*)^Td| > 0$, donc $\alpha(d,\mu) > 0$ et $\varphi(t) > 0$ pour $t$ petit.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: preuve (cas 2)}
+
+\textbf{Cas 2:} $Jd = 0$, i.e.\ $d \in \ker J(x^*) = T_{\cX}(x^*)$.
+
+Les termes d'ordre $t$ s'annulent: $\nabla g_i(x^*)^Td = 0$ pour tout $i$, et
+$\nabla f(x^*)^Td = -y^{*T}J(x^*)d = 0$.
+Le terme dominant est d'ordre $t^2$:
+$$
+\varphi(t) = \frac{t^2}{2}\,d^T\nabla^2 f(x^*)\,d + \frac{1}{\mu}\sum_{i \in \cE} O(t^2) + o(t^2).
+$$
+
+Plus précisément, $|g_i(x^*+td)| = \frac{t^2}{2}|d^T\nabla^2 g_i(x^*)\,d| + o(t^2)$.
+
+\mbox{}
+
+Comme les conditions suffisantes du second ordre donnent
+$$
+d^T\nabla^2_{xx}L(x^*,y^*)\,d > 0 \quad \forall d \in T_{\cX}(x^*) \setminus \{0\},
+$$
+il existe $\sigma > 0$ tel que $d^T\nabla^2_{xx}L(x^*,y^*)\,d \geq \sigma$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: preuve (cas 2, suite)}
+
+Développons $\varphi(t)$ au second ordre. Comme $d \in T_{\cX}(x^*)$:
+\begin{align*}
+\varphi(t)
+&= \frac{t^2}{2}\,d^T\nabla^2 f(x^*)\,d + \frac{1}{\mu}\sum_{i \in \cE}\frac{t^2}{2}\,|d^T\nabla^2 g_i(x^*)\,d| + o(t^2) \\
+&\geq \frac{t^2}{2}\left(d^T\nabla^2 f(x^*)\,d - \frac{1}{\mu}\sum_{i \in \cE}|y_i^*|\,|d^T\nabla^2 g_i(x^*)\,d|\right. \\
+&\qquad\qquad\left.+ \frac{1}{\mu}\sum_{i \in \cE}|d^T\nabla^2 g_i(x^*)\,d|\right) + o(t^2)
+\end{align*}
+
+\mbox{}
+
+Le terme $d^T\nabla^2 f(x^*)\,d + \sum_i y_i^* d^T\nabla^2 g_i(x^*)\,d = d^T\nabla^2_{xx}L(x^*,y^*)\,d \geq \sigma > 0$.
+
+\mbox{}
+
+Les termes résiduels en $1/\mu$ sont positifs ou nuls (ce sont des valeurs absolues pondérées par $(1/\mu - |y_i^*|) \geq 0$). Donc $\varphi(t) > 0$ pour $t > 0$ petit.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: conclusion}
+
+\textbf{Synthèse.}
+Pour $0 < \mu < \mu^* := 1/\max_{i \in \cE}|y_i^*|$:
+
+\begin{itemize}
+\item 
+Pour toute direction $d \notin T_{\cX}(x^*)$ (cas 1): le terme de pénalité domine à l'ordre~$t$ et rend $\Phi(x^*+td,\mu) > \Phi(x^*,\mu)$.
+\item
+Pour toute direction $d \in T_{\cX}(x^*)\setminus\{0\}$ (cas 2): la courbure positive du Lagrangien assure $\Phi(x^*+td,\mu) > \Phi(x^*,\mu)$ à l'ordre~$t^2$.
+\end{itemize}
+
+\mbox{}
+
+Comme la sphère unité est compacte, la borne est uniforme en $d$, et il existe $\bar{t} > 0$ tel que pour tout $x$ avec $0 < \|x - x^*\| < \bar{t}$:
+$$
+\Phi(x, \mu) > \Phi(x^*, \mu).
+$$
+
+Donc $x^*$ est un minimiseur local strict de $\Phi(\cdot, \mu)$. \qed
+
+\mbox{}
+
+{\blue Remarque:} Le seuil $\mu^* = 1/\|y^*\|_\infty$ montre que la pénalisation doit dépasser la norme des multiplicateurs. Plus les multiplicateurs sont grands, plus le poids de pénalité nécessaire est élevé.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exactitude de la pénalité $\ell_1$: cas avec inégalités}
+
+Le résultat s'étend au problème avec contraintes d'égalité et d'inégalité. Rappelons que
+$$
+\Phi(x, \mu) = f(x) + \frac{1}{\mu} \sum_{i \in \cE} | g_i(x) | + \frac{1}{\mu} \sum_{i \in \cI} [ g_i(x) ]^+.
+$$
+
+\mbox{}
+
+Si $x^*$ est un point KKT avec multiplicateurs $y_i^*$ ($i \in \cE$) et $y_i^* \geq 0$ ($i \in \cI$), sous LICQ et conditions suffisantes du second ordre, la preuve s'adapte:
+
+\begin{itemize}
+\item 
+Pour les contraintes actives $i \in \cA(x^*) = \{i \in \cI : g_i(x^*) = 0\}$, le raisonnement est analogue avec $[g_i(x^*+td)]^+$ au lieu de $|g_i(x^*+td)|$.
+\item
+Pour les contraintes inactives $i \in \cI \setminus \cA(x^*)$, $g_i(x^*) < 0$ et par continuité $[g_i(x^*+td)]^+ = 0$ pour $t$ petit: elles ne contribuent pas.
+\end{itemize}
+
+\mbox{}
+
+Le seuil critique devient $\mu^* = 1/\max\left\{ \max_{i \in \cE}|y_i^*|,\, \max_{i \in \cA(x^*)} y_i^* \right\}$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inexactitude de la pénalité quadratique}
+
+À titre de comparaison, montrons que la pénalité quadratique est \textbf{inexacte}.
+
+\mbox{}
+
+Considérons $\min\, x$ s.c.\ $x = 1$, de solution $x^* = 1$.
+
+\mbox{}
+
+La pénalité quadratique est $\Phi_\mu(x) = x + \frac{1}{2\mu}(x-1)^2$.
+
+\mbox{}
+
+La condition $\Phi_\mu'(x) = 0$ donne $1 + \frac{1}{\mu}(x-1) = 0$, soit $x_\mu = 1-\mu$.
+
+\mbox{}
+
+Pour tout $\mu > 0$, le minimiseur $x_\mu = 1 - \mu \neq 1 = x^*$.
+
+\mbox{}
+
+Le minimiseur de $\Phi_\mu$ ne coïncide jamais avec $x^*$: il n'existe pas de $\mu^* > 0$ fini pour lequel l'égalité soit atteinte. La pénalité quadratique ne peut qu'approcher la solution, sans l'atteindre pour un $\mu$ fixé.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inexactitude de la pénalité quadratique (suite)}
+
+En revanche, la pénalité $\ell_1$ pour le même problème est $\Phi(x,\mu) = x + \frac{1}{\mu}|x-1|$.
+
+\mbox{}
+
+Pour $x > 1$: $\Phi'(x) = 1 + \frac{1}{\mu} > 0$ (croissante).
+
+Pour $x < 1$: $\Phi'(x) = 1 - \frac{1}{\mu}$.
+\begin{itemize}
+\item Si $\mu < 1$: $\Phi'(x) < 0$ pour $x < 1$, donc $\Phi$ est décroissante à gauche de $1$ et croissante à droite. $x^* = 1$ est bien le minimiseur.
+\item Si $\mu \geq 1$: $\Phi'(x) \geq 0$ pour $x < 1$ aussi, donc $\Phi$ est non-décroissante partout et le minimiseur est repoussé vers $-\infty$.
+\end{itemize}
+
+\mbox{}
+
+Le seuil est $\mu^* = 1/|y^*| = 1$, en accord avec le théorème. Pour $\mu < 1$, la pénalité $\ell_1$ retrouve exactement $x^* = 1$.
 
 \end{frame}
 

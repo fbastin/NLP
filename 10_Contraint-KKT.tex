@@ -127,7 +127,7 @@ minimum local du Lagrangien lorsque $\lambda = \lambda^*$.
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[shrink=3]
 \frametitle{Multiplicateurs de Lagrange: contraintes d'inégalité}
 
 Considérons le problème de programmation mathématique suivant
@@ -137,13 +137,14 @@ Considérons le problème de programmation mathématique suivant
 \end{align*}
 où $\cX \subset \RR^n$, $f: \RR^n \rightarrow \RR$, $g_i: \RR^n \rightarrow \RR$, $i = 1,\ldots,m$.
 
-\end{frame}
-
-\begin{frame}
-\frametitle{Multiplicateurs de Lagrange: contraintes d'inégalité}
+\mbox{}
 
 \begin{thm}
-Supposons que le Lagrangien associé au problème précédent
+Supposons que le Lagrangien associé au problème
+\begin{align*}
+\min_{x \in \cX} \ & f(x) \\
+\mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m,
+\end{align*}
 possède un minimum local $x^* \in \cX$ lorsque le vecteur de multiplicateurs $\lambda$ vaut $\lambda^*$.
 Si $g_i(x^*) \leq 0$, $\lambda^*_i \geq 0$ et $\lambda^*_i g_i(x^*) = 0$, $i = 1,\ldots,m$, alors $x^*$ est un minimum local de $f(x)$.
 \end{thm}
@@ -283,8 +284,8 @@ Soient $x^*$ minimum pour $x \in \cB(x^*,\epsilon)$, $\epsilon > 0$, et $(\lambd
 Alors
 \begin{align*}
 f(x^*) &= \cL(\lambda^*, \mu^*) \\
-&= \min_{x \in \cB(x^*,\epsilon)} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{j = 1}^r \mu_j^* h_j(x) \right) \\
-& \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{j = 1}^r \mu_j^* h_j(x^*) \\
+&= \min_{x \in \cB(x^*,\epsilon)} \left( f(x) + \sum_{i = 1}^m \lambda_i^* g_i(x) + \sum_{i = 1}^r \mu_i^* h_i(x) \right) \\
+& \leq f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
 & \leq f(x^*)
 \end{align*}
 Dès lors, $x^*$ est un minimum de $L(x, \lambda^*, \mu^*)$ sur $\cB(x^*,\epsilon)$.
@@ -326,7 +327,7 @@ Dès lors, l'hypothèse de dualité forte apparaît importante. Elle sera garant
 \item
 Programme linéaire. La dualité forte tient toujours.
 \item
-Programme convexe. Condition de Slater: $\exists x$ tel que $g_i(x) < 0$, $i = 1,\ldots,m$ et $h_j(x) = 0$, $j = 1,\ldots,r$.
+Programme convexe. Condition de Slater: $\exists x$ tel que $g_i(x) < 0$, $i = 1,\ldots,m$ et $h_i(x) = 0$, $i = 1,\ldots,r$.
 \item
 Programme non-convexe.
 Hypothèse de qualification de contraintes.
@@ -343,9 +344,9 @@ Si $x^*$ est une solution locale de
 \begin{align*}
 \min_{x \in \cX} \ & f(x) \\
 \mbox{t.q. } & g_i(x) \leq 0,\ i = 1,\ldots,m \\
-& h_j(x) = 0,\ j = 1,\ldots,r,
+& h_i(x) = 0,\ i = 1,\ldots,r,
 \end{align*}
-où les fonctions $f$, $g_i$, $i = 1,\ldots,m$, et $h_j$, $j = 1,\ldots,r$, sont continûment différentiables, et qu'une condition de qualification de contrainte tient en $x^*$.
+où les fonctions $f$, $g_i$ et $h_i$, $i = 1,\ldots,m$, sont continûment différentiables, et qu'une condition de qualification de contrainte tient en $x^*$.
 Alors, il existe un vecteur de multiplicateurs de Lagrange $(\lambda^*, \mu^*)$ tel que les conditions KKT sont satisfaites en $(x^*,\lambda^*, \mu^*)$.
 \end{thm}
 
@@ -361,7 +362,7 @@ La difficulté tient au fait qu'on ne dispose pas de dualité forte au sens glob
 
 L'idée clé est géométrique: sous une qualification de contrainte, le cône tangent à $\cX$ en $x^*$ coïncide avec le cône linéarisé
 $$
-\{ d \mid d^T\nabla g_i(x^*) = 0,\ i\in\cE,\ d^T\nabla g_i(x^*) \leq 0,\ i\in\cA(x^*)\cap\cI \}.
+\{ d \mid d^T\nabla g_i(x^*) \leq 0,\ i\in\cA(x^*) \}.
 $$
 On montre alors que $-\nabla f(x^*)$ doit appartenir au cône engendré par les gradients des contraintes actives, ce qui donne l'existence de $(\lambda^*,\mu^*)$ vérifiant les conditions KKT.
 
@@ -377,7 +378,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	
 	S'il existe $x^*$, $(\lambda^*, \mu^*)$ satisfaisant les conditions KKT, alors
 	\begin{align*}
-	L(x^*, \lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{j = 1}^r \mu_j^* h_j(x^*) \\
+	L(\lambda^*, \mu^*) &= f(x^*) + \sum_{i = 1}^m \lambda_i^* g_i(x^*) + \sum_{i = 1}^r \mu_i^* h_i(x^*) \\
 	&= f(x^*)
 	\end{align*}
 	
@@ -417,7 +418,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	$$
 	en considérant la norme engendrée par une matrice $H$ définie positive
 	$$
-	\min_x \frac{1}{2} \| y - x \|_H^2 \mbox{ tel que } Ax = b.
+	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
 	$$
 	Nous allons résoudre ce problème en utilisant les conditions KKT.
 	
@@ -428,7 +429,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	
 	Considérons le problème
 	$$
-	\min_x \frac{1}{2} \| y - x \|_H^2 \mbox{ tel que } Ax = b.
+	\min_x \frac{1}{2} \| y - x \|_H \mbox{ tel que } Ax = b.
 	$$
 	Le problème est convexe, et satisfait la condition de Slater s'il existe au moins un point réalisable.
 
@@ -441,7 +442,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	\end{align*}
 	ou
 	\begin{align*}
-	H(y-x) - A^T \lambda &= 0 \\
+	H(y-x) + A^T \lambda &= 0 \\
 	Ax & = b \\
 	\end{align*}
 	
@@ -452,7 +453,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	
 	Le problème peut être réorganisé comme
 	\begin{align*}
-	Hx + A^T \lambda &= Hy \\
+	Hx - A^T \lambda &= Hy \\
 	Ax + 0\lambda & = b
 	\end{align*}
 	donnant lieu au système linéaire
@@ -461,7 +462,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	H & A^T \\ A & 0
 	\end{pmatrix}
 	\begin{pmatrix}
-	x \\ \lambda
+	x \\ -\lambda
 	\end{pmatrix}
 	=
 	\begin{pmatrix}
@@ -471,11 +472,11 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	Si $H$ est inversible, ce qui sera le cas dans nos problèmes comme nous prendrons $H$ définie positive, nous pouvons résoudre le système en isolant $x$ et en le substituant.
 	Tout d'abord, nous avons
 	$$
-	x = H^{-1}Hy-H^{-1}A^T \lambda = y-H^{-1}A^T \lambda
+	x = H^{-1}Hy+H^{-1}A^T \lambda = y+H^{-1}A^T \lambda
 	$$
 	et donc
 	$$
-	A\left(y-H^{-1}A^T \lambda\right) = b
+	A\left(y+H^{-1}A^T \lambda\right) = b
 	$$
 	
 \end{frame}
@@ -485,35 +486,12 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	
 	On en tire
 	$$
-	AH^{-1}A^T \lambda = Ay - b
+	AH^{-1}A^T \lambda = b - Ay
 	$$
 	puis, une fois $\lambda$ déterminé
 	$$
-	Hx = Hy - A^T \lambda
+	Hx = Hy + A^T \lambda
 	$$
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{Inversibilité de $AH^{-1}A^T$ et complément de Schur}
-
-	La matrice $AH^{-1}A^T \in \RR^{p \times p}$ est inversible sous nos hypothèses.
-	En effet, pour tout $v \ne 0$,
-	$$
-	v^T AH^{-1}A^T v = (A^Tv)^T H^{-1} (A^Tv).
-	$$
-	Puisque $H$ est définie positive, $H^{-1}$ l'est aussi, donc $(A^Tv)^T H^{-1}(A^Tv) > 0$ dès que $A^Tv \ne 0$.
-	Or $A \in \RR^{p \times n}$ est de rang plein (rang $p$), donc $A^T$ est injective: $A^Tv = 0 \Rightarrow v = 0$.
-	Dès lors $AH^{-1}A^T$ est définie positive, en particulier inversible.
-
-	\medskip
-	\textbf{Lien avec le complément de Schur.}
-	La matrice de selle du système KKT est
-	$$
-	K = \begin{pmatrix} H & A^T \\ A & 0 \end{pmatrix}.
-	$$
-	Le \textbf{complément de Schur} de $H$ dans $K$ est $S = 0 - AH^{-1}A^T = -AH^{-1}A^T$.
-	Puisque $S$ est définie négative (et donc inversible), $K$ est elle-même inversible, ce qui garantit l'existence et l'unicité de la solution $(x^*, \lambda^*)$.
 	
 	%Supposons que nous pouvons obtenir deux matrices de rang plein $R$ et $N$ dont les colonnes donnent une base au domaine et à l'espace nul de $A$, respectivement.
 	%$x$ peut alors être représenté comme
@@ -562,7 +540,7 @@ Voir par exemple Nocedal \& Wright, \textit{Numerical Optimization}, Section~12.
 	
 	De ce qui précède, en prenant $H = I$, et en notant $\overline{d}_k$ la projection de $d_k$,
 	\begin{align*}
-	\overline{d}_k &= d_k - A^T\lambda \\
+	\overline{d}_k &= d_k + A^T\lambda \\
 	&= d_k - A^T(AA^T)^{-1}Ad_k \\
 	&= \left(I-A^T(AA^T)^{-1}A\right)d_k \\
 	&= -\left(I-A^T(AA^T)^{-1}A\right)\nabla f(x_k) 
@@ -641,11 +619,6 @@ $$
 independence constraint qualification -- LICQ) tient si l'ensemble des contraintes actives $\nabla_x g_i(x), i \in \cA(x)$ est linéairement indépendant.
 \end{defn}
 
-\end{frame}
-
-\begin{frame}
-\frametitle{LICQ: lemme}
-
 \begin{lem}
 	Soit $x^*$ un point du problème de programmation nonlinéaire où la LICQ tient et soit $d \in \RR^n$ un vecteur tel que
 	\begin{align*}
@@ -653,16 +626,15 @@ independence constraint qualification -- LICQ) tient si l'ensemble des contraint
 	d^T \nabla g_i(x^*) &= 0,\ i \in \cE \\
 	d^T \nabla g_i(x^*) &\leq 0,\ i \in \cA(x^*) \cap \cI
 	\end{align*}
-	Sous ces hypothèses, il existe un chemin réalisable issu de $x^*$ de direction tangente $d$ (énoncé complet au frame suivant).
 \end{lem}
 
 \end{frame}
 
-\begin{frame}
-\frametitle{LICQ: lemme (suite)}
+\begin{frame}[shrink=2]
+\frametitle{LICQ}
 
 \begin{lem}[suite]
-Sous les hypothèses précédentes,
+Sous les hypothèses précédentes ($x^*$ vérifie la LICQ, $d \ne 0$, $d^T\nabla g_i(x^*)=0$ pour $i\in\cE$, et $d^T\nabla g_i(x^*)\leq 0$ pour $i\in\cA(x^*)\cap\cI$),
 pour $\epsilon > 0$ assez petit, il existe un chemin $x(\cdot) \in C^2 \left((-\epsilon, \epsilon), \RR^n \right)$ tel que
 \begin{align*}
 x(0) &= x^* \\
@@ -763,7 +735,7 @@ Le lemme affirme que ces conditions de premier ordre suffisent à garantir l'exi
 \end{frame}
 
 \begin{frame}
-\frametitle{Preuve}
+\frametitle{Preuve du lemme (suite)}
 
 Puisque la LICQ tient, il est possible de choisir $Z \in \RR^{(n-\ell) \times n}$ telle que
 $$
@@ -877,7 +849,7 @@ $$
 S'il existe $(a,b)$ tel que $F(a,b) = 0$ et pour lequel le jacobien de $D_yF$ ($D_yF$ est inversible) est non nul, alors
 \begin{enumerate}
 \item
-il existe un voisinage $A$ de $a$ dans $\RR^n$ et un voisinage $B$ de $b$ dans $\RR^p$, une fonction $f \in C^k(A,B)$, tels que $A \times B \subseteq \Omega$ et que $\forall\, (x,y) \in A \times B$,
+il existe un voisinage $A$ de $a$ dans $\cR^n$ et un voisinage $B$ de $b$ dans $\cR^p$, une fonction $f \in C^k(A,B)$, tels que $A \times B \subseteq \Omega$ et que $\forall\, (x,y) \in A \times B$,
 $$
 F(x,y) = 0 \Leftrightarrow y=f(x).
 $$
@@ -920,18 +892,124 @@ $$
 \begin{frame}
 \frametitle{Retour au cône tangent}
 
-Il est également possible de montrer que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
+Sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x^*$ admet la caractérisation suivante.
+
+\begin{thm}[Reformulation du cône tangent sous LICQ]
+Soit $x^*$ un point réalisable où la LICQ tient. Alors
 $$
-T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0, i \in \cE, \ d^T\nabla g_i(x) \leq 0, i \in \cA(x) \cap \cI \}
+T_{\cX}(x^*) = \mathcal{F}(x^*) := \{ d \,|\, d^T\nabla g_i(x^*) = 0,\, i \in \cE, \ d^T\nabla g_i(x^*) \leq 0,\, i \in \cA(x^*) \cap \cI \}.
 $$
-Dès lors,
+\end{thm}
+
+On appelle $\mathcal{F}(x^*)$ le {\red cône linéarisé} (ou cône des directions réalisables linéarisées). La preuve nécessite deux inclusions.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inclusion $T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$}
+
+Cette inclusion tient \textbf{sans hypothèse de qualification de contrainte}.
+
+\mbox{}
+
+Soit $d \in T_{\cX}(x^*)$. Par la définition du cône tangent (rappelée dans le jeu de transparents sur les méthodes de projection), il existe des suites $\{x_k\} \subset \cX$ avec $x_k \to x^*$ et $\{t_k\} \downarrow 0$ telles que $d_k := (x_k - x^*)/t_k \to d$.
+
+\mbox{}
+
+Pour $i \in \cE$: $g_i(x_k) = 0$ et $g_i(x^*) = 0$, donc par Taylor:
 $$
-\frac{d}{dt} x(0) \in T_{\cX}(x^*).
+0 = g_i(x_k) = g_i(x^*) + \nabla g_i(x^*)^T(x_k - x^*) + o(\|x_k-x^*\|).
+$$
+En divisant par $t_k$: $\nabla g_i(x^*)^T d_k + o(1) = 0$. À la limite: $d^T\nabla g_i(x^*) = 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inclusion $T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$ (suite)}
+
+Pour $i \in \cA(x^*) \cap \cI$: $g_i(x_k) \leq 0$ et $g_i(x^*) = 0$, donc par Taylor:
+$$
+g_i(x_k) = \nabla g_i(x^*)^T(x_k - x^*) + o(\|x_k-x^*\|) \leq 0.
+$$
+En divisant par $t_k > 0$: $\nabla g_i(x^*)^T d_k + o(1) \leq 0$. À la limite:
+$$
+d^T\nabla g_i(x^*) \leq 0.
+$$
+
+Donc $d \in \mathcal{F}(x^*)$. \qed
+
+\mbox{}
+
+{\blue Remarque:} cette direction est entièrement basée sur un développement de Taylor au premier ordre. L'ensemble $\mathcal{F}(x^*)$ est toujours un sur-ensemble de $T_{\cX}(x^*)$, mais l'inclusion inverse peut échouer sans qualification de contrainte.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inclusion $\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ (sous LICQ)}
+
+C'est l'inclusion qui requiert la LICQ. Soit $d \in \mathcal{F}(x^*)$, i.e.
+$$
+d^T\nabla g_i(x^*) = 0,\ i \in \cE, \qquad d^T\nabla g_i(x^*) \leq 0,\ i \in \cA(x^*) \cap \cI.
+$$
+
+\textbf{Si $d = 0$:} $d \in T_{\cX}(x^*)$ trivialement.
+
+\mbox{}
+
+\textbf{Si $d \ne 0$:} ce sont exactement les hypothèses du lemme précédent.
+Le lemme fournit un chemin $x(\cdot) \in C^2((-\epsilon, \epsilon), \RR^n)$ tel que:
+\begin{itemize}
+\item $x(0) = x^*$,
+\item $\frac{d}{dt}x(0) = d$,
+\item $x(t) \in \cX$ pour $t \in [0, \epsilon)$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Inclusion $\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ (suite)}
+
+Posons $x_k := x(t_k)$ pour toute suite $t_k \downarrow 0$ avec $t_k \in (0, \epsilon)$.
+
+\mbox{}
+
+Alors $x_k \in \cX$, $x_k \to x^*$, et
+$$
+\frac{x_k - x^*}{t_k} = \frac{x(t_k) - x(0)}{t_k} \to \frac{d}{dt}x(0) = d.
 $$
 
 \mbox{}
 
-Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, lequel nous permettra de davantage caractériser les conditions prévalentes à une solution du problème d'optimisation.
+Par la définition séquentielle du cône tangent, cela montre que $d \in T_{\cX}(x^*)$. \qed
+
+\mbox{}
+
+\textbf{Conclusion:} sous la LICQ, $T_{\cX}(x^*) = \mathcal{F}(x^*)$, et
+$$
+\frac{d}{dt} x(0) \in T_{\cX}(x^*).
+$$
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Reformulation du cône tangent: synthèse}
+
+\textbf{Résumé.}
+
+\begin{itemize}
+\item
+$T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$ est toujours vraie (développement de Taylor, pas de CQ nécessaire).
+\item
+$\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ sous LICQ (via le lemme d'existence de chemin réalisable, lui-même prouvé par le théorème des fonctions implicites).
+\end{itemize}
+
+\mbox{}
+
+La LICQ est essentielle pour la seconde inclusion. Sans elle, $\mathcal{F}(x^*)$ peut être strictement plus grand que $T_{\cX}(x^*)$.
+
+\mbox{}
+
+Nous allons utiliser ce résultat pour introduire la notion de chemin réalisable, lequel nous permettra de davantage caractériser les conditions prévalentes à une solution du problème d'optimisation.
 
 \end{frame}
 
@@ -951,12 +1029,12 @@ Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, l
 
 \end{frame}
 
-\begin{frame}
+\begin{frame}[shrink=4]
 \frametitle{Chemin de sortie réalisable: illustration}
 
 \vspace*{-3pt}
 {\centering
-\scalebox{0.88}{%
+\scalebox{0.93}{%
 \begin{tikzpicture}[scale=0.62, every node/.style={transform shape},
   constraint/.style={thick, blue!70!black},
   gradient/.style={-{Stealth[length=6pt]}, thick},
