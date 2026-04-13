@@ -651,6 +651,60 @@ g_i(x(t)) &\leq 0,\ i \in \cI,\ t \in [0, \epsilon)
 \end{frame}
 
 \begin{frame}
+\frametitle{LICQ et condition de Slater}
+
+Dans le cas \textbf{convexe}, la condition de qualification naturelle est la condition de Slater.
+Un lien important relie la LICQ (condition locale) à Slater (condition globale).
+
+\mbox{}
+
+\begin{thm}
+Considérons un programme convexe avec contraintes d'inégalité linéaires
+$$
+g_i(x) = a_i^T x - b_i \leq 0,\quad i = 1,\ldots,m.
+$$
+Si la LICQ tient en un point réalisable $x^*$, alors la condition de Slater est satisfaite,
+i.e.\ il existe $\bar{x}$ tel que $g_i(\bar{x}) < 0$ pour tout $i = 1,\ldots,m$.
+\end{thm}
+
+\mbox{}
+
+{\blue Remarque}: la LICQ est une condition locale (en $x^*$), tandis que Slater est
+une condition globale (existence d'un point intérieur).
+Le résultat ci-dessus vaut pour des contraintes linéaires ; il ne s'étend pas en général
+aux contraintes non-linéaires.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{LICQ implique Slater: preuve}
+
+\begin{proof}
+Notons $\cA(x^*) = \{i \mid g_i(x^*) = 0\}$ les contraintes actives en $x^*$, et $A$
+la matrice dont les lignes sont $a_i^\top$, $i \in \cA(x^*)$.
+
+\mbox{}
+
+La LICQ signifie que $A$ est de rang plein, donc $AA^\top \succ 0$.
+Choisissons $d = -A^\top(AA^\top)^{-1}\mathbf{1}$, de sorte que $Ad = -\mathbf{1}$,
+i.e.\ $a_i^T d = -1 < 0$ pour tout $i \in \cA(x^*)$.
+Posons $\bar{x} = x^* + \epsilon d$ pour $\epsilon > 0$ suffisamment petit.
+
+\begin{itemize}
+\item \textbf{Contraintes actives} ($i \in \cA(x^*)$) : les contraintes étant linéaires,
+$$
+g_i(\bar{x}) = \underbrace{g_i(x^*)}_{=0} + \epsilon\, a_i^T d = -\epsilon < 0.
+$$
+\item \textbf{Contraintes inactives} ($i \notin \cA(x^*)$) : $g_i(x^*) < 0$, et par
+linéarité $g_i(\bar{x}) = g_i(x^*) + \epsilon\, a_i^T d < 0$ pour $\epsilon$ assez petit.
+\end{itemize}
+
+Donc $g_i(\bar{x}) < 0$ pour tout $i$ : la condition de Slater est satisfaite. \qed
+\end{proof}
+
+\end{frame}
+
+\begin{frame}
 \frametitle{Motivation des conditions sur $d$}
 
 Les conditions sur $d$ sont les conditions de \textbf{faisabilité au premier ordre}.
@@ -733,10 +787,6 @@ Le lemme affirme que ces conditions de premier ordre suffisent à garantir l'exi
 \end{center}
 
 \end{frame}
-
-\begin{frame}
-\frametitle{Preuve du lemme (suite)}
-
 Puisque la LICQ tient, il est possible de choisir $Z \in \RR^{(n-\ell) \times n}$ telle que
 $$
 \begin{pmatrix}
@@ -892,124 +942,18 @@ $$
 \begin{frame}
 \frametitle{Retour au cône tangent}
 
-Sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x^*$ admet la caractérisation suivante.
-
-\begin{thm}[Reformulation du cône tangent sous LICQ]
-Soit $x^*$ un point réalisable où la LICQ tient. Alors
+Il est également possible de montrer que sous la LICQ, le cône tangent à l'ensemble réalisable $\cX$ en $x$ peut se réécrire comme
 $$
-T_{\cX}(x^*) = \mathcal{F}(x^*) := \{ d \,|\, d^T\nabla g_i(x^*) = 0,\, i \in \cE, \ d^T\nabla g_i(x^*) \leq 0,\, i \in \cA(x^*) \cap \cI \}.
+T_{\cX}(x) = \{ d \,|\, d^T\nabla g_i(x) = 0, i \in \cE, \ d^T\nabla g_i(x) \leq 0, i \in \cA(x) \cap \cI \}
 $$
-\end{thm}
-
-On appelle $\mathcal{F}(x^*)$ le {\red cône linéarisé} (ou cône des directions réalisables linéarisées). La preuve nécessite deux inclusions.
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Inclusion $T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$}
-
-Cette inclusion tient \textbf{sans hypothèse de qualification de contrainte}.
-
-\mbox{}
-
-Soit $d \in T_{\cX}(x^*)$. Par la définition du cône tangent (rappelée dans le jeu de transparents sur les méthodes de projection), il existe des suites $\{x_k\} \subset \cX$ avec $x_k \to x^*$ et $\{t_k\} \downarrow 0$ telles que $d_k := (x_k - x^*)/t_k \to d$.
-
-\mbox{}
-
-Pour $i \in \cE$: $g_i(x_k) = 0$ et $g_i(x^*) = 0$, donc par Taylor:
-$$
-0 = g_i(x_k) = g_i(x^*) + \nabla g_i(x^*)^T(x_k - x^*) + o(\|x_k-x^*\|).
-$$
-En divisant par $t_k$: $\nabla g_i(x^*)^T d_k + o(1) = 0$. À la limite: $d^T\nabla g_i(x^*) = 0$.
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Inclusion $T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$ (suite)}
-
-Pour $i \in \cA(x^*) \cap \cI$: $g_i(x_k) \leq 0$ et $g_i(x^*) = 0$, donc par Taylor:
-$$
-g_i(x_k) = \nabla g_i(x^*)^T(x_k - x^*) + o(\|x_k-x^*\|) \leq 0.
-$$
-En divisant par $t_k > 0$: $\nabla g_i(x^*)^T d_k + o(1) \leq 0$. À la limite:
-$$
-d^T\nabla g_i(x^*) \leq 0.
-$$
-
-Donc $d \in \mathcal{F}(x^*)$. \qed
-
-\mbox{}
-
-{\blue Remarque:} cette direction est entièrement basée sur un développement de Taylor au premier ordre. L'ensemble $\mathcal{F}(x^*)$ est toujours un sur-ensemble de $T_{\cX}(x^*)$, mais l'inclusion inverse peut échouer sans qualification de contrainte.
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Inclusion $\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ (sous LICQ)}
-
-C'est l'inclusion qui requiert la LICQ. Soit $d \in \mathcal{F}(x^*)$, i.e.
-$$
-d^T\nabla g_i(x^*) = 0,\ i \in \cE, \qquad d^T\nabla g_i(x^*) \leq 0,\ i \in \cA(x^*) \cap \cI.
-$$
-
-\textbf{Si $d = 0$:} $d \in T_{\cX}(x^*)$ trivialement.
-
-\mbox{}
-
-\textbf{Si $d \ne 0$:} ce sont exactement les hypothèses du lemme précédent.
-Le lemme fournit un chemin $x(\cdot) \in C^2((-\epsilon, \epsilon), \RR^n)$ tel que:
-\begin{itemize}
-\item $x(0) = x^*$,
-\item $\frac{d}{dt}x(0) = d$,
-\item $x(t) \in \cX$ pour $t \in [0, \epsilon)$.
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Inclusion $\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ (suite)}
-
-Posons $x_k := x(t_k)$ pour toute suite $t_k \downarrow 0$ avec $t_k \in (0, \epsilon)$.
-
-\mbox{}
-
-Alors $x_k \in \cX$, $x_k \to x^*$, et
-$$
-\frac{x_k - x^*}{t_k} = \frac{x(t_k) - x(0)}{t_k} \to \frac{d}{dt}x(0) = d.
-$$
-
-\mbox{}
-
-Par la définition séquentielle du cône tangent, cela montre que $d \in T_{\cX}(x^*)$. \qed
-
-\mbox{}
-
-\textbf{Conclusion:} sous la LICQ, $T_{\cX}(x^*) = \mathcal{F}(x^*)$, et
+Dès lors,
 $$
 \frac{d}{dt} x(0) \in T_{\cX}(x^*).
 $$
 
-\end{frame}
-
-\begin{frame}
-\frametitle{Reformulation du cône tangent: synthèse}
-
-\textbf{Résumé.}
-
-\begin{itemize}
-\item
-$T_{\cX}(x^*) \subseteq \mathcal{F}(x^*)$ est toujours vraie (développement de Taylor, pas de CQ nécessaire).
-\item
-$\mathcal{F}(x^*) \subseteq T_{\cX}(x^*)$ sous LICQ (via le lemme d'existence de chemin réalisable, lui-même prouvé par le théorème des fonctions implicites).
-\end{itemize}
-
 \mbox{}
 
-La LICQ est essentielle pour la seconde inclusion. Sans elle, $\mathcal{F}(x^*)$ peut être strictement plus grand que $T_{\cX}(x^*)$.
-
-\mbox{}
-
-Nous allons utiliser ce résultat pour introduire la notion de chemin réalisable, lequel nous permettra de davantage caractériser les conditions prévalentes à une solution du problème d'optimisation.
+Nous allons utiliser ce lemme pour introduire la notion de chemin réalisable, lequel nous permettra de davantage caractériser les conditions prévalentes à une solution du problème d'optimisation.
 
 \end{frame}
 
